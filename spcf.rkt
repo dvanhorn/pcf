@@ -54,11 +54,3 @@
    (side-condition (not-div? O))]
   [(δ^ O (N_0 ...) M)
    (where M (δf O (N_0 ...)))])
-
-(define-metafunction PCF
-  [(δf add1 (N))           ,(add1 (term N))]
-  [(δf sub1 (N))           ,(max 0 (sub1 (term N)))]
-  [(δf * (N_0 N_1))        ,(* (term N_0) (term N_1))]
-  [(δf + (N_0 N_1))        ,(+ (term N_0) (term N_1))]
-  [(δf quotient (N_0 0))    (err "Divide by zero")]
-  [(δf quotient (N_0 N_1)) ,(quotient (term N_0) (term N_1))])

@@ -1,5 +1,5 @@
 #lang racket 
-(provide PCF v -->v)
+(provide PCF v -->v δ δf)
 (require redex/reduction-semantics "subst.rkt")
 
 (define-language PCF
