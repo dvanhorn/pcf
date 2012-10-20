@@ -1,5 +1,11 @@
 #lang pcf/symbolic traces
 
+(if0 (• nat) 1 2)
+
+(add1 (if0 (• nat) 1 2))
+
+(add1 (if0 (• nat) 1 (• nat)))
+
 ((λ ([x : nat]) 1) 2)
 
 ((λ ([f : (nat -> nat)])
