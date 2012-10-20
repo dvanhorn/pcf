@@ -27,7 +27,7 @@ See `examples/` for examples.
 [1] To install `raco git`:
 
 ```
-% git clone http://github.com/samth/raco-git.git`
+% git clone http://github.com/samth/raco-git.git
 % raco link raco-git
 % raco setup raco-git
 ```
