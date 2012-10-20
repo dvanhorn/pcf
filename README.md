@@ -15,3 +15,5 @@ where
 `option ::=
         | traces
         | stepper`
+
+See `examples/` for examples.
