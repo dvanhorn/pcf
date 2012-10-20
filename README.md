@@ -1,19 +1,17 @@
-pcf
-===
-
 Symbolic PCF
+============
 
 To install:
 
-   % raco git --github dvanhorn pcf
+   `% raco git --github dvanhorn pcf`
 
 Enables:
 
-#lang pcf <option>
-#lang pcf/symbolic <option>
+`#lang pcf <option>`
+`#lang pcf/symbolic <option>`
 
 where
 
-option ::=
+`option ::=
         | traces
-        | stepper
+        | stepper`
