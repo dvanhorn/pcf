@@ -23,8 +23,8 @@
    (--> ((λ ([X : T] ..._1) M) V ..._1)
         (subst (X V) ... M)
         β)
-   (--> (O V_0 ...) M
-        (judgment-holds (δ O (V_0 ...) M))
+   (--> (O V ...) M
+        (judgment-holds (δ O (V ...) M))
         δ)
    (--> (if0 0 M_0 M_1) M_0 if0-t)
    (--> (if0 N M_0 M_1) M_1

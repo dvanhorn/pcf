@@ -9,15 +9,13 @@
 (define s
   (reduction-relation
    SPCF
-   (--> ((• (T ..._1 -> T_0)) V ..._1)
-        (• T_0)
-        β•)
+   (--> ((• (T_0 ..._1 -> T)) V ..._1) (• T) β•)
    (--> ((• (T_0 ..._1 T T_1 ... -> T_o)) 
              V_0 ..._1 V V_1 ...)
         (havoc T V)
         havoc)
-   (--> (O V_0 ...) M
-        (judgment-holds (δ^ O (V_0 ...) M))
+   (--> (O V ...) M
+        (judgment-holds (δ^ O (V ...) M))
         δ^)
    (--> (if0 (• nat) M_0 M_1) M_0 if•-t)
    (--> (if0 (• nat) M_0 M_1) M_1 if•-f)))
