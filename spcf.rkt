@@ -1,5 +1,5 @@
 #lang racket
-(provide SPCF s sv -->sv)
+(provide SPCF s sv -->sv typeof/symbolic typable/symbolic?)
 (require redex/reduction-semantics "pcf.rkt")
 
 (define-extended-language SPCF PCF
@@ -45,9 +45,16 @@
   #:mode (δ^ I I O)
   #:contract (δ^ O (V ...) M)
   [(δ^ quotient (any (• nat)) (• nat))]  
-  [(δ^ quotient (any (• nat)) (err "Divide by zero"))]  
-  [(δ^ quotient ((• nat) 0)   (err "Divide by zero"))]  
+  [(δ^ quotient (any (• nat)) (err nat "Divide by zero"))]  
+  [(δ^ quotient ((• nat) 0)   (err nat "Divide by zero"))]  
   [(δ^ quotient ((• nat) N)   (• nat))
    (side-condition (not-zero? N))]
   [(δ^ O (any_0 ... (• nat) any_1 ...) (• nat))
    (side-condition (not-div? O))])
+
+(define (typable/symbolic? M)
+  (cons? (judgment-holds (typeof/symbolic () ,M T) T)))
+
+(define-extended-judgment-form SPCF typeof
+  #:mode (typeof/symbolic I I O)
+  [(typeof/symbolic Γ (• T) T)])

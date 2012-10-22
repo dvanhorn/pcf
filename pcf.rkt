@@ -1,5 +1,5 @@
 #lang racket 
-(provide PCF v -->v δ δf typeof)
+(provide PCF v -->v δ δf typeof typable?)
 (require redex/reduction-semantics "subst.rkt")
 
 (define-language PCF
@@ -51,6 +51,9 @@
   [(δf + (N_0 N_1))        ,(+ (term N_0) (term N_1))]
   [(δf quotient (N_0 0))    (err nat "Divide by zero")]
   [(δf quotient (N_0 N_1)) ,(quotient (term N_0) (term N_1))])
+
+(define (typable? M)
+  (cons? (judgment-holds (typeof () ,M T) T)))
 
 (define-judgment-form PCF
   #:mode (typeof I I O)

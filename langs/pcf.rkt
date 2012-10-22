@@ -1,6 +1,7 @@
 #lang racket
 (require (for-syntax racket/base "make-lang.rkt")
+         (for-syntax (only-in "../pcf.rkt" typable?))
          "../pcf.rkt")
 (provide #%top-interaction #%module-begin)
-(define-syntax #%top-interaction (make-#%top-interaction #'-->v))
-(define-syntax #%module-begin    (make-#%module-begin    #'-->v))
+(define-syntax #%top-interaction (make-#%top-interaction #'-->v typable?))
+(define-syntax #%module-begin    (make-#%module-begin    #'-->v typable?))
