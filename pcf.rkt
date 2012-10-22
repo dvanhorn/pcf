@@ -15,7 +15,10 @@
   (X ::= variable-not-otherwise-mentioned)
   
   ;; Evaluation contexts
-  (E ::= hole (M ... E V ...) (if0 E M M)))
+  (E ::= hole (M ... E V ...) (if0 E M M))
+  
+  ;; Type environments
+  (Γ ::= ((X T) ...)))
 
 (define v
   (reduction-relation
@@ -45,3 +48,34 @@
   [(δf + (N_0 N_1))        ,(+ (term N_0) (term N_1))]
   [(δf quotient (N_0 0))    (err "Divide by zero")]
   [(δf quotient (N_0 N_1)) ,(quotient (term N_0) (term N_1))])
+
+(define-judgment-form PCF
+  #:mode (typeof I I O)
+  [(typeof Γ N nat)]
+  [(typeof ((X_0 T_0) ... (X T) any_1 ...) X T)]
+  [(typeof Γ add1 (nat -> nat))]
+  [(typeof Γ sub1 (nat -> nat))]
+  [(typeof Γ * (nat nat -> nat))]
+  [(typeof Γ + (nat nat -> nat))]
+  [(typeof Γ quotient (nat nat -> nat))]
+  [(typeof Γ (if0 M_1 M_2 M_3) T)
+   (typeof Γ M_1 nat)
+   (typeof Γ M_2 T)
+   (typeof Γ M_3 T)]
+  [(typeof Γ (M M_0 ...) T)
+   (typeof Γ M (T_0 ..._1 -> T))
+   (typeof Γ M_0 T_0)
+   ...]
+  [(typeof Γ (λ ([X : T] ...) M) (T ... -> T_0))
+   (typeof (extend Γ (X T) ...) M T_0)])
+
+(define-metafunction PCF
+  [(extend-one (any_0 ... (X T_0) any_1 ...) X T)
+   (any_0 ... (X T) any_1 ...)]
+  [(extend-one (any ...) X T)
+   ((X T) any ...)])
+
+(define-metafunction PCF
+  [(extend Γ) Γ]
+  [(extend Γ (X T) any ...)
+   (extend (extend-one Γ X T) any ...)])
