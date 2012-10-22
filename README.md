@@ -4,8 +4,9 @@ Symbolic PCF
 This collection provides an abstract reduction semantics for PCF where
 components may be abstracted to their type, written `(• T)`.  See
 `pcf.rkt` for a Redex model of plain PCF; see `spcf.rkt` for the
-extension to the symbolic semantics.  Both languages are also
-available as `#lang` languages.
+extension to the symbolic semantics; see `cpcf.rkt` for the extension
+to contracts.  These languages are also available as `#lang`
+languages and include static type checking.
 
 To install using `raco git` [1]:
 
@@ -13,8 +14,11 @@ To install using `raco git` [1]:
 
 Enables:
 
-`#lang pcf <option>`
-`#lang pcf/symbolic <option>`
+```
+#lang pcf <option>
+#lang pcf/symbolic <option>
+#lang pcf/contracts <option>
+```
 
 where
 
