@@ -3,7 +3,7 @@
 (require syntax/parse
          redex/reduction-semantics
          "../pcf.rkt"
-         (for-template racket redex))
+         (for-template racket redex "lexical.rkt"))
 
 (define-syntax-class trace-opt
   [pattern (~datum stepper) #:attr sym 'stepper]
@@ -26,10 +26,11 @@
                (syntax->list #'(e ...)))
      (define trace (attribute trace.sym))
      #`(#%module-begin
+        (lexical e) ...
         #,(if trace
               #'(reduction-steps-cutoff 100)
               #'(void))
-        (initial-char-width 140)
+        (initial-char-width 140)        
         #,(case trace
             [(traces) 
              #`(begin (traces #,R (term e)) ...)]
