@@ -1,5 +1,5 @@
 #lang racket 
-(provide PCF v -->v δ δf)
+(provide PCF v -->v δ δf typeof)
 (require redex/reduction-semantics "subst.rkt")
 
 (define-language PCF
@@ -7,7 +7,7 @@
   (T ::= nat (T ... -> T))
   
   ;; Terms
-  (M ::= X V (M M ...) (if0 M M M) (err string))
+  (M ::= X V (M M ...) (if0 M M M) (err T string))
   (V ::= N O (λ ([X : T] ...) M))
      
   (N ::= natural)
@@ -38,6 +38,7 @@
 
 (define-judgment-form PCF
   #:mode (δ I I O)
+  ;; Using this contract will make v non-reusable.
   ;#:contract (δ O (V ...) M)
   [(δ O (N_0 ...) M)
    (where M (δf O (N_0 ...)))])
@@ -48,12 +49,13 @@
   [(δf sub1 (N))           ,(max 0 (sub1 (term N)))]
   [(δf * (N_0 N_1))        ,(* (term N_0) (term N_1))]
   [(δf + (N_0 N_1))        ,(+ (term N_0) (term N_1))]
-  [(δf quotient (N_0 0))    (err "Divide by zero")]
+  [(δf quotient (N_0 0))    (err nat "Divide by zero")]
   [(δf quotient (N_0 N_1)) ,(quotient (term N_0) (term N_1))])
 
 (define-judgment-form PCF
   #:mode (typeof I I O)
   #:contract (typeof Γ M T)
+  [(typeof Γ (err T string) T)]
   [(typeof Γ N nat)]
   [(typeof ((X_0 T_0) ... (X T) any_1 ...) X T)]
   [(typeof Γ add1 (nat -> nat))]
@@ -73,7 +75,7 @@
    (typeof (extend Γ (X T) ...) M T_0)])
 
 (define-metafunction PCF
-  extend-one : Γ X T -> T
+  extend-one : Γ X T -> Γ
   [(extend-one (any_0 ... (X T_0) any_1 ...) X T)
    (any_0 ... (X T) any_1 ...)]
   [(extend-one (any ...) X T)
