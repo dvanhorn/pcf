@@ -22,7 +22,7 @@
 
 (define v
   (reduction-relation
-   PCF
+   PCF #:domain M
    (--> ((λ ([X : T] ..._1) M) V ..._1)
         (subst (X V) ... M)
         β)
@@ -38,10 +38,12 @@
 
 (define-judgment-form PCF
   #:mode (δ I I O)
+  ;#:contract (δ O (V ...) M)
   [(δ O (N_0 ...) M)
    (where M (δf O (N_0 ...)))])
 
 (define-metafunction PCF
+  δf : O (V ...) -> M
   [(δf add1 (N))           ,(add1 (term N))]
   [(δf sub1 (N))           ,(max 0 (sub1 (term N)))]
   [(δf * (N_0 N_1))        ,(* (term N_0) (term N_1))]
@@ -51,6 +53,7 @@
 
 (define-judgment-form PCF
   #:mode (typeof I I O)
+  #:contract (typeof Γ M T)
   [(typeof Γ N nat)]
   [(typeof ((X_0 T_0) ... (X T) any_1 ...) X T)]
   [(typeof Γ add1 (nat -> nat))]
@@ -70,12 +73,14 @@
    (typeof (extend Γ (X T) ...) M T_0)])
 
 (define-metafunction PCF
+  extend-one : Γ X T -> T
   [(extend-one (any_0 ... (X T_0) any_1 ...) X T)
    (any_0 ... (X T) any_1 ...)]
   [(extend-one (any ...) X T)
    ((X T) any ...)])
 
 (define-metafunction PCF
+  extend : Γ (X T) ... -> Γ
   [(extend Γ) Γ]
   [(extend Γ (X T) any ...)
    (extend (extend-one Γ X T) any ...)])

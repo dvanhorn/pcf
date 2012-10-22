@@ -11,7 +11,7 @@
 
 (define c
   (reduction-relation
-   CPCF
+   CPCF #:domain M
    (--> (M ⚖ V) (if0 (M V) V blame) ?)
    (--> ((C ..._1 -> C_0) ⚖ (λ ([X : T] ..._1) M))
         (λ ([X : T] ...)

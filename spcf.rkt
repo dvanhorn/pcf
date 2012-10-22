@@ -8,7 +8,7 @@
   
 (define s
   (reduction-relation
-   SPCF
+   SPCF #:domain M
    (--> ((• (T_0 ..._1 -> T)) V ..._1) (• T) β•)
    (--> ((• (T_0 ..._1 T T_1 ... -> T_o)) 
              V_0 ..._1 V V_1 ...)
@@ -24,15 +24,18 @@
   (union-reduction-relations s (extend-reduction-relation v SPCF)))
 
 (define-metafunction SPCF
+  havoc : T M -> M
   [(havoc nat M) M]
   [(havoc (T_0 ... -> T_1) M)
    (havoc T_1 (M (• T_0) ...))])
 
 (define-metafunction SPCF
+  not-zero? : any -> #t or #f
   [(not-zero? 0) #f]
   [(not-zero? any) #t])
 
 (define-metafunction SPCF
+  not-div? : any -> #t or #f
   [(not-div? div) #f]
   [(not-div? any) #t])
 
@@ -40,6 +43,7 @@
 
 (define-judgment-form SPCF
   #:mode (δ^ I I O)
+  #:contract (δ^ O (V ...) M)
   [(δ^ quotient (any (• nat)) (• nat))]  
   [(δ^ quotient (any (• nat)) (err "Divide by zero"))]  
   [(δ^ quotient ((• nat) 0)   (err "Divide by zero"))]  
