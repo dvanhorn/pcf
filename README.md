@@ -8,9 +8,11 @@ extension to the symbolic semantics; see `cpcf.rkt` for the extension
 to contracts.  These languages are also available as `#lang`
 languages and include static type checking.
 
-To install using `raco git` [1]:
+To install:
 
-   `% raco git --github dvanhorn pcf`
+   `% git clone http://github.com/dvanhorn/pcf`
+   `% raco link pcf`
+   `% raco setup pcf`
 
 Enables:
 
@@ -27,11 +29,3 @@ where
         | stepper`
 
 See `examples/` for examples.
-
-[1] To install `raco git`:
-
-```
-% git clone http://github.com/samth/raco-git.git
-% raco link raco-git
-% raco setup raco-git
-```
