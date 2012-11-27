@@ -20,6 +20,7 @@ Enables:
 #lang pcf <option>
 #lang pcf/symbolic <option>
 #lang pcf/contracts <option>
+#lang pcf/contracts/symbolic <option>
 ```
 
 where
