@@ -1,13 +1,14 @@
 #lang racket
 (provide CPCF c cv -->cv typeof/contract typable/contract?)
 (require redex/reduction-semantics "pcf.rkt")
- 
+
 (define-extended-language CPCF PCF
   ;; Terms
-  (M .... (C ⚖ M) blame)
+  (M ::= .... (C ⚖ M) blame)
   ;; Contracts
-  (C V (C ... -> C))
-  (E .... (C ⚖ E)))
+  (C ::= V (C ... -> C))
+
+  (E ::= .... (C ⚖ E)))
 
 (define c
   (reduction-relation
