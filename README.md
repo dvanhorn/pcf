@@ -10,9 +10,11 @@ languages and include static type checking.
 
 To install:
 
-   `% git clone http://github.com/dvanhorn/pcf`
-   `% raco link pcf`
-   `% raco setup pcf`
+```
+% git clone http://github.com/dvanhorn/pcf
+% raco link pcf
+% raco setup pcf
+```
 
 Enables:
 
