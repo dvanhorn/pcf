@@ -11,7 +11,7 @@
   (V ::= N O (λ ([X : T] ...) M))
      
   (N ::= natural)
-  (O ::= add1 sub1 * + quotient)
+  (O ::= add1 sub1 * + quotient pos?)
   (X ::= variable-not-otherwise-mentioned)
   
   ;; Evaluation contexts
@@ -49,6 +49,8 @@
   [(δf sub1 (N))           ,(max 0 (sub1 (term N)))]
   [(δf * (N_0 N_1))        ,(* (term N_0) (term N_1))]
   [(δf + (N_0 N_1))        ,(+ (term N_0) (term N_1))]
+  [(δf pos? (0))            1]
+  [(δf pos? (N))            0]
   [(δf quotient (N_0 0))    (err nat "Divide by zero")]
   [(δf quotient (N_0 N_1)) ,(quotient (term N_0) (term N_1))])
 
@@ -65,6 +67,7 @@
   [(typeof Γ sub1 (nat -> nat))]
   [(typeof Γ * (nat nat -> nat))]
   [(typeof Γ + (nat nat -> nat))]
+  [(typeof Γ pos? (nat -> nat))]
   [(typeof Γ quotient (nat nat -> nat))]
   [(typeof Γ (if0 M_1 M_2 M_3) T)
    (typeof Γ M_1 nat)
