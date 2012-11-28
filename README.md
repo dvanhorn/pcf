@@ -49,7 +49,7 @@ These languages are also available as Redex models.
 * `symbolic/lang`: implements `#lang pcf/symbolic`.
 * `contracts/lang`: implements `#lang pcf/contracts`.
 * `contracts/symbolic/lang`: implements `#lang pcf/contracts/symbolic`.
-* `langs/`: common code for creating languages.
+* `common/`: common code for creating languages.
 
 ## Installation and testing
 
