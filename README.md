@@ -6,7 +6,8 @@ studying PCF, contracts, and symbolic execution.
 
 The four languages are the following:
 
-* __PCF__: a core typed language (with errors and recursion)
+* __PCF__: a core typed language (with natural numbers, errors and
+  recursion).
 
 * __Symbolic PCF ('PCF)__: an extension of PCF endowed with a notion
   of "symbolic values", written `(• T)`, which represents an
@@ -24,9 +25,8 @@ The four languages are the following:
   symbolic values written `(• T C ...)`, which represents an
   abstraction of all values of type `T` satisfying contracts `C ...`.
 
-See `pcf.rkt` for a Redex model of plain PCF; see `spcf.rkt` for the
-extension to the symbolic semantics; see `cpcf.rkt` for the extension
-to contracts; see `scpcf.rkt` for 'CPCF.
+See `pcf.rkt`, `spcf.rkt`, `cpcf.rkt`, and `scpcf.rkt` for the Redex
+models of PCF, 'PCF, CPCF, and 'CPCF, respectively.
 
 These languages are also available as `#lang` languages and include
 static type checking.
