@@ -51,7 +51,7 @@ These languages are also available as Redex models.
 * `contracts/symbolic/lang`: implements `#lang pcf/contracts/symbolic`.
 * `langs/`: common code for creating languages.
 
-## To install and test:
+## Installation and testing
 
 You will need [Racket](http://racket-lang.org/) 5.3.1 or later.
 
