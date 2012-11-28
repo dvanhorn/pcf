@@ -25,8 +25,8 @@ The four languages are the following:
   symbolic values written `(• T C ...)`, which represents an
   abstraction of all values of type `T` satisfying contracts `C ...`.
 
-These languages are also available as `#lang` languages and include
-static type checking:
+These languages are available as `#lang` languages that include static
+type checking:
 
 ```
 #lang pcf <option>
@@ -41,6 +41,8 @@ where
         | traces
         | stepper`
 
+These languages are also available as Redex models.
+
 ## Organization
 
 * `examples/`: examples written in each language.
@@ -48,10 +50,12 @@ where
 * `lang/`: implements `#lang pcf`.
 * `symbolic/lang`: implements `#lang pcf/symbolic`.
 * `contracts/lang`: implements `#lang pcf/contracts`.
-* `contracts/symbolic/lang`: implements `#lang pcf/contracts`.
+* `contracts/symbolic/lang`: implements `#lang pcf/contracts/symbolic`.
 * `langs/`: common code for creating languages.
 
 ## To install and test:
+
+You will need [Racket](http://racket-lang.org/) 5.3.1 or later.
 
 ```
 % git clone http://github.com/dvanhorn/pcf
