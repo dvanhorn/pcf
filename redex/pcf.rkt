@@ -1,22 +1,22 @@
-#lang racket 
+#lang racket
 (provide PCF v -->v δ δf typeof typable?)
 (require redex/reduction-semantics "subst.rkt")
 
 (define-language PCF
   ;; Types
   (T ::= nat (T ... -> T))
-  
+
   ;; Terms
   (M ::= X V (M M ...) (if0 M M M) (err T string))
   (V ::= N O (λ ([X : T] ...) M))
-     
+
   (N ::= natural)
   (O ::= add1 sub1 * + quotient pos?)
   (X ::= variable-not-otherwise-mentioned)
-  
+
   ;; Evaluation contexts
   (E ::= hole (M ... E V ...) (if0 E M M))
-  
+
   ;; Type environments
   (Γ ::= ((X T) ...)))
 
@@ -24,16 +24,16 @@
   (reduction-relation
    PCF #:domain M
    (--> ((λ ([X : T] ..._1) M) V ..._1)
-        (subst (X V) ... M)
-        β)
+	(subst (X V) ... M)
+	β)
    (--> (O V ...) M
-        (judgment-holds (δ O (V ...) M))
-        δ)
+	(judgment-holds (δ O (V ...) M))
+	δ)
    (--> (if0 0 M_0 M_1) M_0 if0-t)
    (--> (if0 N M_0 M_1) M_1
-        (side-condition (not (zero? (term N))))
-        if0-f)))
-   
+	(side-condition (not (zero? (term N))))
+	if0-f)))
+
 (define -->v (context-closure v PCF E))
 
 (define-judgment-form PCF

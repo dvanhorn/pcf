@@ -5,21 +5,21 @@
 (define-extended-language SPCF PCF
   ;; Values
   (V .... (• T)))
-  
+
 (define s
   (reduction-relation
    SPCF #:domain M
    (--> ((• (T_0 ..._1 -> T)) V ..._1) (• T) β•)
-   (--> ((• (T_0 ..._1 T T_1 ... -> T_o)) 
-             V_0 ..._1 V V_1 ...)
-        (havoc T V)
-        havoc)
+   (--> ((• (T_0 ..._1 T T_1 ... -> T_o))
+	     V_0 ..._1 V V_1 ...)
+	(havoc T V)
+	havoc)
    (--> (O V ...) M
-        (judgment-holds (δ^ O (V ...) M))
-        δ^)
+	(judgment-holds (δ^ O (V ...) M))
+	δ^)
    (--> (if0 (• nat) M_0 M_1) M_0 if•-t)
    (--> (if0 (• nat) M_0 M_1) M_1 if•-f)))
-   
+
 (define sv
   (union-reduction-relations s (extend-reduction-relation v SPCF)))
 
@@ -44,9 +44,9 @@
 (define-judgment-form SPCF
   #:mode (δ^ I I O)
   #:contract (δ^ O (V ...) M)
-  [(δ^ quotient (any (• nat)) (• nat))]  
-  [(δ^ quotient (any (• nat)) (err nat "Divide by zero"))]  
-  [(δ^ quotient ((• nat) 0)   (err nat "Divide by zero"))]  
+  [(δ^ quotient (any (• nat)) (• nat))]
+  [(δ^ quotient (any (• nat)) (err nat "Divide by zero"))]
+  [(δ^ quotient ((• nat) 0)   (err nat "Divide by zero"))]
   [(δ^ quotient ((• nat) N)   (• nat))
    (side-condition (not-zero? N))]
   [(δ^ O (any_0 ... (• nat) any_1 ...) (• nat))
