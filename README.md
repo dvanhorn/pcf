@@ -25,21 +25,8 @@ The four languages are the following:
   symbolic values written `(• T C ...)`, which represents an
   abstraction of all values of type `T` satisfying contracts `C ...`.
 
-See `pcf.rkt`, `spcf.rkt`, `cpcf.rkt`, and `scpcf.rkt` for the Redex
-models of PCF, 'PCF, CPCF, and 'CPCF, respectively.
-
 These languages are also available as `#lang` languages and include
-static type checking.
-
-To install:
-
-```
-% git clone http://github.com/dvanhorn/pcf
-% raco link pcf
-% raco setup pcf
-```
-
-Enables:
+static type checking:
 
 ```
 #lang pcf <option>
@@ -54,4 +41,25 @@ where
         | traces
         | stepper`
 
-See `examples/` for examples.
+## Organization
+
+* `examples/`: examples written in each language.
+* `redex/`: Redex models of each language.
+* `lang/`: implements `#lang pcf`.
+* `symbolic/lang`: implements `#lang pcf/symbolic`.
+* `contracts/lang`: implements `#lang pcf/contracts`.
+* `contracts/symbolic/lang`: implements `#lang pcf/contracts`.
+* `langs/`: common code for creating languages.
+
+## To install and test:
+
+```
+% git clone http://github.com/dvanhorn/pcf
+% raco link pcf
+% raco setup pcf
+% raco test pcf
+```
+
+The last command tests every file in collection.  It will likey create
+a bunch of windows and print results of examples, but so long as it
+does not signal an error, the tests have passed.

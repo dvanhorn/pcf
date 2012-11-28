@@ -2,7 +2,7 @@
 (provide make-#%top-interaction make-#%module-begin)
 (require syntax/parse
          redex/reduction-semantics
-         "../pcf.rkt"
+         "../redex/pcf.rkt"
          (for-template racket redex "lexical.rkt"))
 
 (define-syntax-class trace-opt
