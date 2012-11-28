@@ -2,9 +2,7 @@ PCF with Contracts and Symbolic Values
 ======================================
 
 This collection implements four core programming languages, useful for
-studying PCF, contracts, and symbolic execution.
-
-The four languages are the following:
+studying PCF, contracts, and symbolic execution:
 
 * __PCF__: a core typed language (with natural numbers, errors and
   recursion).
