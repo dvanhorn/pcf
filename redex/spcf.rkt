@@ -1,5 +1,5 @@
 #lang racket
-(provide SPCF s sv -->sv typeof/symbolic typable/symbolic?)
+(provide SPCF s sv inj-sv -->sv typeof/symbolic typable/symbolic?)
 (require redex/reduction-semantics "pcf.rkt")
 
 (define-extended-language SPCF PCF
@@ -19,6 +19,10 @@
 	δ^)
    (--> (if0 (• nat) M_0 M_1) M_0 if•-t)
    (--> (if0 (• nat) M_0 M_1) M_1 if•-f)))
+
+(define-metafunction SPCF
+  inj-sv : M -> M
+  [(inj-sv M) M])
 
 (define sv
   (union-reduction-relations s (extend-reduction-relation v SPCF)))

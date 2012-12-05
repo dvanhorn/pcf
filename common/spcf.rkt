@@ -4,5 +4,5 @@
          "../redex/spcf.rkt"
          "racket-pcf.rkt")
 (provide #%top-interaction #%module-begin (all-from-out "racket-pcf.rkt"))
-(define-syntax #%top-interaction (make-#%top-interaction #'-->sv typable/symbolic?))
-(define-syntax #%module-begin    (make-#%module-begin    #'-->sv typable/symbolic?))
+(define-syntax #%top-interaction (make-#%top-interaction #'inj-sv #'-->sv typable/symbolic?))
+(define-syntax #%module-begin    (make-#%module-begin    #'inj-sv #'-->sv typable/symbolic?))

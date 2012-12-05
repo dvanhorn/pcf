@@ -1,5 +1,5 @@
 #lang racket
-(provide SCPCF sc -->scv typeof/contract/symbolic typable/contract/symbolic?)
+(provide SCPCF sc inj-scv -->scv typeof/contract/symbolic typable/contract/symbolic?)
 (require redex/reduction-semantics "cpcf.rkt" "pcf.rkt")
 
 (define-extended-language SCPCF CPCF
@@ -60,6 +60,9 @@
 	  ((λ ([X : T] ...) M) (C_1 ⚖ X) ...))
 	ηt)))
 
+(define-metafunction SCPCF
+  inj-scv : M -> M
+  [(inj-scv M) M])
 
 (define-metafunction SCPCF
   not-zero? : any -> #t or #f

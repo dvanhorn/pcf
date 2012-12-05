@@ -1,22 +1,51 @@
 #lang racket
-(provide CPCF c cv -->cv typeof/contract typable/contract?)
+(provide CPCF c cv -->cv inj-cv typeof/contract typable/contract?)
 (require redex/reduction-semantics "pcf.rkt")
 
-(define-extended-language CPCF PCF
+(define-extended-language CPCF-source PCF
   ;; Terms
-  (M ::= .... (C ⚖ M) blame)
+  (M ::= .... (C ⚖ M))
   ;; Contracts
   (C ::= V (C ... -> C))
 
   (E ::= .... (C ⚖ E)))
 
+(define-extended-language CPCF CPCF-source
+  (M ::= .... (C L L ⚖ M) (blame L))
+  (E ::= .... (C L L ⚖ E))
+  (L ::= † 'variable))
+
+(define-metafunction CPCF
+  inj-cv : M -> M
+  [(inj-cv M) (lab/context M †)])
+
+(define-metafunction CPCF
+  lab/context : M L -> M
+  [(lab/context (C ⚖ M) L)
+   ((lab-c/context C L) L L_0 ⚖ (lab/context M L_0))
+   (where L_0 (quote ,(gensym)))]
+  [(lab/context (M ...) L)
+   ((lab/context M L) ...)]
+  [(lab/context (if0 M ...) L)
+   (if0 (lab/context M L) ...)]
+  [(lab/context (λ ([X : T] ...) M) L)
+   (λ ([X : T] ...) (lab/context M L))]
+  [(lab/context M L) M])
+
+(define-metafunction CPCF
+  lab-c/context : C L -> C
+  [(lab-c/context (C_0 ... -> C) L)
+   ((lab-c/context C_0 L) ... -> (lab-c/context C L))]
+  [(lab-c/context V L)
+   (lab/context V L)])
+
 (define c
   (reduction-relation
    CPCF #:domain M
-   (--> (M ⚖ V) (if0 (M V) V blame) ?)
-   (--> ((C ..._1 -> C_0) ⚖ (λ ([X : T] ..._1) M))
-	(λ ([X : T] ...)
-	  (C_0 ⚖ ((λ ([X : T] ...) M) (C ⚖ X) ...)))
+   (--> (M L_+ L_- ⚖ V) (if0 (M V) V (blame L_+)) ?)
+   (--> ((C ..._1 -> C_0) L_+ L_- ⚖ (λ ([X : T] ..._1) M))
+        (λ ([X : T] ...)
+	  (C_0 L_+ L_- ⚖ ((λ ([X : T] ...) M) (C L_- L_+ ⚖ X) ...)))
 	η)))
 
 (define cv

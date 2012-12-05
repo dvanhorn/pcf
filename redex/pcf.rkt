@@ -1,5 +1,5 @@
 #lang racket
-(provide PCF v -->v δ δf typeof typable?)
+(provide PCF v inj-v -->v δ δf typeof typable?)
 (require redex/reduction-semantics "subst.rkt")
 
 (define-language PCF
@@ -33,6 +33,10 @@
    (--> (if0 N M_0 M_1) M_1
 	(side-condition (not (zero? (term N))))
 	if0-f)))
+
+(define-metafunction PCF
+  inj-v : M -> M
+  [(inj-v M) M])
 
 (define -->v (context-closure v PCF E))
 
