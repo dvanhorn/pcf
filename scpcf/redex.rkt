@@ -7,7 +7,7 @@
   (V .... (• T C ...))
 
   (C .... any? prime?)
-  (B (λ ([X : T] ...) (C ⚖ ((λ ([X : T] ...) M) (C ⚖ X) ...))))
+  (B (λ ([X : T] ...) (C L L ⚖ ((λ ([X : T] ...) M) (C L L ⚖ X) ...))))
   (NB (side-condition V (not (redex-match SCPCF B (term NB))))))
 
 
@@ -31,38 +31,63 @@
    (--> (if0 (• nat C ...) M_0 M_1) M_0 if•-t)
    (--> (if0 (• nat C ...) M_0 M_1) M_1 if•-f)
 
-   (--> (any? ⚖ V) V any?)
+   (--> (any? L_+ L_- ⚖ V) V any?)
 
-   (--> (C ⚖ (• T C_0 ... C C_1 ...))
+   (--> (C L_+ L_- ⚖ (• T C_0 ... C C_1 ...))
 	(• T C_0 ... C C_1 ...)
 	(side-condition (not (eq? (term M) 'any?)))
 	known)
 
-   (--> (M ⚖ (• T C ...))
+   (--> (M L_+ L_- ⚖ (• T C ...))
 	(if0 (M (• T C ...))
 	     (• T C ... M)
-	     blame)
+	     (blame L_+))
 	(side-condition (not (eq? (term M) 'any?)))
 	(side-condition (not (member (term M) (term (C ...)))))
 	check-rem)
 
-   (--> (M ⚖ V) (if0 (M V) V blame)
+   (--> (M L_+ L_- ⚖ V)
+        (if0 (M V) V (blame L_+))
 	(side-condition (not (eq? (term M) 'any?)))
 	(side-condition (not (redex-match SCPCF (• T C ...) (term V))))
 	?)
-   (--> ((C_1 ... -> C) ⚖ (λ ([X : T] ...) M))
+   (--> ((C_1 ... -> C) L_+ L_- ⚖ (λ ([X : T] ...) M))
 	(λ ([X : T] ...)
-	  (C ⚖ ((λ ([X : T] ...) M) (C_1 ⚖ X) ...)))
+	  (C L_+ L_- ⚖ ((λ ([X : T] ...) M) (C_1 L_- L_+ ⚖ X) ...)))
 	(side-condition (not (eq? (term C) 'any?)))
 	η)
-   (--> ((C_1 ... -> any?) ⚖ (λ ([X : T] ...) M))
+   (--> ((C_1 ... -> any?) L_+ L_- ⚖ (λ ([X : T] ...) M))
 	(λ ([X : T] ...)
-	  ((λ ([X : T] ...) M) (C_1 ⚖ X) ...))
+	  ((λ ([X : T] ...) M) (C_1 L_- L_+ ⚖ X) ...))
 	ηt)))
 
+;; --
+;; DUPLICATION OF INJ-CV
+;; doesn't seem possible to abstract with metafunction extensions.
 (define-metafunction SCPCF
   inj-scv : M -> M
-  [(inj-scv M) M])
+  [(inj-scv M) (lab/context M †)])
+
+(define-metafunction SCPCF
+  lab/context : M L -> M
+  [(lab/context (C ⚖ M) L)
+   ((lab-c/context C L) L L_0 ⚖ (lab/context M L_0))
+   (where L_0 (quote ,(gensym)))]
+  [(lab/context (M ...) L)
+   ((lab/context M L) ...)]
+  [(lab/context (if0 M ...) L)
+   (if0 (lab/context M L) ...)]
+  [(lab/context (λ ([X : T] ...) M) L)
+   (λ ([X : T] ...) (lab/context M L))]
+  [(lab/context M L) M])
+
+(define-metafunction SCPCF
+  lab-c/context : C L -> C
+  [(lab-c/context (C_0 ... -> C) L)
+   ((lab-c/context C_0 L) ... -> (lab-c/context C L))]
+  [(lab-c/context V L)
+   (lab/context V L)])
+;; --
 
 (define-metafunction SCPCF
   not-zero? : any -> #t or #f
