@@ -3,7 +3,7 @@
 (require syntax/parse
          redex/reduction-semantics
          pcf/redex
-         (for-template racket redex pcf/private/lexical))
+         (for-template racket redex/reduction-semantics redex/pict pcf/private/lexical))
 
 (define-syntax-class trace-opt
   [pattern (~datum stepper) #:attr sym 'stepper]
@@ -27,6 +27,9 @@
      (define trace (attribute trace.sym))
      #`(#%module-begin
         (lexical e) ... ; lexical expansion for IDE integration
+	(require unstable/lazy-require)
+	(lazy-require [redex (traces stepper initial-char-width term-node-children reduction-steps-cutoff)])
+
         #,(if trace
               #'(reduction-steps-cutoff 100)
               #'(void))
