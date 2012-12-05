@@ -30,13 +30,13 @@
         #,(if trace
               #'(reduction-steps-cutoff 100)
               #'(void))
-        (initial-char-width 140)        
+        (initial-char-width 140)
         #,(case trace
-            [(traces) 
+            [(traces)
              #`(begin (traces #,REL (term (#,INJ e))) ...)]
             [(stepper)
              #`(begin (stepper #,REL (term (#,INJ e))) ...)]
             [else
              #'(void)])
-              
+
         (apply values (append (apply-reduction-relation* #,REL (term (#,INJ e))) ...)))]))
