@@ -28,9 +28,9 @@ type checking:
 
 ```
 #lang pcf <option>
-#lang pcf/symbolic <option>
-#lang pcf/contracts <option>
-#lang pcf/contracts/symbolic <option>
+#lang spcf <option>
+#lang cpcf <option>
+#lang scpcf <option>
 ```
 
 where
@@ -43,23 +43,16 @@ These languages are also available as Redex models.
 
 ## Organization
 
-* `examples/`: examples written in each language.
-* `redex/`: Redex models of each language.
-* `lang/`: implements `#lang pcf`.
-* `symbolic/lang`: implements `#lang pcf/symbolic`.
-* `contracts/lang`: implements `#lang pcf/contracts`.
-* `contracts/symbolic/lang`: implements `#lang pcf/contracts/symbolic`.
-* `common/`: common code for creating languages.
+* `LANG/examples.rkt`: examples written in each language.
+* `LANG/redex.rkt`: Redex models of each language.
+* `LANG/lang/`: implements `#lang LANG`.
 
 ## Installation and testing
 
-You will need [Racket](http://racket-lang.org/) 5.3.1 or later.
+You will need [Racket](http://racket-lang.org/) 5.3.1.9 or later.
 
 ```
-% git clone http://github.com/dvanhorn/pcf
-% raco link pcf
-% raco setup pcf
-% raco test pcf
+% raco pkg install pcf
 ```
 
 The last command tests every file in collection.  It will likey create

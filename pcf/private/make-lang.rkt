@@ -2,8 +2,8 @@
 (provide make-#%top-interaction make-#%module-begin)
 (require syntax/parse
          redex/reduction-semantics
-         "../redex/pcf.rkt"
-         (for-template racket redex "lexical.rkt"))
+         pcf/redex
+         (for-template racket redex pcf/private/lexical))
 
 (define-syntax-class trace-opt
   [pattern (~datum stepper) #:attr sym 'stepper]

@@ -1,6 +1,6 @@
 #lang racket
 (provide PCF v inj-v -->v δ δf typeof typable?)
-(require redex/reduction-semantics "subst.rkt")
+(require redex/reduction-semantics pcf/private/subst)
 
 (define-language PCF
   ;; Types

@@ -1,4 +1,4 @@
-#lang pcf/contracts
+#lang cpcf
 
 (add1 7)
 

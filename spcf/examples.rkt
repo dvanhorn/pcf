@@ -1,4 +1,4 @@
-#lang pcf/symbolic traces
+#lang spcf traces
 
 (if0 (• nat) 1 2)
 

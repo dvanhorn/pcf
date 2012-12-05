@@ -1,5 +1,5 @@
 #lang racket
-(require redex/reduction-semantics "../pcf.rkt"
+(require redex/reduction-semantics pcf/redex
 	 (rename-in redex/reduction-semantics [term quote]))
 (test-->> -->v '(add1 5) '6)
 (test-->> -->v '(sub1 5) '4)

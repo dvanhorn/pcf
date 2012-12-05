@@ -1,6 +1,6 @@
 #lang racket
 (provide CPCF c cv -->cv inj-cv typeof/contract typable/contract?)
-(require redex/reduction-semantics "pcf.rkt")
+(require redex/reduction-semantics pcf/redex)
 
 (define-extended-language CPCF-source PCF
   ;; Terms

@@ -1,2 +1,2 @@
 #lang s-exp syntax/module-reader
-pcf/common/spcf
+scpcf/lang

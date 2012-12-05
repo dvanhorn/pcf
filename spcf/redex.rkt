@@ -1,6 +1,6 @@
 #lang racket
 (provide SPCF s sv inj-sv -->sv typeof/symbolic typable/symbolic?)
-(require redex/reduction-semantics "pcf.rkt")
+(require redex/reduction-semantics pcf/redex)
 
 (define-extended-language SPCF PCF
   ;; Values

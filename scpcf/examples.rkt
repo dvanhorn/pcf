@@ -1,4 +1,4 @@
-#lang pcf/contracts/symbolic traces
+#lang scpcf traces
 (add1 (• nat pos?))
 
 ((• ((nat -> nat) -> nat))

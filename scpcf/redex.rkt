@@ -1,6 +1,6 @@
 #lang racket
 (provide SCPCF sc inj-scv -->scv typeof/contract/symbolic typable/contract/symbolic?)
-(require redex/reduction-semantics "cpcf.rkt" "pcf.rkt")
+(require redex/reduction-semantics cpcf/redex pcf/redex)
 
 (define-extended-language SCPCF CPCF
   ;; Values
