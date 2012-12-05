@@ -1,14 +1,13 @@
 #lang racket
-(provide CPCF c cv -->cv inj-cv typeof/contract typable/contract?)
+(provide CPCF-source CPCF c cv -->cv inj-cv typeof/contract typable/contract?)
+(provide lab/context lab-c/context typeof-contract) ; for documentation
 (require redex/reduction-semantics pcf/redex)
 
 (define-extended-language CPCF-source PCF
   ;; Terms
   (M ::= .... (C ⚖ M))
   ;; Contracts
-  (C ::= V (C ... -> C))
-
-  (E ::= .... (C ⚖ E)))
+  (C ::= V (C ... -> C)))
 
 (define-extended-language CPCF CPCF-source
   (M ::= .... (C L L ⚖ M) (blame L))
@@ -45,7 +44,9 @@
    (--> (M L_+ L_- ⚖ V) (if0 (M V) V (blame L_+)) ?)
    (--> ((C ..._1 -> C_0) L_+ L_- ⚖ (λ ([X : T] ..._1) M))
         (λ ([X : T] ...)
-	  (C_0 L_+ L_- ⚖ ((λ ([X : T] ...) M) (C L_- L_+ ⚖ X) ...)))
+	  (C_0 L_+ L_- ⚖
+            ((λ ([X : T] ...) M)
+             (C L_- L_+ ⚖ X) ...)))
 	η)))
 
 (define cv

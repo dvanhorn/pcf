@@ -1,5 +1,5 @@
 #lang racket
-(provide SPCF s sv inj-sv -->sv typeof/symbolic typable/symbolic?)
+(provide SPCF s sv inj-sv -->sv typeof/symbolic typable/symbolic? δ^ havoc)
 (require redex/reduction-semantics pcf/redex)
 
 (define-extended-language SPCF PCF
