@@ -46,6 +46,7 @@ These languages are also available as Redex models.
 * `LANG/examples.rkt`: examples written in each language.
 * `LANG/redex.rkt`: Redex models of each language.
 * `LANG/lang/`: implements `#lang LANG`.
+* `tests/LANG/`: tests for each language.
 
 ## Installation and testing
 
