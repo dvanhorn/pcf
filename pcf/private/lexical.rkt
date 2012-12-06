@@ -1,5 +1,7 @@
 #lang racket
 (provide lexical)
+(require pcf/private/label)
+
 (define-syntax (lexical stx)
   (syntax-case stx ()
     [(_ e) #'(void (λ () (lx e)))]))
