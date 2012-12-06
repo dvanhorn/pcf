@@ -23,8 +23,10 @@
            (the-eval `(require ,lang))
            the-eval)))))
 
-@(define pcf-eval (make-eval 'pcf/lang))
-@(define cpcf-eval (make-eval 'cpcf/lang))
+@(define pcf-eval   (make-eval 'pcf/lang))
+@(define cpcf-eval  (make-eval 'cpcf/lang))
+@(define spcf-eval  (make-eval 'spcf/lang))
+@(define scpcf-eval (make-eval 'scpcf/lang))
 
 @title{PCF with Contracts and Symbolic Values}
 
@@ -83,6 +85,7 @@ PCF is a core typed call-by-value functional programming language.
 (if0 0 (add1 2) 8)
 
 (add1 add1)
+(quotient 5 0)
 ]
 
 @subsection[#:tag "pcf/redex"]{Model}
@@ -119,6 +122,11 @@ Contextual closure of @racket[v] over evaluation contexts.
 
 @subsection[#:tag "cpcf/lang"]{Language}
 
+@figure["CPCF Syntax" "CPCF Syntax, extending PCF"]{
+@racketgrammar*[#:literals (λ if0 err add1 sub1 * + quotient pos? -> nat : ⚖)
+                [M .... (C ⚖ M)]
+                [C M (C ... -> C)]]}
+
 @interaction[#:eval cpcf-eval
 ((λ ([x : nat]) x) ⚖ 3)
 ((λ ([x : nat]) x) ⚖ 0)
@@ -127,6 +135,16 @@ Contextual closure of @racket[v] over evaluation contexts.
  (λ ([x : nat]) x))
 
 ((((λ ([x : nat]) x) -> (λ ([x : nat]) x))
+  ⚖
+  (λ ([x : nat]) x))
+ 0)
+
+((((λ ([x : nat]) x) -> (λ ([x : nat]) 1))
+  ⚖
+  (λ ([x : nat]) x))
+ 0)
+
+((((λ ([x : nat]) 1) -> (λ ([x : nat]) x))
   ⚖
   (λ ([x : nat]) x))
  0)
@@ -170,6 +188,33 @@ Contextual closure of @racket[cv] over evaluation contexts.
 
 @subsection[#:tag "spcf/lang"]{Language}
 
+@figure["SPCF Syntax" "SPCF Syntax, extending PCF"]{
+@racketgrammar*[#:literals (λ if0 err add1 sub1 * + quotient pos? -> nat : •)
+                [V .... (• T)]]}
+
+@interaction[#:eval spcf-eval
+(if0 (• nat) 1 2)
+
+(add1 (if0 (• nat) 1 2))
+
+(add1 (if0 (• nat) 1 (• nat)))
+
+((λ ([x : nat]) 1) 2)
+
+((λ ([f : (nat -> nat)])
+   (f (f 5)))
+ (λ ([n : nat])
+   (quotient 625 n)))
+
+((• ((nat -> nat) -> nat))
+ (λ ([n : nat])
+   (quotient 625 n)))
+
+((λ ([f : (nat -> nat)])
+   (f (f 5)))
+ (• (nat -> nat)))
+]
+
 @subsection[#:tag "spcf/redex"]{Model}
 
 @defmodule[spcf/redex]
@@ -203,6 +248,26 @@ Contextual closure of @racket[sv] over evaluation contexts.
 @section{SCPCF}
 
 @subsection[#:tag "scpcf/lang"]{Language}
+
+@figure["SCPCF Syntax" "SCPCF Syntax, extending PCF"]{
+@racketgrammar*[#:literals (λ if0 err add1 sub1 * + quotient pos? -> nat : ⚖)
+                [M .... (C ⚖ M)]
+                [V .... (• T C ...)]
+                [C .... M (C ... -> C)]]}
+
+@interaction[#:eval scpcf-eval
+(add1 (• nat pos?))
+
+((• ((nat -> nat) -> nat))
+ (λ ([n : nat])
+   (quotient 625 n)))
+
+((• ((nat -> nat) -> nat))
+ ((pos? -> (λ ([x : nat]) 0))
+  ⚖
+  (λ ([n : nat])
+    (quotient 625 n))))
+]
 
 @subsection[#:tag "scpcf/redex"]{Model}
 
