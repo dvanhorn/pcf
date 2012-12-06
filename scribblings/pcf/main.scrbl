@@ -84,10 +84,6 @@ Contextual closure of @racket[v] over evaluation contexts.
 
 @(render-metafunction δf)}
 
-@defidform[#:kind "metafunction" inj-v]
-
-@render-metafunction[inj-v]
-
 @defidform[#:kind "judgment form" typeof]
 
 @figure["typeof" (list "Typing judgment " (racket typeof)) (render-judgment-form typeof)]
@@ -117,10 +113,6 @@ Contextual closure of @racket[v] over evaluation contexts.
 Contextual closure of @racket[cv] over evaluation contexts.
 
 @;figure["-->cv" (list "Reduction relation " (racket -->cv)) (render-reduction-relation -->cv #:style 'horizontal)]
-
-@defidform[#:kind "metafunction" inj-cv]
-
-@render-metafunction[inj-cv]
 
 @render-metafunction[lab/context]
 
@@ -163,10 +155,6 @@ Contextual closure of @racket[sv] over evaluation contexts.
 @figure["δ^" (list "Abstract primitive application " (racket δ^))]{
 @render-judgment-form[δ^]}
 
-@defidform[#:kind "metafunction" inj-sv]
-
-@render-metafunction[inj-sv]
-
 @defidform[#:kind "judgment form" typeof/symbolic]
 
 @figure["typeof/symbolic" (list "Typing judgment " (racket typeof/symbolic)) (render-judgment-form typeof/symbolic)]
@@ -193,10 +181,6 @@ Contextual closure of @racket[sv] over evaluation contexts.
 @;defthing[-->scv reduction-relation?]
 
 Contextual closure of @racket[scv] over evaluation contexts.
-
-@;defidform[#:kind "metafunction" inj-scv]
-
-@;render-metafunction[inj-scv]
 
 @defidform[#:kind "judgment form" typeof/contract/symbolic]
 
