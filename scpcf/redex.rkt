@@ -8,8 +8,7 @@
   (V .... (• T C ...))
 
   (C .... any? prime?)
-  (B (λ ([X : T] ...) (C L L ⚖ ((λ ([X : T] ...) M) (C L L ⚖ X) ...))))
-  (NB (side-condition V (not (redex-match SCPCF B (term NB))))))
+  (B (λ ([X : T] ...) (C L L ⚖ ((λ ([X : T] ...) M) (C L L ⚖ X) ...)))))
 
 
 (define sc
