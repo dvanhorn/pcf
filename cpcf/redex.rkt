@@ -12,7 +12,7 @@
 (define-extended-language CPCF CPCF-source
   (M ::= .... (C L L ⚖ M) (blame L))
   (E ::= .... (C L L ⚖ E))
-  (L ::= † 'variable))
+  (L ::= † 'variable any))
 
 (define-metafunction CPCF
   inj-cv : M -> M

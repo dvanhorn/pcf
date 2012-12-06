@@ -4,5 +4,5 @@
          pcf/redex
 	 pcf/private/racket-pcf)
 (provide #%top-interaction #%module-begin (all-from-out pcf/private/racket-pcf))
-(define-syntax #%top-interaction (make-#%top-interaction #'inj-v #'-->v typable?))
-(define-syntax #%module-begin    (make-#%module-begin    #'inj-v #'-->v typable?))
+(define-syntax #%top-interaction (make-#%top-interaction #'-->v typable?))
+(define-syntax #%module-begin    (make-#%module-begin    #'-->v typable?))
