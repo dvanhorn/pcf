@@ -53,8 +53,7 @@ based on Plotkin's PCF.
   predicates written in PCF and higher-order contracts, written
   @racket[(C ... -> C)].  The monitor of a contract against a
   computation is written @racket[(C ⚖ M)].  When a contract fails,
-  @racket[blame] is signalled (although this simplified model does not
-  indicate _who_ is to blame).}
+  @racket[blame] is signalled and indicates who is to blame.}
 
 @item{@bold{Symbolic CPCF ('CPCF)}: an extension of Contract PCF
   endowed with symbolic values written @racket[(• T C ...)], which

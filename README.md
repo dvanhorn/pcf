@@ -16,8 +16,7 @@ studying PCF, contracts, and symbolic execution:
   predicates written in PCF and higher-order contracts, written `(C
   ... -> C)`.  The monitor of a contract against a computation is
   written `(C ⚖ M)`.  When a contract fails, `blame` is signalled
-  (although this simplified model does not indicate _who_ is to
-  blame).
+  and indicates who is to blame.
 
 * __Symbolic CPCF ('CPCF)__: an extension of Contract PCF endowed with
   symbolic values written `(• T C ...)`, which represents an
