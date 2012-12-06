@@ -14,14 +14,17 @@
 
 @(require racket/sandbox
           scribble/eval)
-@(define my-evaluator
+@(define (make-eval lang)
    (call-with-trusted-sandbox-configuration
      (lambda ()
        (parameterize ([sandbox-output 'string]
                       [sandbox-error-output 'string])
          (let ([the-eval (make-base-eval)])
-           (the-eval '(require pcf/lang))
+           (the-eval `(require ,lang))
            the-eval)))))
+
+@(define pcf-eval (make-eval 'pcf/lang))
+@(define cpcf-eval (make-eval 'cpcf/lang))
 
 @title{PCF with Contracts and Symbolic Values}
 
@@ -72,7 +75,7 @@ PCF is a core typed call-by-value functional programming language.
                 [O add1 sub1 * + quotient pos?]
                 [T nat (T ... -> T)]]}
 
-@interaction[#:eval my-evaluator
+@interaction[#:eval pcf-eval
 5
 (λ ([x : nat]) x)
 ((λ ([x : nat]) x) 5)
@@ -115,6 +118,20 @@ Contextual closure of @racket[v] over evaluation contexts.
 @section{CPCF}
 
 @subsection[#:tag "cpcf/lang"]{Language}
+
+@interaction[#:eval cpcf-eval
+((λ ([x : nat]) x) ⚖ 3)
+((λ ([x : nat]) x) ⚖ 0)
+(((λ ([x : nat]) x) -> (λ ([x : nat]) x))
+ ⚖
+ (λ ([x : nat]) x))
+
+((((λ ([x : nat]) x) -> (λ ([x : nat]) x))
+  ⚖
+  (λ ([x : nat]) x))
+ 0)
+]
+
 
 @subsection[#:tag "cpcf/redex"]{Model}
 
