@@ -7,7 +7,7 @@
   ;; Values
   (V .... (• T C ...))
 
-  (C .... any? prime?)
+  (C .... any?)
   (B (λ ([X : T] ...) (C L L ⚖ ((λ ([X : T] ...) M) (C L L ⚖ X) ...)))))
 
 
