@@ -29,10 +29,32 @@
 
 @table-of-contents[]
 
+@section{Overview}
+
 This package contains a collection of modules for exploring and
 experimenting with (variations on) a core typed functional language
 based on Plotkin's PCF.
 
+@itemlist[
+@item{@bold{PCF}: a core typed language (with natural numbers, errors and
+  recursion).}
+
+@item{@bold{Symbolic PCF ('PCF)}: an extension of PCF endowed with a notion
+  of "symbolic values", written @racket[(• T)], which represents an
+  abstraction of all values of type @racket[T].}
+
+@item{@bold{Contract PCF (CPCF)}: an extension of PCF endowed with
+  behavioral software contracts.  Contracts include arbitrary
+  predicates written in PCF and higher-order contracts, written
+  @racket[(C ... -> C)].  The monitor of a contract against a
+  computation is written @racket[(C ⚖ M)].  When a contract fails,
+  @racket[blame] is signalled (although this simplified model does not
+  indicate _who_ is to blame).}
+
+@item{@bold{Symbolic CPCF ('CPCF)}: an extension of Contract PCF
+  endowed with symbolic values written @racket[(• T C ...)], which
+  represents an abstraction of all values of type @racket[T]
+  satisfying contracts @racket[C ...].}]
 
 @section{PCF}
 
