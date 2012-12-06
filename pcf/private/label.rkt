@@ -1,5 +1,5 @@
 #lang racket
-(provide lab ⚖)
+(provide lab ⚖ scrub pp)
 
 (define-syntax (lab stx)
   (syntax-case stx ()
@@ -17,3 +17,26 @@
     [(_ (e ...) l)
      #'(list (lab/l e l) ...)]
     [(_ e l) #''e]))
+
+(require unstable/lazy-require)
+(lazy-require (redex/gui [default-pretty-printer]))
+
+(define (scrub v)
+  (match v
+    [(list 'blame s)
+     (list 'blame 
+           (string->symbol
+            (format "~a:~a:~a" 
+                    (syntax-source s)
+                    (syntax-line s)
+                    (syntax-column s))))]
+    [(list c + - '⚖ m)
+     (list (scrub c) '⚖ (scrub m))]
+    
+    [(list m ...)
+     (map scrub m)]
+    [_ v]))
+
+(define pp
+  (λ (v port width txt)
+    (default-pretty-printer (scrub v) port width txt)))

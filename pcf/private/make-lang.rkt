@@ -19,7 +19,7 @@
     [(_ . e)
      (unless (typable? (syntax->datum #'e))
        (raise-syntax-error 'type-error "ill-typed expression" #'e))
-     #`(apply values (apply-reduction-relation* #,REL (lab e)))]))
+     #`(apply values (map scrub (apply-reduction-relation* #,REL (lab e))))]))
 
 (define ((make-#%module-begin REL typable?) stx)
   (syntax-parse stx
@@ -38,26 +38,7 @@
                                      default-pretty-printer)])        
  
         #,(if trace
-              #'(begin (reduction-steps-cutoff 100)
-                       (define (scrub v)
-                         (match v
-                           [(list 'blame s)
-                            (list 'blame 
-                                  (string->symbol
-                                   (format "~a:~a:~a" 
-                                           (syntax-source s)
-                                           (syntax-line s)
-                                           (syntax-column s))))]
-                           [(list c + - '⚖ m)
-                            (list (scrub c) '⚖ (scrub m))]
-                           
-                           [(list m (... ...))
-                            (map scrub m)]
-                           [_ v]))
-                            
-                       (define pp
-                         (λ (v port width txt)
-                           (default-pretty-printer (scrub v) port width txt))))
+              #'(reduction-steps-cutoff 100)
               #'(void))
         (initial-char-width 140)
         #,(case trace
