@@ -171,10 +171,6 @@ Contextual closure of @racket[cv] over evaluation contexts.
 
 @;figure["-->cv" (list "Reduction relation " (racket -->cv)) (render-reduction-relation -->cv #:style 'horizontal)]
 
-@render-metafunction[lab/context]
-
-@render-metafunction[lab-c/context]
-
 @defidform[#:kind "judgment form" typeof/contract]
 
 @figure["typeof/contract" (list "Typing judgment " (racket typeof/contract))]{
