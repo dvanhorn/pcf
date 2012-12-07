@@ -260,11 +260,9 @@ Contextual closure of @racket[sv] over evaluation contexts.
 
 @subsection[#:tag "scpcf/lang"]{Language}
 
-@figure["SCPCF Syntax" "SCPCF Syntax, extending PCF"]{
+@figure["SCPCF Syntax" "SCPCF Syntax, extending CPCF"]{
 @racketgrammar*[#:literals (λ if0 err add1 sub1 * + quotient pos? -> nat : ⚖)
-                [M .... (C ⚖ M)]
-                [V .... (• T C ...)]
-                [C .... M (C ... -> C)]]}
+                [V .... (• T C ...)]]}
 
 @interaction[#:eval scpcf-eval
 (add1 (• nat pos?))
