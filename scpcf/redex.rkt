@@ -1,5 +1,5 @@
 #lang racket
-(provide SCPCF sc inj-scv -->scv typeof/contract/symbolic typable/contract/symbolic?)
+(provide SCPCF sc -->scv typeof/contract/symbolic typable/contract/symbolic?)
 (require redex/reduction-semantics pcf/redex
          (except-in cpcf/redex lab/context lab-c/context))
 
@@ -60,34 +60,6 @@
 	(λ ([X : T] ...)
 	  ((λ ([X : T] ...) M) (C_1 L_- L_+ ⚖ X) ...))
 	ηt)))
-
-;; --
-;; DUPLICATION OF INJ-CV
-;; doesn't seem possible to abstract with metafunction extensions.
-(define-metafunction SCPCF
-  inj-scv : M -> M
-  [(inj-scv M) (lab/context M †)])
-
-(define-metafunction SCPCF
-  lab/context : M L -> M
-  [(lab/context (C ⚖ M) L)
-   ((lab-c/context C L) L L_0 ⚖ (lab/context M L_0))
-   (where L_0 (quote ,(gensym)))]
-  [(lab/context (M ...) L)
-   ((lab/context M L) ...)]
-  [(lab/context (if0 M ...) L)
-   (if0 (lab/context M L) ...)]
-  [(lab/context (λ ([X : T] ...) M) L)
-   (λ ([X : T] ...) (lab/context M L))]
-  [(lab/context M L) M])
-
-(define-metafunction SCPCF
-  lab-c/context : C L -> C
-  [(lab-c/context (C_0 ... -> C) L)
-   ((lab-c/context C_0 L) ... -> (lab-c/context C L))]
-  [(lab-c/context V L)
-   (lab/context V L)])
-;; --
 
 (define-metafunction SCPCF
   not-zero? : any -> #t or #f
@@ -152,4 +124,19 @@
 
 (define-extended-judgment-form SCPCF typeof/contract
   #:mode (typeof/contract/symbolic I I O)
-  [(typeof/contract/symbolic Γ M nat)]) ;; FIXME
+  [(typeof/contract/symbolic Γ (• T) T)]
+  [(typeof/contract/symbolic Γ (• T C C_1 ...) T)
+   (typeof/contract/symbolic Γ (• T C_1 ...) T)
+   (typeof-contract/symbolic Γ C T)])
+
+(define-judgment-form SCPCF
+  #:mode (typeof-contract/symbolic I I O)
+  #:contract (typeof-contract/symbolic Γ C T)
+  ;:interp C is a contract for values of type T
+  [(typeof-contract/symbolic Γ (C ... -> C_0) (T ... -> T_0))
+   (typeof-contract/symbolic Γ C_0 T_0)
+   (typeof-contract/symbolic Γ C T)
+   ...]
+  [(typeof-contract/symbolic Γ M T)
+   (typeof/contract/symbolic Γ M (T -> nat))])
+
