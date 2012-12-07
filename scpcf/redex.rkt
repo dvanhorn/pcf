@@ -114,8 +114,9 @@
 (define scv
   (union-reduction-relations sc (extend-reduction-relation v SCPCF)))
 
-(define -->scv (context-closure scv SCPCF E))
-
+(define -->scv
+  (union-reduction-relations (context-closure scv SCPCF E)
+                             (extend-reduction-relation err-abort SCPCF)))
 
 (define (typable/contract/symbolic? M)
   (cons? (judgment-holds (typeof/contract/symbolic () ,M T) T)))

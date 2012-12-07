@@ -12,6 +12,7 @@
   (test-->> -->v '(pos? 0) '1)
   (test-->> -->v '(pos? 1) '0)
   (test-->> -->v '(quotient 1 0) '(err nat "Divide by zero"))
+  (test-->> -->v '(add1 (quotient 1 0)) '(err nat "Divide by zero"))
   (test-->> -->v '(quotient 5 3) 1)
   (test-->> -->v '(quotient 6 3) 2)
   

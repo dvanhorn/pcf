@@ -43,7 +43,9 @@
   [(not-div? div) #f]
   [(not-div? any) #t])
 
-(define -->sv (context-closure sv SPCF E))
+(define -->sv
+  (union-reduction-relations (context-closure sv SPCF E)
+                             (extend-reduction-relation err-abort SPCF)))
 
 (define-judgment-form SPCF
   #:mode (δ^ I I O)

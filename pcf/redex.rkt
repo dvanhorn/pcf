@@ -1,5 +1,5 @@
 #lang racket
-(provide PCF v inj-v -->v δ δf typeof typable?)
+(provide PCF v err-abort -->v δ δf typeof typable?)
 (require redex/reduction-semantics pcf/private/subst)
 
 (define-language PCF
@@ -37,11 +37,22 @@
 	(side-condition (not (zero? (term N))))
 	if0-f)))
 
-(define-metafunction PCF
-  inj-v : M -> M
-  [(inj-v M) M])
+(define err-abort
+  (reduction-relation
+   PCF #:domain M
+   (--> (in-hole E (err T string))
+	(err T string)
+	(where #t (not-mt? E))
+	abort-err)))
 
-(define -->v (context-closure v PCF E))
+(define -->v
+  (union-reduction-relations (context-closure v PCF E) err-abort))
+
+(define-metafunction PCF
+  not-mt? : E -> #t or #f
+  [(not-mt? hole) #f]
+  [(not-mt? E) #t])
+
 
 (define-judgment-form PCF
   #:mode (δ I I O)

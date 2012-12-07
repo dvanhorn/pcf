@@ -52,7 +52,9 @@
 (define cv
   (union-reduction-relations c (extend-reduction-relation v CPCF)))
 
-(define -->cv (context-closure cv CPCF E))
+(define -->cv
+  (union-reduction-relations (context-closure cv CPCF E)
+                             (extend-reduction-relation err-abort CPCF)))
 
 (define (typable/contract? M)
   (cons? (judgment-holds (typeof/contract () ,M T) T)))
