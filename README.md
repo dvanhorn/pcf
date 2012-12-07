@@ -40,6 +40,10 @@ where
 
 These languages are also available as Redex models.
 
+## Documentation
+
+http://dvanhorn.github.com/pcf/
+
 ## Organization
 
 * `LANG/examples.rkt`: examples written in each language.

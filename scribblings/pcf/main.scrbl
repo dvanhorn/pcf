@@ -32,6 +32,8 @@
 
 @author+email["David Van Horn" "dvanhorn@ccs.neu.edu"]
 
+@url{https://github.com/dvanhorn/pcf/}
+
 @table-of-contents[]
 
 @section{Overview}
@@ -301,4 +303,3 @@ Contextual closure of @racket[scv] over evaluation contexts.
 
 @defproc[(typable/contract/symbolic? (m (redex-match SCPCF M))) boolean?]{Is @racket[m] a well-typed SCPCF term?}
 
-@index-section[]
