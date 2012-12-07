@@ -54,7 +54,3 @@ You will need [Racket](http://racket-lang.org/) 5.3.1.9 or later.
 ```
 % raco pkg install pcf
 ```
-
-The last command tests every file in collection.  It will likey create
-a bunch of windows and print results of examples, but so long as it
-does not signal an error, the tests have passed.
