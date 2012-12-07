@@ -131,6 +131,8 @@ Contextual closure of @racket[v] over evaluation contexts.
 
 @subsection[#:tag "cpcf/lang"]{Language}
 
+@defmodulelang[cpcf]
+
 @figure["CPCF Syntax" "CPCF Syntax, extending PCF"]{
 @racketgrammar*[#:literals (λ if0 err add1 sub1 * + quotient pos? -> nat : ⚖)
                 [M .... (C ⚖ M)]
@@ -193,6 +195,8 @@ Contextual closure of @racket[cv] over evaluation contexts.
 
 @subsection[#:tag "spcf/lang"]{Language}
 
+@defmodulelang[spcf]
+
 @figure["SPCF Syntax" "SPCF Syntax, extending PCF"]{
 @racketgrammar*[#:literals (λ if0 err add1 sub1 * + quotient pos? -> nat : •)
                 [V .... (• T)]]}
@@ -251,6 +255,8 @@ Contextual closure of @racket[sv] over evaluation contexts.
 @defproc[(typable/symbolic? (m (redex-match SPCF M))) boolean?]{Is @racket[m] a well-typed SPCF term?}
 
 @section{SCPCF}
+
+@defmodulelang[scpcf]
 
 @subsection[#:tag "scpcf/lang"]{Language}
 
