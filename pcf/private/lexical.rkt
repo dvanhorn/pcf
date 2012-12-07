@@ -8,9 +8,11 @@
 
 (require (for-syntax syntax/stx))
 (define-syntax (lx stx)
-  (syntax-case stx (λ • : err ⚖)
+  (syntax-case stx (λ • : err μ ⚖)
      [(_ (λ ([x : _] ...) e))
       (nice stx #'(λ (x ...) (lx e)))]
+     [(_ (μ (x : _) v))
+      (nice stx #'(letrec ((x (lx v))) x))]
      [(_ (if0 e0 e1 e2))
       (nice stx #'(if (lx e0)
                       (lx e1)

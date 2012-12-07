@@ -25,6 +25,16 @@
                  3)
           '5)
 
+(test-->> -->v
+          '((μ (fact : (nat -> nat))
+               (λ ([n : nat])
+                  (if0 n
+                       1
+                       (* n (fact (sub1 n))))))
+            5)
+          '120)
+
+
 (test-equal (typable? '5) #t)
 (test-equal (typable? '(add1 5)) #t)
 (test-equal (typable? '(5 5)) #f)

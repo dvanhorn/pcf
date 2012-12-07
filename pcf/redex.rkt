@@ -7,7 +7,7 @@
   (T ::= nat (T ... -> T))
 
   ;; Terms
-  (M ::= X V (M M ...) (if0 M M M) (err T string))
+  (M ::= X V (M M ...) (μ (X : T) V) (if0 M M M) (err T string))
   (V ::= N O (λ ([X : T] ...) M))
 
   (N ::= natural)
@@ -26,6 +26,9 @@
    (--> ((λ ([X : T] ..._1) M) V ..._1)
 	(subst (X V) ... M)
 	β)
+   (--> (μ (X : T) V)
+        (subst (X (μ (X : T) V)) V)
+        μ)
    (--> (O V ...) M
 	(judgment-holds (δ O (V ...) M))
 	δ)
@@ -81,6 +84,8 @@
    (typeof Γ M (T_0 ..._1 -> T))
    (typeof Γ M_0 T_0)
    ...]
+  [(typeof Γ (μ (X : T) V) T)
+   (typeof (extend Γ (X T)) V T)]  
   [(typeof Γ (λ ([X : T] ...) M) (T ... -> T_0))
    (typeof (extend Γ (X T) ...) M T_0)])
 

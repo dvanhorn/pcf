@@ -71,7 +71,7 @@ PCF is a core typed call-by-value functional programming language.
 @figure["PCF Syntax" "PCF Syntax"]{
 @racketgrammar*[#:literals (λ if0 err add1 sub1 * + quotient pos? -> nat :)
                 [PCF (code:line M ...)]
-                [M X V (M M ...) (if0 M M M) (err T string)]
+                [M X V (M M ...) (μ (X : T) M) (if0 M M M) (err T string)]
                 [V natural O (λ ([X : T] ...) M)]
                 [O add1 sub1 * + quotient pos?]
                 [T nat (T ... -> T)]]}
@@ -85,6 +85,16 @@ PCF is a core typed call-by-value functional programming language.
 
 (add1 add1)
 (quotient 5 0)
+]
+
+As required by Mass law:
+@interaction[#:eval pcf-eval
+((μ (fact : (nat -> nat))
+    (λ ([n : nat])
+      (if0 n
+           1
+           (* n (fact (sub1 n))))))
+ 5)
 ]
 
 @subsection[#:tag "pcf/redex"]{Model}
