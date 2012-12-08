@@ -4,6 +4,6 @@
          scpcf/redex
          pcf/private/racket-pcf
          pcf/private/label)
-(provide #%top-interaction #%module-begin ⚖ (all-from-out pcf/private/racket-pcf))
+(provide #%top-interaction #%module-begin ⚖ err (all-from-out pcf/private/racket-pcf))
 (define-syntax #%top-interaction (make-#%top-interaction #'-->scv typable/contract/symbolic?))
 (define-syntax #%module-begin    (make-#%module-begin    #'-->scv typable/contract/symbolic?))

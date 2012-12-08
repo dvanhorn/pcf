@@ -24,8 +24,8 @@
 (define err-abort
   (reduction-relation
    PCF #:domain M
-   (--> (in-hole E (err T string))
-	(err T string)
+   (--> (in-hole E (err L T string))
+	(err L T string)
 	(where #t (not-mt? E))
 	err-abort)))
 
@@ -52,5 +52,5 @@
   [(δf + (N_0 N_1))        ,(+ (term N_0) (term N_1))]
   [(δf pos? (0))            1]
   [(δf pos? (N))            0]
-  [(δf quotient (N_0 0))    (err nat "Divide by zero")]
+  [(δf quotient (N_0 0))    (err #f nat "Divide by zero")]
   [(δf quotient (N_0 N_1)) ,(quotient (term N_0) (term N_1))])

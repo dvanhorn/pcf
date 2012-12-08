@@ -87,6 +87,7 @@ PCF is a core typed call-by-value functional programming language.
 
 (add1 add1)
 (quotient 5 0)
+(err nat "an error")
 ]
 
 As required by Mass law:

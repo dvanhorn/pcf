@@ -80,9 +80,9 @@
   #:contract (δ^ O (V ...) M)
   [(δ^ quotient (any (• nat C ...)) (• nat))]
   [(δ^ quotient (any (• nat C_0 ... pos? C_1 ...)) (• nat))]
-  [(δ^ quotient (any (• nat C ...)) (err nat "Divide by zero"))
+  [(δ^ quotient (any (• nat C ...)) (err #f nat "Divide by zero"))
    (side-condition (no-pos? C ...))]
-  [(δ^ quotient ((• nat C ...) 0)   (err nat "Divide by zero"))]
+  [(δ^ quotient ((• nat C ...) 0)   (err #f nat "Divide by zero"))]
   [(δ^ quotient ((• nat C ...) N)   (• nat))
    (side-condition (not-zero? N))]
   [(δ^ pos? ((• nat C_1 ... pos? C_2 ...)) 0)]

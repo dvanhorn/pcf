@@ -45,8 +45,8 @@
   #:mode (δ^ I I O)
   #:contract (δ^ O (V ...) M)
   [(δ^ quotient (any (• nat)) (• nat))]
-  [(δ^ quotient (any (• nat)) (err nat "Divide by zero"))]
-  [(δ^ quotient ((• nat) 0)   (err nat "Divide by zero"))]
+  [(δ^ quotient (any (• nat)) (err #f nat "Divide by zero"))]
+  [(δ^ quotient ((• nat) 0)   (err #f nat "Divide by zero"))]
   [(δ^ quotient ((• nat) N)   (• nat))
    (side-condition (not-zero? N))]
   [(δ^ O (any_0 ... (• nat) any_1 ...) (• nat))
