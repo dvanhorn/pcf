@@ -1,6 +1,6 @@
 #lang racket
 (provide SCPCF sc -->scv typeof/contract/symbolic typable/contract/symbolic?)
-(require redex/reduction-semantics pcf/redex
+(require redex/reduction-semantics pcf/redex cpcf/redex
          (except-in cpcf/redex lab/context lab-c/context))
 
 (define-extended-language SCPCF CPCF
@@ -116,7 +116,8 @@
 
 (define -->scv
   (union-reduction-relations (context-closure scv SCPCF E)
-                             (extend-reduction-relation err-abort SCPCF)))
+                             (extend-reduction-relation err-abort SCPCF)
+                             (extend-reduction-relation con-abort SCPCF)))
 
 (define (typable/contract/symbolic? M)
   (cons? (judgment-holds (typeof/contract/symbolic () ,M T) T)))

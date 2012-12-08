@@ -1,5 +1,5 @@
 #lang racket
-(provide CPCF-source CPCF c cv -->cv inj-cv typeof/contract typable/contract?)
+(provide CPCF-source CPCF c cv con-abort -->cv inj-cv typeof/contract typable/contract?)
 (provide lab/context lab-c/context typeof-contract) ; for documentation
 (require redex/reduction-semantics pcf/redex)
 
@@ -52,9 +52,23 @@
 (define cv
   (union-reduction-relations c (extend-reduction-relation v CPCF)))
 
+(define con-abort
+  (reduction-relation
+    CPCF #:domain M
+    (--> (in-hole E (blame L))
+         (blame L)
+         (where #t (not-mt? E))
+         con-abort)))
+
+(define-metafunction CPCF
+  not-mt? : E -> #t or #f
+  [(not-mt? hole) #f]
+  [(not-mt? E) #t])
+
 (define -->cv
   (union-reduction-relations (context-closure cv CPCF E)
-                             (extend-reduction-relation err-abort CPCF)))
+                             (extend-reduction-relation err-abort CPCF)
+                             con-abort))
 
 (define (typable/contract? M)
   (cons? (judgment-holds (typeof/contract () ,M T) T)))
