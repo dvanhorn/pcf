@@ -15,7 +15,7 @@
   (X ::= variable-not-otherwise-mentioned)
 
   ;; Evaluation contexts
-  (E ::= hole (M ... E V ...) (if0 E M M))
+  (E ::= hole (V ... E M ...) (if0 E M M))
 
   ;; Type environments
   (Γ ::= ((X T) ...)))

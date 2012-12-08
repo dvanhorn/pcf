@@ -21,7 +21,10 @@
   
   (test-->> -->v '((λ ([x : nat]) x) 5) '5)
   (test-->> -->v '((λ ([x : nat] [y : nat]) x) 5 7) '5)
-  
+  (test-->> -->v '((err (nat -> nat) "l") (err nat "r"))
+                 '(err (nat -> nat) "l"))
+  (test-->> -->v '((λ ([x : nat]) x) (err nat "r"))
+                 '(err nat "r"))
   (test-->> -->v '(((λ ([f : (nat -> nat)])
                       (λ ([x : nat])
                         (f (f x))))
