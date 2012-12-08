@@ -189,7 +189,8 @@ Contextual closure of @racket[cv] over evaluation contexts.
 @figure["typeof/contract" (list "Typing judgment " (racket typeof/contract))]{
 @(render-judgment-form typeof/contract)
 
-@(render-judgment-form typeof-contract)}
+@;(render-judgment-form typeof-contract)
+}
 
 @defproc[(typable/contract? (m (redex-match CPCF M))) boolean?]{Is @racket[m] a well-typed PCF term?}
 

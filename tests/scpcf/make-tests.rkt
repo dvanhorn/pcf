@@ -10,7 +10,5 @@
 
   (test-equal (typable/contract/symbolic? '(pos? ⚖ (• nat))) #t)
   (test-equal (typable/contract/symbolic? '(pos? ⚖ (• (nat -> nat)))) #f)
-  ;; This tests cause errors because of
-  ;; http://lists.racket-lang.org/users/archive/2012-December/055486.html
-  #;(test-equal (typable/contract/symbolic? '((• (nat -> nat)) ⚖ 7)) #t)
-  #;(test-equal (typable/contract/symbolic? '((• (nat -> nat)) ⚖ (• nat))) #t))
+  (test-equal (typable/contract/symbolic? '((• (nat -> nat)) ⚖ 7)) #t)
+  (test-equal (typable/contract/symbolic? '((• (nat -> nat)) ⚖ (• nat))) #t))
