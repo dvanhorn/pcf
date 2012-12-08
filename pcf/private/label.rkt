@@ -10,8 +10,8 @@
 (define-syntax (lab/l stx)
   (syntax-parse stx #:literals (⚖)
     [(_ (c (~and kw ⚖) e) l)
-     #`(list (lab/l c l) 
-             l 
+     #`(list (lab/l c l)
+             l
              #'kw
              '⚖ (lab/l e l))]
     [(_ (e ...) l)
@@ -24,15 +24,14 @@
 (define (scrub v)
   (match v
     [(list 'blame s)
-     (list 'blame 
+     (list 'blame
            (string->symbol
-            (format "~a:~a:~a" 
+            (format "~a:~a:~a"
                     (syntax-source s)
                     (syntax-line s)
                     (syntax-column s))))]
     [(list c + - '⚖ m)
      (list (scrub c) '⚖ (scrub m))]
-    
     [(list m ...)
      (map scrub m)]
     [_ v]))
