@@ -27,8 +27,7 @@
    (--> (in-hole E (err T string))
 	(err T string)
 	(where #t (not-mt? E))
-	
-         pcf/private/subst)))
+	err-abort)))
 
 (define -->v
   (union-reduction-relations (context-closure v PCF E) err-abort))
