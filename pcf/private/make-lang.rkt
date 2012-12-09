@@ -19,7 +19,7 @@
     [(_ . e)
      (unless (typable? (syntax->datum #'e))
        (raise-syntax-error 'type-error "ill-typed expression" #'e))
-     #`(apply values (map scrub (apply-reduction-relation* #,REL (lab e))))]))
+     #`(return (apply-reduction-relation* #,REL (lab e)))]))
 
 (define ((make-#%module-begin REL typable?) stx)
   (syntax-parse stx
@@ -48,5 +48,6 @@
              #`(begin (stepper #,REL (lab e) #:pp pp) ...)]
             [else
              #'(void)])
-
-        (apply values (append (map scrub (apply-reduction-relation* #,REL (lab e))) ...)))]))
+        
+        (return
+         (append (apply-reduction-relation* #,REL (lab e)) ...)))]))
