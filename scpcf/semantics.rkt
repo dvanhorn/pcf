@@ -95,7 +95,7 @@
 
 (define-metafunction SCPCF
   havoc : T C ... M -> M
-  [(havoc nat C ... M) M]
+  [(havoc nat C ... M) (μ (x : nat) x)]
   [(havoc (T_0 -> T_1) (C_0 -> C_1) ...
 	  (λ ((X : T)) (@ 'Λ (λ ((X : T)) M) (C_3 ⚖ X))))
    (havoc T_1 C_1 ...

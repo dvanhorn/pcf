@@ -5,7 +5,7 @@
 
 (define (make-scpcf-tests -->scv typable/contract/symbolic?)
   (test-->> -->scv '(pos? + - ⚖ (• nat)) '(• nat pos?) '(blame +))
-  (test-->> -->scv '((• (nat -> nat)) + - ⚖ 7) '7 '(blame +))
+  (test-->> -->scv #:cycles-ok '((• (nat -> nat)) + - ⚖ 7) '7 '(blame +))
   (test-->> -->scv '(@ #f add1 (pos? + - ⚖ (• nat))) '(• nat) '(blame +))
 
   (test-equal (typable/contract/symbolic? '(pos? ⚖ (• nat))) #t)

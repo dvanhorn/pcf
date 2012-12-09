@@ -23,7 +23,7 @@
 
 (define-metafunction SPCF
   havoc : T M -> M
-  [(havoc nat M) M]
+  [(havoc nat M) (μ (x : nat) x)]
   [(havoc (T_0 ... -> T_1) M)
    (havoc T_1 (@ 'Λ M (• T_0) ...))])
 

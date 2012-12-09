@@ -6,7 +6,7 @@
 (define (make-spcf-tests -->sv typable/symbolic?)
   (test-->> -->sv '(@ #f add1 (• nat)) '(• nat))
   (test-->> -->sv '(if0 (• nat) 1 2) 1 2)
-  (test-->> -->sv '(@ #f (• (nat -> nat)) (• nat)) '(• nat))
+  (test-->> -->sv #:cycles-ok '(@ #f (• (nat -> nat)) (• nat)) '(• nat))
 
   (test-equal (typable/symbolic? '(• nat)) #t)
   (test-equal (typable/symbolic? '(add1 (• nat))) #t)

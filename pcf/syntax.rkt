@@ -6,9 +6,11 @@
   ;; Types
   (T ::= nat (T ... -> T))
   ;; Terms
-  (M ::= X V (M M ...) (μ (X : T) V) (if0 M M M) (err T string))
+  (M ::= X V (M M ...) (μ (X : T) S) (if0 M M M) (err T string))
   ;; Values
   (V ::= N O (λ ([X : T] ...) M))
+  ;; Simple
+  (S ::= V X)
   (N ::= natural)
   (O ::= add1 sub1 * + quotient pos?)
   (X ::= variable-not-otherwise-mentioned))

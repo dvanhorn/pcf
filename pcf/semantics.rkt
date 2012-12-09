@@ -10,8 +10,8 @@
    (--> (@ L (λ ([X : T] ..._1) M) V ..._1)
 	(subst (X V) ... M)
 	β)
-   (--> (μ (X : T) V)
-        (subst (X (μ (X : T) V)) V)
+   (--> (μ (X : T) S)
+        (subst (X (μ (X : T) S)) S)
         μ)
    (--> (@ L O V ...) M
 	(judgment-holds (δ O L (V ...) M))
