@@ -7,14 +7,14 @@
 (define v
   (reduction-relation
    PCF #:domain M
-   (--> ((λ ([X : T] ..._1) M) V ..._1)
+   (--> (@ L (λ ([X : T] ..._1) M) V ..._1)
 	(subst (X V) ... M)
 	β)
    (--> (μ (X : T) V)
         (subst (X (μ (X : T) V)) V)
         μ)
-   (--> (O V ...) M
-	(judgment-holds (δ O (V ...) M))
+   (--> (@ L O V ...) M
+	(judgment-holds (δ O L (V ...) M))
 	δ)
    (--> (if0 0 M_0 M_1) M_0 if0-t)
    (--> (if0 N M_0 M_1) M_1
@@ -38,19 +38,19 @@
   [(not-mt? E) #t])
 
 (define-judgment-form PCF
-  #:mode (δ I I O)
+  #:mode (δ I I I O)
   ;; Using this contract will make v non-reusable.
   ;#:contract (δ O (V ...) M)
-  [(δ O (N_0 ...) M)
-   (where M (δf O (N_0 ...)))])
+  [(δ O L (N_0 ...) M)
+   (where M (δf O L (N_0 ...)))])
 
 (define-metafunction PCF
-  δf : O (V ...) -> M
-  [(δf add1 (N))           ,(add1 (term N))]
-  [(δf sub1 (N))           ,(max 0 (sub1 (term N)))]
-  [(δf * (N_0 N_1))        ,(* (term N_0) (term N_1))]
-  [(δf + (N_0 N_1))        ,(+ (term N_0) (term N_1))]
-  [(δf pos? (0))            1]
-  [(δf pos? (N))            0]
-  [(δf quotient (N_0 0))    (err #f nat "Divide by zero")]
-  [(δf quotient (N_0 N_1)) ,(quotient (term N_0) (term N_1))])
+  δf : O L (V ...) -> M
+  [(δf add1 L (N))           ,(add1 (term N))]
+  [(δf sub1 L (N))           ,(max 0 (sub1 (term N)))]
+  [(δf * L (N_0 N_1))        ,(* (term N_0) (term N_1))]
+  [(δf + L (N_0 N_1))        ,(+ (term N_0) (term N_1))]
+  [(δf pos? L (0))            1]
+  [(δf pos? L (N))            0]
+  [(δf quotient L (N_0 0))    (err L nat "Divide by zero")]
+  [(δf quotient L (N_0 N_1)) ,(quotient (term N_0) (term N_1))])

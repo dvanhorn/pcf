@@ -9,7 +9,13 @@
 (define-syntax (⚖ stx) (error 'kw))
 (define-syntax (err stx) (error 'kw))
 (define-syntax (lab/l stx)
-  (syntax-parse stx #:literals (⚖ err)
+  (syntax-parse stx #:literals (⚖ err ->)
+    [(_ (λ ([x : t] ...) e) l)
+     #'(list 'λ '([x : t] ...) (lab/l e l))]
+    [(_ (μ (x : t) e) l)
+     #'(list 'μ '(x : t) (lab/l e l))]
+    [(_ (if0 e0 e1 e2) l)
+     #'(list 'if0 (lab/l e0 l) (lab/l e1 l) (lab/l e2 l))]    
     [(_ (~and (err t s) src) l)
      #`(list 'err #'src 't s)]
     [(_ (c (~and kw ⚖) e) l)
@@ -17,8 +23,10 @@
              l
              #'kw
              '⚖ (lab/l e l))]
-    [(_ (e ...) l)
-     #'(list (lab/l e l) ...)]
+    [(_ (c0 ... -> c) l)
+     #'(list (lab/l c0 l) ... '-> (lab/l c l))]
+    [(_ (~and (e ...) src) l)
+     #'(list '@ #'src (lab/l e l) ...)]
     [(_ e l) #''e]))
 
 (require unstable/lazy-require)
@@ -34,10 +42,12 @@
 
 (define (scrub v)
   (match v
+    [(list '@ l m ...)
+     (map scrub m)]
     [(list 'err l t s)
      (list 'err (loc l) t s)]
     [(list 'blame s)
-     (list 'blame (loc s))]
+     (list 'blame (loc s))]    
     [(list c + - '⚖ m)
      (list (scrub c) '⚖ (scrub m))]
     [(list m ...)

@@ -5,12 +5,12 @@
 (define c
   (reduction-relation
    CPCF #:domain M
-   (--> (M L_+ L_- ⚖ V) (if0 (M V) V (blame L_+)) ?)
+   (--> (M L_+ L_- ⚖ V) (if0 (@ 'Λ M V) V (blame L_+)) ?)
    (--> ((C ..._1 -> C_0) L_+ L_- ⚖ (λ ([X : T] ..._1) M))
         (λ ([X : T] ...)
           (C_0 L_+ L_- ⚖
-               ((λ ([X : T] ...) M)
-                (C L_- L_+ ⚖ X) ...)))
+               (@ 'Λ (λ ([X : T] ...) M)
+                  (C L_- L_+ ⚖ X) ...)))
         η)))
 
 (define cv
