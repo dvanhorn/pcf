@@ -1,15 +1,20 @@
 #lang racket
-(provide lab ⚖ err pp return)
+(provide lab • ⚖ err μ -> if0 pp return)
 
 (define-syntax (lab stx)
   (syntax-case stx ()
     [(_ e) #'(lab/l e #'e)]))
 
 (require (for-syntax syntax/parse))
+(define-syntax (• stx) (error 'kw))
 (define-syntax (⚖ stx) (error 'kw))
 (define-syntax (err stx) (error 'kw))
+(define-syntax (μ stx) (error 'kw))
+(define-syntax (if0 stx) (error 'kw))
+  
 (define-syntax (lab/l stx)
-  (syntax-parse stx #:literals (⚖ err ->)
+  (syntax-parse stx #:literals (• λ μ if0 err ⚖ ->)
+    [(_ (• t) l) #'(list '• 't)]
     [(_ (λ ([x : t] ...) e) l)
      #'(list 'λ '([x : t] ...) (lab/l e l))]
     [(_ (μ (x : t) e) l)
