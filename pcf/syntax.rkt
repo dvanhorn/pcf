@@ -17,11 +17,6 @@
   (O ::= add1 sub1 * + quotient pos?)
   ;; Variables
   (X ::= variable-not-otherwise-mentioned)
-  
-    
-  ;; Evaluation contexts (out of place, just for presentation)
-  (E ::= hole (V ... E M ...) (if0 E M M))
-  
   ;; Type environments
   (Γ ::= ((X T) ...)))
 

@@ -2,10 +2,8 @@
 @(require scribble/manual
           scriblib/figure
           redex/pict
-          pcf/redex
-          scpcf/redex
-          (for-label pcf/redex
-                     scpcf/redex
+          pcf/source
+          (for-label pcf/source
                      redex/reduction-semantics))
 
 @(require racket/sandbox
@@ -22,7 +20,7 @@
 @(define pcf-eval   (make-eval 'pcf/lang))
 @(define redex-eval (make-eval 'redex/reduction-semantics
                                'redex/pict
-                               'pcf/redex))
+                               'pcf/source))
 
 
 
@@ -113,10 +111,11 @@ metafunctions, judgments, and relations.  So let's start with a judgment
 about the syntactic correctness of programs, i.e. let's start by
 defining what it means for a term to be well-typed.
 
-@figure["redex-to-lang/typeof" (list "Typing judgment " (racket typeof) " (selected cases)")                                
-(parameterize [(judgment-form-cases
-                (list 0 1 2 3 8 9 10 11 12))]
-  (render-judgment-form typeof/contract/symbolic))]
+@figure["redex-to-lang/typeof" 
+        (list "Typing judgment " (racket typeof) " (selected cases)")                                
+        (parameterize ([judgment-form-cases
+                        '(0 1 2 3 9 11)])
+          (render-judgment-form typeof))]
 
 This judgment relies on a @emph{type environment}, @math{Γ}, which not
 included in the @racket[PCF-source] definition.  To define type environments,
@@ -130,7 +129,7 @@ The code for the typing judgment takes the following form:
 
 @codeblock[#:keep-lang-line? #f]|{
 #lang racket
-(define-judgment-form PCF-static
+(define-judgment-form PCF-source
   #:mode (typeof I I O)
   #:contract (typeof Γ M T)
   [(typeof Γ (err T string) T)]
@@ -184,6 +183,26 @@ axioms are shown in @figure-ref{redex-to-lang/v}.
 
 @(figure "redex-to-lang/v" (list "Reduction relation " (racket v-source)) (render-reduction-relation v-source #:style 'horizontal))
 
+The @racket[v-source] relation makes use of three helper metafunctions.  The first,
+@racket[subst], does substitution.  Rather than define it yourself, you
+can import this one from @racket[pcf/private/subst]---or you can look at
+how to it yourself in the @emph{Redex} book.  It does what you might expect:
+@interaction[#:eval redex-eval
+(require pcf/private/subst)
+(term (subst (x 4) (y 7) (+ x (* y x))))]
+
+The second metafunction, @racket[δ], interprets the application of primitive
+operations to values.  Its definition is fairly straightforward, so we
+leave it to work out the details.  Some examples:
+@interaction[#:eval redex-eval
+(term (δf add1 (7)))
+(term (δf * (3 4)))
+(term (δf quotient (14 3)))
+(term (δf quotient (14 0)))]
+
+The third and final metafunction used by @racket[v-source] is @racket[nonzero?],
+which by now you should have no problem defining.
+
 Finally, we can now compute with programs by using the reduction relation,
 which can be applied by using Redex's @racket[apply-reduction-relation]:
 @interaction[#:eval redex-eval
@@ -230,6 +249,22 @@ with respect to @render-term[PCF-source E], which we call @racket[-->v-source]:
                    (* n (fact (sub1 n))))))
          5)))
 ]
+
+If we wanted more detail on these computations, we can use some more
+of the tools that come with Redex.  For example, by requiring @racket[redex/gui],
+we can use the @racket[traces] function for visualizing the @emph{trace}
+of computation.  For example, the result of
+@racketblock[
+(traces -->v-source
+        (term ((λ ([f : (nat -> nat)]) (f (f 2)))
+               (λ ([x : nat]) (* x x)))))            
+]
+is an interactive window that shows the intermediate terms of the
+computation as a graph labelled with edges corresponding to
+reduction axioms, shown in @figure-ref{traces}.
+@figure["traces" "Reduction graph"]{
+@centered{@image[#:suffixes '(".png" ".pdf") #:scale .8]{traces}}}
+
 
 At this point, we have the basics of a working model for PCF.
 We might go further and turn some of our examples into test cases, perhaps
