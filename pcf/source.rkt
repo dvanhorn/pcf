@@ -49,8 +49,7 @@
 (define err-abort
   (reduction-relation
    PCF-source #:domain M
-   (--> (in-hole E (err T string))
-   (err T string)
+   (--> (in-hole E (err T string)) (err T string)
    (where #t (not-mt? E))
    err-abort)))
 

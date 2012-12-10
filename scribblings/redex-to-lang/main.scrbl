@@ -4,6 +4,9 @@
           redex/pict
           pcf/source
           (for-label pcf/source
+                     racket/sandbox
+                     scribble/eval
+                     racket/base
                      redex/reduction-semantics))
 
 @(require racket/sandbox
@@ -17,10 +20,11 @@
            (the-eval `(require ,@reqs))
            the-eval)))))
 
-@(define pcf-eval   (make-eval 'pcf/lang))
-@(define redex-eval (make-eval 'redex/reduction-semantics
-                               'redex/pict
-                               'pcf/source))
+@(define pcf-eval (make-eval 'pcf/lang))
+@(define redex-eval 
+   (make-eval 'redex/reduction-semantics
+              'redex/pict
+              'pcf/source))
 
 
 
@@ -84,7 +88,7 @@ the grammar of the language:
   ;; Naturals
   (N ::= natural)
   ;; Primitive operations
-  (O ::= add1 sub1 * + quotient pos?)
+  (O ::= add1 sub1 * + quotient)
   ;; Variables
   (X ::= variable-not-otherwise-mentioned))}|
   
@@ -250,6 +254,59 @@ with respect to @render-term[PCF-source E], which we call @racket[-->v-source]:
          5)))
 ]
 
+There is one short-coming of the @racket[-->v-source] relation
+that you may have noticed.  Programs that produce errors
+get @emph{stuck}, e.g.:
+@interaction[#:eval redex-eval
+(apply-reduction-relation* -->v-source 
+  (term (sub1 (quotient 5 0))))]
+
+In this small example, it's easy to see the program signalled
+an error, but in anything much larger it becomes very difficult
+to spot what's gone wrong when an error is buried deep inside
+some evaluation context.  We can define a reduction relation
+that handles such situations by discarding the surrounding
+context and producing the error as the overall result of the
+computation:
+@(centered
+  (parameterize ([rule-pict-style 'horizontal])
+    (render-reduction-relation err-abort)))
+or as code:
+@interaction[#:eval redex-eval
+(define err-abort
+  (reduction-relation
+   PCF-source #:domain M
+   (--> (in-hole E (err T string)) (err T string)
+   (where #t (not-mt? E))
+   err-abort)))
+
+(apply-reduction-relation err-abort
+  (term (sub1 (err nat "Divide by zero"))))
+]
+This relation relies on a helper metafunction @racket[not-mt?]
+that determines if an evaluation context is not the empty context.
+(What would happen if you left that side condition off?)
+Notice how the rule is context-sensitive: it matches the entire
+program against an evaluation context pattern variable
+and an error term, then throws the context away on the right-hand-side.
+To put incorporate this rule into the PCF semantics, let's
+re-define @racket[-->v-source] as the following, which combines
+the context closure of @racket[v-source] and the new @racket[err-abort]
+relation:
+@interaction[#:eval redex-eval
+(define -->v-source
+  (union-reduction-relations
+   (context-closure v-source PCF-source E)
+   err-abort))]
+
+Now when an error occurs, it is produced as the result of the computation:
+@interaction[#:eval redex-eval
+(apply-reduction-relation* -->v-source 
+  (term (sub1 (quotient 5 0))))]
+
+So now we have a working interpreter for PCF in the form of 
+the reflexive, transitive closure of @racket[-->v-source], which
+is exactly what @racket[apply-reduction-relation*] computes.
 If we wanted more detail on these computations, we can use some more
 of the tools that come with Redex.  For example, by requiring @racket[redex/gui],
 we can use the @racket[traces] function for visualizing the @emph{trace}
@@ -265,6 +322,18 @@ reduction axioms, shown in @figure-ref{traces}.
 @figure["traces" "Reduction graph"]{
 @centered{@image[#:suffixes '(".png" ".pdf") #:scale .8]{traces}}}
 
+Redex also gives you the ability to step through a computation
+with an interactive algebraic stepper.  Simply use the @racket[stepper]
+function:
+@racketblock[
+(stepper -->v-source
+         (term ((λ ([f : (nat -> nat)]) (f (f 2)))
+                (λ ([x : nat]) (* x x)))))
+]
+which will launch the stepper window shown in @figure-ref{stepper}.
+
+@figure["stepper" "Algebraic stepper"]{
+@image[#:suffixes '(".pdf" ".png") #:scale .8]{stepper}}
 
 At this point, we have the basics of a working model for PCF.
 We might go further and turn some of our examples into test cases, perhaps
@@ -290,45 +359,17 @@ language that enables us to write PCF programs like this:
 
 @centered{@image[#:suffixes '(".pdf" ".png") #:scale .8]{pcf}}
 
-@;defthing[-->v reduction-relation?]
+In the definitions panel of this DrRacket window, you'll notice
+we've indicated PCF as the language this module is written in.
+The subsequent text consists of a PCF expression computing @math{5!}.
+After pressing ``Run'', the interactions panel appears and prints
+the results from the definitions panel, i.e. @racket[120].
+After which, we can type PCF expressions at the prompt and get 
+results back interactively.
 
-Contextual closure of @racket[v] over evaluation contexts.
-
-@;figure["-->v" (list "Reduction relation " (racket -->v)) (render-reduction-relation -->v #:style 'horizontal)]
-
-@;defidform[#:kind "judgment-form" δ]
-
-@figure["redex-to-lang/δ" (list "Primitive application " (racket δ))]{
-@(render-judgment-form δ)
-
-@(render-metafunction δf)}
-
-@;defidform[#:kind "judgment form" typeof]
-
-
-@;defproc[(typable? (m (redex-match PCF M))) boolean?]{Is @racket[m] a well-typed PCF term?}
-
-@figure["redex-to-lang/PCF Syntax" "PCF Syntax"]{
-@racketgrammar*[#:literals (λ if0 err add1 sub1 * + quotient pos? -> nat :)
-                [PCF (code:line M ...)]
-                [M X V (M M ...) (μ (X : T) M) (if0 M M M) (err T string)]
-                [V natural O (λ ([X : T] ...) M)]
-                [O add1 sub1 * + quotient pos?]
-                [T nat (T ... -> T)]]}
-
-@interaction[#:eval pcf-eval
-5
-(λ ([x : nat]) x)
-((λ ([x : nat]) x) 5)
-(if0 1 2 3)
-(if0 0 (add1 2) 8)
-
-(add1 add1)
-(quotient 5 0)
-(err nat "an error")
-]
-
-As required by Mass law:
+Not only is it now easier to develop programs written in PCF, it
+is also easier to @emph{discuss} PCF programs since we can use
+the PCF language directly in documenting examples:
 @interaction[#:eval pcf-eval
 ((μ (fact : (nat -> nat))
     (λ ([n : nat])
@@ -337,6 +378,68 @@ As required by Mass law:
            (* n (fact (sub1 n))))))
  5)
 ]
+It is worth point out that this is a @emph{different} prompt than
+the one used before.  It is a PCF prompt, not a Racket prompt.
+
+
+@section{Catching type errors with Check Syntax}
+
+@section{Lexical structure}
+
+@section{Highlighting run-time errors}
+
+@section{Typesetting examples}
+
+As mentioned in @secref{Building_languages}, once we have a @tt{#lang}
+language, it becomes possible to use that language just like any
+other @tt{#lang} language.  For example, in this document, there
+is a Racket evaluator for showing examples of using Redex, and there
+is a PCF evaluator for showing examples using PCF.  Both are
+constructed at the beginning of the Scribble document like so:
+@codeblock|{
+#lang scribble/manual
+@(require racket/sandbox
+          scribble/eval)
+@(define (make-eval . reqs)
+   (call-with-trusted-sandbox-configuration
+     (lambda ()
+       (parameterize ([sandbox-output 'string]
+                      [sandbox-error-output 'string])
+         (let ([the-eval (make-base-eval)])
+           (the-eval `(require ,@reqs))
+           the-eval)))))
+
+@(define pcf-eval (make-eval 'pcf/lang))
+@(define redex-eval 
+   (make-eval 'redex/reduction-semantics
+              'redex/pict
+              'pcf/source))}|
+
+at which point it's easy to write code to typeset examples of either language.
+For example this:
+@codeblock[#:keep-lang-line? #f]|{
+#lang scribble/manual
+@(examples #:eval pcf-eval
+   ((μ (fact : (nat -> nat))
+       (λ ([n : nat])
+         (if0 n
+              1
+              (* n (fact (sub1 n))))))
+    5))
+}|
+will create an example that looks like this:
+
+@(examples #:eval pcf-eval
+   ((μ (fact : (nat -> nat))
+       (λ ([n : nat])
+         (if0 n
+              1
+              (* n (fact (sub1 n))))))
+    5))
+
+
+
+@section{Where to Go from Here}
 
 
 @bibliography[
