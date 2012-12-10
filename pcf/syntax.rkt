@@ -1,5 +1,5 @@
 #lang racket
-(provide PCF)
+(provide PCF PCF-source)
 (require redex/reduction-semantics)
 
 (define-language PCF-source
@@ -9,12 +9,22 @@
   (M ::= X V (M M ...) (μ (X : T) S) (if0 M M M) (err T string))
   ;; Values
   (V ::= N O (λ ([X : T] ...) M))
-  ;; Simple
+  ;; Simple terms
   (S ::= V X)
+  ;; Naturals
   (N ::= natural)
+  ;; Primitive operations
   (O ::= add1 sub1 * + quotient pos?)
-  (X ::= variable-not-otherwise-mentioned))
+  ;; Variables
+  (X ::= variable-not-otherwise-mentioned)
   
+    
+  ;; Evaluation contexts (out of place, just for presentation)
+  (E ::= hole (V ... E M ...) (if0 E M M))
+  
+  ;; Type environments
+  (Γ ::= ((X T) ...)))
+
 (define-extended-language PCF PCF-source
   ;; Labels
   (L ::= any)
@@ -22,7 +32,4 @@
   (M ::= .... (@ L M M ...) (err L T string))
   
   ;; Evaluation contexts
-  (E ::= hole (@ L V ... E M ...) (if0 E M M))
-
-  ;; Type environments
-  (Γ ::= ((X T) ...)))
+  (E ::= hole (@ L V ... E M ...) (if0 E M M)))

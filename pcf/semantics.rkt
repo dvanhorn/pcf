@@ -1,8 +1,26 @@
 #lang racket
-(provide v err-abort -->v δ δf)
+(provide v v-source err-abort -->v δ δf)
 (require redex/reduction-semantics
          pcf/syntax
          pcf/private/subst)
+
+(define v-source
+  (reduction-relation
+   PCF-source #:domain M
+   (--> ((λ ([X : T] ..._1) M) V ..._1)
+	(subst (X V) ... M)
+	β)
+   (--> (μ (X : T) S)
+        (subst (X (μ (X : T) S)) S)
+        μ)
+   (--> (O V ...) M
+	(judgment-holds (δ O #f (V ...) M))
+	δ)
+   (--> (if0 0 M_0 M_1) M_0 if0-t)
+   (--> (if0 N M_0 M_1) M_1
+	(judgment-holds (nonzero? N))
+	if0-f)))
+
 
 (define v
   (reduction-relation
@@ -18,8 +36,14 @@
 	δ)
    (--> (if0 0 M_0 M_1) M_0 if0-t)
    (--> (if0 N M_0 M_1) M_1
-	(side-condition (not (zero? (term N))))
+	(judgment-holds (nonzero? N))
 	if0-f)))
+
+(define-judgment-form PCF
+  #:mode (nonzero? I)
+  #:contract (nonzero? N)
+  [(nonzero? N)
+   (where (side-condition N (not (zero? (term N)))) N)])
 
 (define err-abort
   (reduction-relation
@@ -31,6 +55,9 @@
 
 (define -->v
   (union-reduction-relations (context-closure v PCF E) err-abort))
+
+(define -->v-source
+  (union-reduction-relations (context-closure v-source PCF E) err-abort))
 
 (define-metafunction PCF
   not-mt? : E -> #t or #f

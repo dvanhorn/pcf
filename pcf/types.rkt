@@ -8,7 +8,7 @@
   (and ((redex-match PCF M) t)
        (typable/contract/symbolic? t)))
 
-(define-judgment-form PCF
+(define-judgment-form PCF-source
   #:mode (typeof I I O)
   #:contract (typeof Γ M T)
   [(typeof Γ M T)

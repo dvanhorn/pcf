@@ -104,8 +104,11 @@ As required by Mass law:
 
 @defmodule[pcf/redex]
 
+@defidform[#:kind "language" PCF-source]
 @defidform[#:kind "language" PCF]
-@figure["PCF" (list "The " (racket PCF) " language") (render-language PCF)]
+@figure["PCF" (list "The " (racket PCF-source) " and " (racket PCF) " language")
+              (render-language PCF-source)
+              (render-language PCF)]
 
 @defthing[v reduction-relation?]
 
