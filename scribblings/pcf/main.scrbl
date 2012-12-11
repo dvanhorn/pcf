@@ -167,7 +167,6 @@ Contextual closure of @racket[v] over evaluation contexts.
  0)
 ]
 
-
 @subsection[#:tag "cpcf/redex"]{Model}
 
 @defmodule[cpcf/redex]
