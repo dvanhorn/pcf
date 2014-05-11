@@ -2,7 +2,7 @@
 @(require scribble/manual
 	  scriblib/figure
 	  redex/pict
-	  pcf/source
+	  pcf/source         
 	  (for-label pcf/source
 		     racket/sandbox
 		     scribble/eval

@@ -3,10 +3,12 @@
           scriblib/figure
           redex/pict
           pcf/redex
+          (only-in pcf/source PCF-source)
           cpcf/redex
           spcf/redex
           scpcf/redex
           (for-label pcf/redex
+                     (only-in pcf/source PCF-source)
                      cpcf/redex
                      spcf/redex
                      scpcf/redex
