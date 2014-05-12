@@ -1,14 +1,11 @@
-#lang scribble/doc
-@(require scribble/manual
-          scriblib/figure
+#lang scribble/manual
+@(require scriblib/figure
           redex/pict
           pcf/redex
-          (only-in pcf/source PCF-source)
           cpcf/redex
           spcf/redex
           scpcf/redex
           (for-label pcf/redex
-                     (only-in pcf/source PCF-source)
                      cpcf/redex
                      spcf/redex
                      scpcf/redex
@@ -32,7 +29,7 @@
 
 @title{PCF with Contracts and Symbolic Values}
 
-@author+email["David Van Horn" "dvanhorn@ccs.neu.edu"]
+@author+email["David Van Horn" "dvanhorn@cs.umd.edu"]
 
 @url{https://github.com/dvanhorn/pcf/}
 
@@ -64,13 +61,23 @@ based on Plotkin's PCF.
   represents an abstraction of all values of type @racket[T]
   satisfying contracts @racket[C ...].}]
 
+Each of these languages comes in two forms: as a @literal{#lang} language
+and a Redex model.  The syntax of each Redex model is further broken
+down in to two components: the source code syntax
+(@racket[PCF-source], @racket[CPCF-source], etc.), which is what
+programmers write, and the instrumented syntax used during reduction
+(@racket[PCF], @racket[CPCF], etc.).
+
 @section{PCF}
 
 @subsection[#:tag "pcf/lang"]{Language}
 
 @defmodulelang[pcf]
 
-PCF is a core typed call-by-value functional programming language.
+PCF is a core typed call-by-value functional programming language.  It
+has natural numbers, a few operations, conditionals, recursive
+functions and applications.  Conditionals take the form of @code{(if0
+e1 e2 e3)}, where @code{0} is interpreterd as ``true.''
 
 @figure["PCF Syntax" "PCF Syntax"]{
 @racketgrammar*[#:literals (λ if0 err add1 sub1 * + quotient pos? -> nat :)
@@ -80,13 +87,20 @@ PCF is a core typed call-by-value functional programming language.
                 [O add1 sub1 * + quotient pos?]
                 [T nat (T ... -> T)]]}
 
+Some simple examples:
+
 @interaction[#:eval pcf-eval
 5
 (λ ([x : nat]) x)
 ((λ ([x : nat]) x) 5)
 (if0 1 2 3)
 (if0 0 (add1 2) 8)
+]
 
+The following interactions demonstrate static type errors and dynamic
+run-time errors:
+
+@interaction[#:eval pcf-eval
 (add1 add1)
 (quotient 5 0)
 (err nat "an error")
@@ -133,6 +147,10 @@ Contextual closure of @racket[v] over evaluation contexts.
 
 @figure["typeof" (list "Typing judgment " (racket typeof)) (render-judgment-form typeof)]
 
+This typing judgment is defined in terms of the more general
+@racket[typeof/contract/symbolic] judgment, which operates on a
+superset of @racket[PCF].
+
 @defproc[(typable? (m (redex-match PCF M))) boolean?]{Is @racket[m] a well-typed PCF term?}
 
 @section{CPCF}
@@ -141,11 +159,17 @@ Contextual closure of @racket[v] over evaluation contexts.
 
 @defmodulelang[cpcf]
 
+CPCF extends PCF with a form @code{(C ⚖ M)} for monitoring expressions
+with @deftech{contract}s.  A contract @code{C} is either a predicate
+or a function contract constructed out of domain and range contracts.
+
 @figure["CPCF Syntax" "CPCF Syntax, extending PCF"]{
 @racketgrammar*[#:literals (λ if0 err add1 sub1 * + quotient pos? -> nat : ⚖)
                 [M .... (C ⚖ M)]
                 [C M (C ... -> C)]]}
 
+Here are some simple examples.  Recall that @code{(λ ([x : nat]) x)}
+is the ``is zero?'' predicate:
 @interaction[#:eval cpcf-eval
 ((λ ([x : nat]) x) ⚖ 3)
 ((λ ([x : nat]) x) ⚖ 0)
@@ -202,6 +226,19 @@ Contextual closure of @racket[cv] over evaluation contexts.
 @section{SPCF}
 
 @subsection[#:tag "spcf/lang"]{Language}
+
+Symbolic PCF extends PCF with a notion of @deftech{symbolic value}s.  A
+symbolic value @code{(• T)} represents the set of values of type
+@code{T}.  With the introduction of symbolic values, the reduction
+semantics becomes non-deterministic.  The semantics is sound in the
+sense that it accounts for the behavior of all values in the set
+abstracted by @code{(• T)}.
+
+An important aspect of this semantics is the handling of functions
+that escape to unknown contexts, i.e. when a function is an argument
+of a symbolic fuction.  The @racket[havoc] metafunction is used in
+this case to find any errors that can arise from the use of the
+function in an unknown context.
 
 @defmodulelang[spcf]
 
@@ -267,6 +304,12 @@ Contextual closure of @racket[sv] over evaluation contexts.
 @defmodulelang[scpcf]
 
 @subsection[#:tag "scpcf/lang"]{Language}
+
+Symbolic CPCF is an extension of Symbolic PCF which incorporates
+contracts as in CPCF and usese contracts in symbolic values to refine
+its set of values.  The symbolic value @code{(• T C ...)} represents
+the set of all values that are of type @code{T} and satisfy each
+contract in @code{C ...}.
 
 @figure["SCPCF Syntax" "SCPCF Syntax, extending CPCF"]{
 @racketgrammar*[#:literals (λ if0 err add1 sub1 * + quotient pos? -> nat : ⚖)
