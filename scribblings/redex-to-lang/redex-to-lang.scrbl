@@ -351,7 +351,7 @@ computation as a graph labelled with edges corresponding to reduction
 axioms, shown in @figure-ref{traces}.
 
 @figure["traces" "Reduction graph"]{
-@centered{@image[#:suffixes '(".png" ".pdf") #:scale .8]{traces}}}
+@centered{@image[#:suffixes '(".png" ".pdf") #:scale .8]{redex-to-lang/traces}}}
 
 Redex also gives you the ability to step through a computation with an
 interactive algebraic stepper.  Simply use the @racket[stepper]
@@ -365,7 +365,7 @@ function:
 which will launch the stepper window shown in @figure-ref{stepper}.
 
 @figure["stepper" "Algebraic stepper"]{
-@image[#:suffixes '(".pdf" ".png") #:scale .8]{stepper}}
+@image[#:suffixes '(".pdf" ".png") #:scale .8]{redex-to-lang/stepper}}
 
 At this point, we have the basics of a working model for PCF.  We
 might go further and turn some of our examples into test cases,
@@ -392,7 +392,7 @@ Let's put the horse before the cart and see the end result of
 @emph{how}.  Our goal is a @tt{#lang pcf} language that enables us to
 write PCF programs like this:
 
-@centered{@image[#:suffixes '(".pdf" ".png") #:scale .8]{pcf}}
+@centered{@image[#:suffixes '(".pdf" ".png") #:scale .8]{redex-to-lang/pcf}}
 
 In the definitions panel of this DrRacket window, you'll notice we've
 indicated PCF as the language this module is written in.  The
