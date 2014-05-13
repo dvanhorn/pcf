@@ -1,13 +1,14 @@
 #lang scribble/manual
-@(require scribble/manual
-	  scriblib/figure
+@(require scriblib/figure
 	  redex/pict
 	  pcf/source         
-	  (for-label pcf/source
+	  (for-label ;pcf/redex
+                     pcf/source
+		     redex/pict
 		     racket/sandbox
 		     scribble/eval
 		     racket/base
-		     redex/reduction-semantics))
+		     (except-in redex/reduction-semantics O)))
 
 @(require racket/sandbox
 	  scribble/eval)
@@ -30,7 +31,7 @@
 
 @title{From Redex Models to Programming Languages}
 
-@author+email["David Van Horn" "dvanhorn@ccs.neu.edu"]
+@author+email["David Van Horn" "dvanhorn@cs.umd.edu"]
 
 @section{Overview}
 
@@ -40,13 +41,15 @@ features that make Racket unique in its ability to support the
 creation of new languages, but in this article we're going to look at
 how to combine two of them---Redex, a domain-specific language for
 writing mathematical models of programming languages, and the
-@tt{#lang} mechanism for creating new programming languages that
-Racket modules can be written in.  In the end, this provides a method
+@tt{#lang} mechanism for creating new programming languages in which
+Racket modules can be written.  In the end, this provides a method
 for developing programming language @emph{models} in to fully featured
 @tt{#lang} @emph{languages} integrated into the Racket ecosystem.
 
 
 @section{A Redex Model of PCF}
+
+@declare-exporting[pcf/source]
 
 Let's start by building a model of a very simple, typed functional
 programming language based on Plotkin's PCF language @cite{PCF}.
@@ -57,14 +60,14 @@ hacking.
 
 @subsection[#:tag "pcf/lang"]{Syntax}
 
-@;defmodulelang[pcf]
+@;defmodulelang[pcf/source]
 
 PCF is a core typed functional programming language.  For values, it
 includes natural numbers, functions, and primitive operations.
 Expressions include conditions, applications, recursive binding, and
-errors.  The syntax of PCF is given in @figure-ref{redex-to-lang/PCF}.
+errors.  The syntax of PCF is given in @figure-ref{redex-to-lang/PCF-source}.
 
-@figure["redex-to-lang/PCF-source" (list "The " (racket PCF-source) " language")
+@figure["redex-to-lang/PCF-source" (list "The " @defidform/inline[PCF-source] " language")
 				   (parameterize ([render-language-nts '(T M V S N O X)])
 				     (render-language PCF-source))]
 
@@ -97,7 +100,7 @@ It is no accident that the above definition and that of
 @figure-ref{redex-to-lang/PCF-source} look similiar.  In fact, typeset
 grammar of @figure-ref{redex-to-lang/PCF-source} is computed from the
 definition of @racket[PCF-source].  You can try it for yourself after
-requiring the @racket[redex/pict] module:
+requiring the @racketmodname[redex/pict] module:
 
 @(redex-eval '(render-language-nts '(T M V S N O X)))
 @interaction[#:eval redex-eval
@@ -107,7 +110,7 @@ requiring the @racket[redex/pict] module:
 
 At this point, it's possible to construct PCF programs using Redex's
 @racket[term] constructor.  For example, @racket[(term (add1 7))]
-represents the program @render-term[PCF-source (add1 7)].  Terms just
+represents the program @render-term[PCF-source (add1 7)].  Terms are just
 s-expression values in Racket:
 
 @interaction[#:eval redex-eval
@@ -120,7 +123,7 @@ judgment about the syntactic correctness of programs, i.e. let's start
 by defining what it means for a term to be well-typed.
 
 @figure["redex-to-lang/typeof"
-	(list "Typing judgment " (racket typeof) " (selected cases)")
+	(list "Typing judgment " @defidform/inline[typeof] " (selected cases)")
 	(parameterize ([judgment-form-cases
 			'(0 1 2 3 9 11)])
 	  (render-judgment-form typeof))]
@@ -148,9 +151,9 @@ The code for the typing judgment takes the following form:
 
 The rest is straightforward to transliterate from
 @figure-ref{redex-to-lang/typeof}.  As you'll notice, there are two
-cases that rely on a metafunction @racket[extend] to extend the type
-environment.  You should be able to write this and the remaining cases
-of @racket[typeof] as an exercise.
+cases that rely on a metafunction @defidform/inline[extend] to extend
+the type environment.  You should be able to write this and the
+remaining cases of @racket[typeof] as an exercise.
 
 The @racket[#:mode] and @racket[#:contract] specifications says this
 judgment takes the environment and term as inputs, and produces a type
@@ -182,47 +185,81 @@ judgment that relates inputs to multiple outputs and experiment with
 it.)
 
 Now that we have the syntax and type judgment defined, let's move on
-to the dynamic semantics of @racket[PCF].
+to the dynamic semantics of PCF.
 
 @subsection{Semantics}
+
+
 
 The semantics of PCF is given by a @emph{reduction relation} which is
 relation on program text that transforms a fragment of text into a
 simpler expression.  You should think of this relation as specifying a
 kind of algebra of PCF programs: you can simplyify programs in the
 same way you can simplify arithmetic expressions, but instead of
-appealing to axioms such as @tt{(@math{n} + @math{m})} @math{→ n+m},
-you have axiom for function application, branching with conditional
-expressions, and recursion, etc.  These axioms are shown in
-@figure-ref{redex-to-lang/v}.
+appealing to just the axioms of arithmetic, there are axioms for
+function application, conditionals, and recursion, etc.  These axioms
+are shown in @figure-ref{redex-to-lang/v}.
 
 @(figure "redex-to-lang/v"
-         (list "Reduction relation " (racket v-source))
+         (list "Reduction relation " @defidform/inline[v-source])
          (render-reduction-relation v-source #:style 'horizontal))
 
+The code behind @figure-ref{redex-to-lang/v} is:
+@codeblock[#:keep-lang-line? #f]|{
+#lang racket
+(define v-source
+  (reduction-relation
+   PCF-source #:domain M
+   (--> ((λ ([X : T] ..._1) M) V ..._1) (subst (X V) ... M) β)
+   (--> (μ (X : T) S) (subst (X (μ (X : T) S)) S) μ)
+   (--> (O V ...) (δ O V ...) δ)
+   (--> (if0 0 M_0 M_1) M_0 if0-t)
+   (--> (if0 N M_0 M_1) M_1 (judgment-holds (nonzero? N)) if0-f)))
+}|
+
 The @racket[v-source] relation makes use of three helper
-metafunctions.  The first, @racket[subst], does substitution.  Rather
-than define it yourself, you can import this one from
-@racket[pcf/private/subst]---or you can look at how to it yourself in
-the @emph{Redex} book.  It does what you might expect:
+metafunctions.  The first, @defidform/inline[subst], does
+substitution.  Rather than define it yourself, you can import this one
+from @racket[pcf/private/subst]---or you can look at how to it
+yourself in the @emph{Redex} book.  It does what you might expect;
+here it used to substitute @racket[4] and @racket[7] for @racket[x]
+and @racket[y], respectively, in the expression @racket[(term (+ x (*
+y x)))]:
 
 @interaction[#:eval redex-eval
 (require pcf/private/subst)
 (term (subst (x 4) (y 7) (+ x (* y x))))]
 
-The second metafunction, @racket[δ], interprets the application of
-primitive operations to values.  Its definition is fairly
-straightforward, so we leave it to work out the details.  Some
-examples:
+The second metafunction, @defidform/inline[δ], interprets the
+application of primitive operations to values.  Its definition is
+fairly straightforward:
 
+@codeblock[#:keep-lang-line? #f]|{
+#lang racket
+(define-metafunction PCF-source
+  δ : O V ... -> M
+  [(δ add1 N)           ,(add1 (term N))]
+  [(δ sub1 N)           ,(max 0 (sub1 (term N)))]
+  [(δ * N_0 N_1)        ,(* (term N_0) (term N_1))]
+  [(δ + N_0 N_1)        ,(+ (term N_0) (term N_1))]
+  [(δ quotient N_0 0)    (err nat "Divide by zero")]
+  [(δ quotient N_0 N_1) ,(quotient (term N_0) (term N_1))])
+}|
+
+And now, some examples:
 @interaction[#:eval redex-eval
-(term (δf add1 (7)))
-(term (δf * (3 4)))
-(term (δf quotient (14 3)))
-(term (δf quotient (14 0)))]
+(term (δ add1 7))
+(term (δ * 3 4))
+(term (δ quotient 14 3))
+(term (δ quotient 14 0))]
+
+Notice how @racket[term] works like @racket[quote], but interprets
+metafunctions.
+
 
 The third and final metafunction used by @racket[v-source] is
-@racket[nonzero?], which by now you should have no problem defining.
+@defidform/inline[nonzero?], which by now you should have no problem
+defining.
 
 Finally, we can now compute with programs by using the reduction
 relation, which can be applied by using Redex's
@@ -234,8 +271,8 @@ relation, which can be applied by using Redex's
 	     (apply-reduction-relation v-source
 	       (term ((λ ([f : (nat -> nat)]) (f 3)) sub1)))]
 
-Notice that in the second example, the relation produced @racket[(sub1
-3)], not @racket[2].  That's because @racket[apply-reduction-relation]
+Notice that in the second example, the relation produced @racketresult[(sub1
+3)], not @racketresult[2].  That's because @racket[apply-reduction-relation]
 produces the set of terms related to the input by exactly one use of
 @racket[v-source].  If you'd like to repeatedly apply
 @racket[v-source] until the program is in simplest terms, use
@@ -261,7 +298,7 @@ evaluation contexts that gives a left-to-right order of evaluation:
 Once we add the definition of evaluation contexts to
 @racket[PCF-source], it is possible to define the @emph{contextual
 closure} of @racket[v] with respect to @render-term[PCF-source E],
-which we call @racket[-->v-source]:
+which we call @defidform/inline[-->v-source]:
 
 @interaction[#:eval redex-eval
 (define -->v-source
@@ -288,9 +325,10 @@ e.g.:
 In this small example, it's easy to see the program signalled an
 error, but in anything much larger it becomes very difficult to spot
 what's gone wrong when an error is buried deep inside some evaluation
-context.  We can define a reduction relation that handles such
-situations by discarding the surrounding context and producing the
-error as the overall result of the computation:
+context.  We can define a reduction relation,
+@defidform/inline[err-abort], that handles such situations by
+discarding the surrounding context and producing the error as the
+overall result of the computation:
 
 @(centered
   (parameterize ([rule-pict-style 'horizontal])
@@ -309,15 +347,15 @@ or as code:
 (apply-reduction-relation err-abort
   (term (sub1 (err nat "Divide by zero"))))]
 
-This relation relies on a helper metafunction @racket[not-mt?]  that
-determines if an evaluation context is not the empty context.  (What
-would happen if you left that side condition off?)  Notice how the
-rule is context-sensitive: it matches the entire program against an
-evaluation context pattern variable and an error term, then throws the
-context away on the right-hand-side.  To put incorporate this rule
-into the PCF semantics, let's re-define @racket[-->v-source] as the
-following, which combines the context closure of @racket[v-source] and
-the new @racket[err-abort] relation:
+This relation relies on a helper metafunction
+@defidform/inline[not-mt?]  that determines if an evaluation context
+is not the empty context.  (What would happen if you left that side
+condition off?)  Notice how the rule is context-sensitive: it matches
+the entire program against an evaluation context pattern variable and
+an error term, then throws the context away on the right-hand-side.
+To put incorporate this rule into the PCF semantics, let's re-define
+@racket[-->v-source] as the following, which combines the context
+closure of @racket[v-source] and the new @racket[err-abort] relation:
 
 @interaction[#:eval redex-eval
 (define -->v-source

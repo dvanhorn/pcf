@@ -26,19 +26,11 @@
 (define v-source
   (reduction-relation
    PCF-source #:domain M
-   (--> ((λ ([X : T] ..._1) M) V ..._1)
-   (subst (X V) ... M)
-   β)
-   (--> (μ (X : T) S)
-        (subst (X (μ (X : T) S)) S)
-        μ)
-   (--> (O V ...) M
-   (judgment-holds (δ O (V ...) M))
-   δ)
+   (--> ((λ ([X : T] ..._1) M) V ..._1) (subst (X V) ... M) β)
+   (--> (μ (X : T) S) (subst (X (μ (X : T) S)) S) μ)
+   (--> (O V ...) (δ O V ...) δ)
    (--> (if0 0 M_0 M_1) M_0 if0-t)
-   (--> (if0 N M_0 M_1) M_1
-   (judgment-holds (nonzero? N))
-   if0-f)))
+   (--> (if0 N M_0 M_1) M_1 (judgment-holds (nonzero? N)) if0-f)))
 
 (define-judgment-form PCF-source
   #:mode (nonzero? I)
@@ -58,20 +50,15 @@
   [(not-mt? hole) #f]
   [(not-mt? E) #t])
 
-(define-judgment-form PCF-source
-  #:mode (δ I I O)
-  #:contract (δ O (V ...) M)
-  [(δ O (N_0 ...) M)
-   (where M (δf O (N_0 ...)))])
 
 (define-metafunction PCF-source
-  δf : O (V ...) -> M
-  [(δf add1 (N))           ,(add1 (term N))]
-  [(δf sub1 (N))           ,(max 0 (sub1 (term N)))]
-  [(δf * (N_0 N_1))        ,(* (term N_0) (term N_1))]
-  [(δf + (N_0 N_1))        ,(+ (term N_0) (term N_1))]
-  [(δf quotient (N_0 0))    (err nat "Divide by zero")]
-  [(δf quotient (N_0 N_1)) ,(quotient (term N_0) (term N_1))])
+  δ : O V ... -> M
+  [(δ add1 N)           ,(add1 (term N))]
+  [(δ sub1 N)           ,(max 0 (sub1 (term N)))]
+  [(δ * N_0 N_1)        ,(* (term N_0) (term N_1))]
+  [(δ + N_0 N_1)        ,(+ (term N_0) (term N_1))]
+  [(δ quotient N_0 0)    (err nat "Divide by zero")]
+  [(δ quotient N_0 N_1) ,(quotient (term N_0) (term N_1))])
 
 (define -->v-source
   (union-reduction-relations 
