@@ -1,31 +1,31 @@
 #lang scribble/manual
 @(require scriblib/figure
-	  redex/pict
-	  pcf/source         
-	  (for-label ;pcf/redex
+          redex/pict
+          pcf/source
+          (for-label ;pcf/redex
                      pcf/source
-		     redex/pict
-		     racket/sandbox
-		     scribble/eval
-		     racket/base
-		     (except-in redex/reduction-semantics O)))
+                     redex/pict
+                     racket/sandbox
+                     scribble/eval
+                     racket/base
+                     (except-in redex/reduction-semantics O)))
 
 @(require racket/sandbox
-	  scribble/eval)
+          scribble/eval)
 @(define (make-eval . reqs)
    (call-with-trusted-sandbox-configuration
      (lambda ()
        (parameterize ([sandbox-output 'string]
-		      [sandbox-error-output 'string])
-	 (let ([the-eval (make-base-eval)])
-	   (the-eval `(require ,@reqs))
-	   the-eval)))))
+                      [sandbox-error-output 'string])
+         (let ([the-eval (make-base-eval)])
+           (the-eval `(require ,@reqs))
+           the-eval)))))
 
 @(define pcf-eval (make-eval 'pcf/source/lang))
 @(define redex-eval
    (make-eval 'redex/reduction-semantics
-	      'redex/pict
-	      'pcf/source))
+              'redex/pict
+              'pcf/source))
 
 
 
@@ -68,8 +68,8 @@ Expressions include conditions, applications, recursive binding, and
 errors.  The syntax of PCF is given in @figure-ref{redex-to-lang/PCF-source}.
 
 @figure["redex-to-lang/PCF-source" (list "The " @defidform/inline[PCF-source] " language")
-				   (parameterize ([render-language-nts '(T M V S N O X)])
-				     (render-language PCF-source))]
+                                   (parameterize ([render-language-nts '(T M V S N O X)])
+                                     (render-language PCF-source))]
 
 @margin-note{For more on using Redex, see the book @emph{Semantics
 Engineering with PLT Redex} @cite{Redex}.}
@@ -104,8 +104,8 @@ requiring the @racketmodname[redex/pict] module:
 
 @(redex-eval '(render-language-nts '(T M V S N O X)))
 @interaction[#:eval redex-eval
-	     (require redex/pict)
-	     (render-language PCF-source)]
+             (require redex/pict)
+             (render-language PCF-source)]
 
 
 At this point, it's possible to construct PCF programs using Redex's
@@ -123,10 +123,10 @@ judgment about the syntactic correctness of programs, i.e. let's start
 by defining what it means for a term to be well-typed.
 
 @figure["redex-to-lang/typeof"
-	(list "Typing judgment " @defidform/inline[typeof] " (selected cases)")
-	(parameterize ([judgment-form-cases
-			'(0 1 2 3 9 11)])
-	  (render-judgment-form typeof))]
+        (list "Typing judgment " @defidform/inline[typeof] " (selected cases)")
+        (parameterize ([judgment-form-cases
+                        '(0 1 2 3 9 11)])
+          (render-judgment-form typeof))]
 
 This judgment relies on a @emph{type environment}, @math{Γ}, which not
 included in the @racket[PCF-source] definition.  To define type
@@ -165,18 +165,18 @@ whether the judgment holds for specific inputs and outputs, we can
 query the relation to ask if the inputs and outputs are related:
 
 @interaction[#:eval redex-eval
-		    (judgment-holds (typeof () 7 nat))
-		    (judgment-holds (typeof ((f (nat -> nat))) (f 7) nat))
-		    (judgment-holds (typeof () (7 add1) nat))]
+                    (judgment-holds (typeof () 7 nat))
+                    (judgment-holds (typeof ((f (nat -> nat))) (f 7) nat))
+                    (judgment-holds (typeof () (7 add1) nat))]
 
 It's also possible to write patterns for the outputs and
 @emph{compute} a set of outputs rather than @emph{check} if a
 particular one is in the relation:
 
 @interaction[#:eval redex-eval
-		    (judgment-holds (typeof () 7 T) T)
-		    (judgment-holds (typeof ((f (nat -> nat))) (f 7) T) T)
-		    (judgment-holds (typeof () (7 add1) T) T)]
+                    (judgment-holds (typeof () 7 T) T)
+                    (judgment-holds (typeof ((f (nat -> nat))) (f 7) T) T)
+                    (judgment-holds (typeof () (7 add1) T) T)]
 
 (If you think about it, you can probably convince yourself that
 @racket[typeof] relates programs to at most one type.  What does that
@@ -266,10 +266,10 @@ relation, which can be applied by using Redex's
 @racket[apply-reduction-relation]:
 
 @interaction[#:eval redex-eval
-	     (apply-reduction-relation v-source
-	       (term (add1 7)))
-	     (apply-reduction-relation v-source
-	       (term ((λ ([f : (nat -> nat)]) (f 3)) sub1)))]
+             (apply-reduction-relation v-source
+               (term (add1 7)))
+             (apply-reduction-relation v-source
+               (term ((λ ([f : (nat -> nat)]) (f 3)) sub1)))]
 
 Notice that in the second example, the relation produced @racketresult[(sub1
 3)], not @racketresult[2].  That's because @racket[apply-reduction-relation]
@@ -279,8 +279,8 @@ produces the set of terms related to the input by exactly one use of
 @racket[apply-reduction-relation*]:
 
 @interaction[#:eval redex-eval
-	     (apply-reduction-relation* v-source
-	       (term ((λ ([f : (nat -> nat)]) (f 3)) sub1)))]
+             (apply-reduction-relation* v-source
+               (term ((λ ([f : (nat -> nat)]) (f 3)) sub1)))]
 
 While the @racket[v-source] relates terms that can immediately be
 reduced, it doesn't say anything about terms that @emph{contain}
@@ -307,11 +307,11 @@ which we call @defidform/inline[-->v-source]:
   (term (sub1 (add1 5))))
 (apply-reduction-relation* -->v-source
   (term ((μ (fact : (nat -> nat))
-	    (λ ([n : nat])
-	      (if0 n
-		   1
-		   (* n (fact (sub1 n))))))
-	 5)))
+            (λ ([n : nat])
+              (if0 n
+                   1
+                   (* n (fact (sub1 n))))))
+         5)))
 ]
 
 There is one short-coming of the @racket[-->v-source] relation that
@@ -381,8 +381,8 @@ of
 
 @racketblock[
 (traces -->v-source
-	(term ((λ ([f : (nat -> nat)]) (f (f 2)))
-	       (λ ([x : nat]) (* x x)))))]
+        (term ((λ ([f : (nat -> nat)]) (f (f 2)))
+               (λ ([x : nat]) (* x x)))))]
 
 is an interactive window that shows the intermediate terms of the
 computation as a graph labelled with edges corresponding to reduction
@@ -397,8 +397,8 @@ function:
 
 @racketblock[
 (stepper -->v-source
-	 (term ((λ ([f : (nat -> nat)]) (f (f 2)))
-		(λ ([x : nat]) (* x x)))))]
+         (term ((λ ([f : (nat -> nat)]) (f (f 2)))
+                (λ ([x : nat]) (* x x)))))]
 
 which will launch the stepper window shown in @figure-ref{stepper}.
 
@@ -448,12 +448,13 @@ language directly in documenting examples:
 ((μ (fact : (nat -> nat))
     (λ ([n : nat])
       (if0 n
-	   1
-	   (* n (fact (sub1 n))))))
+           1
+           (* n (fact (sub1 n))))))
  5)]
 
-It is worth point out that this is a @emph{different} prompt than the
-one used before.  It is a PCF prompt, not a Racket prompt.
+It is worth point out that this is a @emph{different} interaction
+prompt than the one used before.  It is a PCF prompt, not a Racket
+prompt.
 
 Making a @tt{#lang} language for an s-expression-based language
 requires two things:
@@ -479,24 +480,24 @@ a Racket expression that evaluates it.  So we arrive at the following:
 @codeblock[#:keep-lang-line? #t]|{
 #lang racket
 (provide (rename-out [pcf-top #%top-interaction]
-		     [pcf-module #%module-begin]))
+                     [pcf-module #%module-begin]))
 (require (for-syntax syntax/parse))
 (require redex/reduction-semantics
-	 pcf/source)
+         pcf/source)
 (define-syntax (pcf-top stx)
   (syntax-parse stx
-    [(_ e)
+    [(_ . e)
      #'(#%top-interaction .
-	 (apply values
-		(apply-reduction-relation* -->v-source (term e))))]))
+         (apply values
+                (apply-reduction-relation* -->v-source (term e))))]))
 
 (define-syntax (pcf-module stx)
   (syntax-parse stx
     [(_ e ...)
      #'(#%module-begin
-	 (apply values
-		(append (apply-reduction-relation* -->v-source (term e))
-			...)))]))
+         (apply values
+                (append (apply-reduction-relation* -->v-source (term e))
+                        ...)))]))
 }|
 
 Save the above module in @filepath{pcf/source/lang.rkt}.  At this
@@ -512,18 +513,18 @@ pcf/source/lang
 
 This is a bit of magic that resides in a specific location that Racket
 will use to resolve @tt{#lang}s that start with
-@racketmodname[pcf/source].  After this, we have a bonafide language:
+@tt{pcf/source}.  After this, we have a bonafide language:
 
 @codeblock[#:keep-lang-line? #t]|{
 #lang pcf/source
 ((μ (fib : (nat -> nat))
     (λ ([n : nat])
       (if0 n
-	   0
-	   (if0 (sub1 n)
-		1
-		(+ (fib (sub1 n))
-		   (fib (sub1 (sub1 n))))))))
+           0
+           (if0 (sub1 n)
+                1
+                (+ (fib (sub1 n))
+                   (fib (sub1 (sub1 n))))))))
  5)
 }|
 
@@ -564,21 +565,21 @@ beginning of the Scribble document like so:
 @codeblock|{
 #lang scribble/manual
 @(require racket/sandbox
-	  scribble/eval)
+          scribble/eval)
 @(define (make-eval . reqs)
    (call-with-trusted-sandbox-configuration
      (lambda ()
        (parameterize ([sandbox-output 'string]
-		      [sandbox-error-output 'string])
-	 (let ([the-eval (make-base-eval)])
-	   (the-eval `(require ,@reqs))
-	   the-eval)))))
+                      [sandbox-error-output 'string])
+         (let ([the-eval (make-base-eval)])
+           (the-eval `(require ,@reqs))
+           the-eval)))))
 
 @(define pcf-eval (make-eval 'pcf/lang))
 @(define redex-eval
    (make-eval 'redex/reduction-semantics
-	      'redex/pict
-	      'pcf/source))}|
+              'redex/pict
+              'pcf/source))}|
 
 at which point it's easy to write code to typeset examples of either
 language.  For example this:
@@ -588,9 +589,9 @@ language.  For example this:
 @(examples #:eval pcf-eval
    ((μ (fact : (nat -> nat))
        (λ ([n : nat])
-	 (if0 n
-	      1
-	      (* n (fact (sub1 n))))))
+         (if0 n
+              1
+              (* n (fact (sub1 n))))))
     5))
 }|
 
@@ -599,9 +600,9 @@ will create an example that looks like this:
 @(examples #:eval pcf-eval
    ((μ (fact : (nat -> nat))
        (λ ([n : nat])
-	 (if0 n
-	      1
-	      (* n (fact (sub1 n))))))
+         (if0 n
+              1
+              (* n (fact (sub1 n))))))
     5))
 
 
@@ -611,13 +612,13 @@ will create an example that looks like this:
 
 @bibliography[
  @bib-entry[#:key "PCF"
-	    #:title "LCF considered as a programming language"
-	    #:author "Gordon Plotkin"
-	    #:date "1977"
-	    #:location "Theoretical Computer Science 5: 223–255"
-	    #:url "http://homepages.inf.ed.ac.uk/gdp/publications/LCF.pdf"]
+            #:title "LCF considered as a programming language"
+            #:author "Gordon Plotkin"
+            #:date "1977"
+            #:location "Theoretical Computer Science 5: 223–255"
+            #:url "http://homepages.inf.ed.ac.uk/gdp/publications/LCF.pdf"]
  @bib-entry[#:key "Redex"
-	    #:title "Semantics Engineering with PLT Redex"
-	    #:author "Matthias Felleisen, Robert Bruce Findler and Matthew Flatt"
-	    #:date "July, 2009"
-	    #:location "MIT Press"]]
+            #:title "Semantics Engineering with PLT Redex"
+            #:author "Matthias Felleisen, Robert Bruce Findler and Matthew Flatt"
+            #:date "July, 2009"
+            #:location "MIT Press"]]
