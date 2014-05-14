@@ -6,10 +6,10 @@
          pcf/source)
 (define-syntax (pcf-top stx)
   (syntax-parse stx
-    [(_ e)
-     #'(#%top-interaction
-         (apply values
-                (apply-reduction-relation* -->v-source (term e))))]))
+    [(_ . e)
+    #'(#%top-interaction .
+        (apply values
+               (apply-reduction-relation* -->v-source (term e))))]))
 
 (define-syntax (pcf-module stx)
   (syntax-parse stx
