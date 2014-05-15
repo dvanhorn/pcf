@@ -528,6 +528,17 @@ will use to resolve @tt{#lang}s that start with
  5)
 }|
 
+One shortcoming of the above code is that type errors are not caught
+until run-time, and even then, they are ``caught'' by having the redex
+model break.
+
+For example:
+@interaction[#:eval pcf-eval
+(add1 (λ ([x : nat]) x))]
+
+
+
+
 @section{Catching type errors with Check Syntax}
 
 One thing you may notice is that Check Syntax does do a whole lot for
