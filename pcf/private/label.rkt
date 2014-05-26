@@ -25,8 +25,9 @@
      #`(list 'err #'src 't s)]
     [(_ (c (~and kw ⚖) e) l)
      #`(list (lab/l c l)
-             l
-             #'kw
+             #'e
+	     l
+             'c
              '⚖ (lab/l e l))]
     [(_ (c0 ... -> c) l)
      #'(list (lab/l c0 l) ... '-> (lab/l c l))]
@@ -51,7 +52,7 @@
      (map scrub m)]
     [(list 'err l t s)
      (list 'err (loc l) t s)]
-    [(list 'blame s)
+    [(list 'blame s c0 c1 v)
      (list 'blame (loc s))]    
     [(list c + - '⚖ m)
      (list (scrub c) '⚖ (scrub m))]
@@ -77,14 +78,14 @@
 
 (define (value? r)
           (match r
-            [(list 'blame l) #f]
+            [(list-rest 'blame l) #f]
             [(list 'err l t s) #f]
             [_ #t]))
         
 (define (return res)
   (for ([r (in-list res)])
     (match r
-      [(list 'blame l) (raise-blame l)]
+      [(list 'blame l c0 c1 v) (raise-blame l c0 c1 v)]
       [(list 'err l t s) (raise-err l t s)]
       [_ (void)]))
   
@@ -99,11 +100,14 @@
       ""))
               
 
-(define (raise-blame l)
-  ((error-display-handler) (format "blame:~a" (syntax->srcstring l))
-                           (exn:fail:src ""
-                                         (current-continuation-marks)
-                                         (and l (syntax->srcloc l)))))
+(define (raise-blame l c0 c1 v)
+  ((error-display-handler)
+   (format "blaming: ~a~nbroke: ~a~nexpected: ~a~ngiven: ~a"
+           (syntax->srcstring l)
+           c0 c1 v)
+   (exn:fail:src ""
+                 (current-continuation-marks)
+                 (and l (syntax->srcloc l)))))
 
 (define (raise-err l t s)
   ((error-display-handler) (format "err:~a ~a" (syntax->srcstring l) s)

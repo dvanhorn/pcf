@@ -10,6 +10,7 @@
   (C ::= V (C ... -> C)))
 
 (define-extended-language CPCF CPCF-source
-  (M ::= .... (C L L ⚖ M) (blame L))
-  (E ::= .... (C L L ⚖ E))
+  (M ::= .... (C L L C ⚖ M) B)
+  (B ::= (blame L C C V)) ;; L broke C, expected C given V
+  (E ::= .... (C L L C ⚖ E))
   (L ::= † 'variable any))

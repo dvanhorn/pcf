@@ -5,12 +5,12 @@
 (define c
   (reduction-relation
    CPCF #:domain M
-   (--> (M L_+ L_- ⚖ V) (if0 (@ 'Λ M V) V (blame L_+)) ?)
-   (--> ((C ..._1 -> C_0) L_+ L_- ⚖ (λ ([X : T] ..._1) M))
+   (--> (M L_+ L_- C ⚖ V) (if0 (@ 'Λ M V) V (blame L_+ C M V)) ?)
+   (--> ((C_1 ..._1 -> C_0) L_+ L_- C ⚖ (λ ([X : T] ..._1) M))
         (λ ([X : T] ...)
-          (C_0 L_+ L_- ⚖
+          (C_0 L_+ L_- C ⚖
                (@ 'Λ (λ ([X : T] ...) M)
-                  (C L_- L_+ ⚖ X) ...)))
+                  (C_1 L_- L_+ C ⚖ X) ...)))
         η)))
 
 (define cv
@@ -19,8 +19,7 @@
 (define con-abort
   (reduction-relation
    CPCF #:domain M
-   (--> (in-hole E (blame L))
-        (blame L)
+   (--> (in-hole E B) B
         (where #t (not-mt? E))
         con-abort)))
 
