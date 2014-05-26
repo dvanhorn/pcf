@@ -19,7 +19,10 @@
                       (lx e2)))]
      [(_ (err _ string)) #'string]
      [(_ (• t ...)) #''(• t ...)]
-     [(_ (c ⚖ e)) #'(begin (lc c) (lx e))]
+     [(_ (c ⚖ e))
+      (let ([kw (stx-car (stx-cdr (stx-car (stx-cdr stx))))])
+        (syntax-track-origin #'(begin (lc c) #;(void ⚖) (lx e)) kw
+                             (syntax-local-introduce kw)))]
      [(_ (e ...))
       #'((lx e) ...)]
      [(_ e) #'e]))
