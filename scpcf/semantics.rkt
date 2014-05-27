@@ -25,55 +25,46 @@
    (--> (if0 (• nat C ...) M_0 M_1) M_0 if•-t)
    (--> (if0 (• nat C ...) M_0 M_1) M_1 if•-f)
 
-   (--> (any? L_+ L_- ⚖ V) V any?)
+   (--> (any? L_+ L_- C ⚖ V) V any?)
 
-   (--> (C L_+ L_- ⚖ (• T C_0 ... C C_1 ...))
+   (--> (C L_+ L_- C_n ⚖ (• T C_0 ... C C_1 ...))
 	(• T C_0 ... C C_1 ...)
 	(side-condition (not (eq? (term M) 'any?)))
 	known)
 
-   (--> (M L_+ L_- ⚖ (• T C ...))
+   (--> (M L_+ L_- C_n ⚖ (• T C ...))
 	(if0 (@ 'Λ M (• T C ...))
 	     (• T C ... M)
-	     (blame L_+))
+	     (blame L_+ C_n M (• T C ...)))
 	(side-condition (not (eq? (term M) 'any?)))
 	(side-condition (not (member (term M) (term (C ...)))))
 	check-rem)
 
-   (--> (M L_+ L_- ⚖ V)
-        (if0 (@ 'Λ M V) V (blame L_+))
+   (--> (M L_+ L_- C ⚖ V)
+        (if0 (@ 'Λ M V) V (blame L_+ C M V))
 	(side-condition (not (eq? (term M) 'any?)))
 	(side-condition (not (redex-match SCPCF (• T C ...) (term V))))
 	?)
-   (--> ((C_1 ... -> C) L_+ L_- ⚖ (λ ([X : T] ...) M))
+   (--> ((C_1 ... -> C) L_+ L_- C_n ⚖ (λ ([X : T] ...) M))
 	(λ ([X : T] ...)
-	  (C L_+ L_- ⚖ (@ 'Λ (λ ([X : T] ...) M) (C_1 L_- L_+ ⚖ X) ...)))
+	  (C L_+ L_- C_n ⚖ (@ 'Λ (λ ([X : T] ...) M) (C_1 L_- L_+ C_n ⚖ X) ...)))
 	(side-condition (not (eq? (term C) 'any?)))
 	η)
-   (--> ((C_1 ... -> any?) L_+ L_- ⚖ (λ ([X : T] ...) M))
+   (--> ((C_1 ... -> any?) L_+ L_- C_n ⚖ (λ ([X : T] ...) M))
 	(λ ([X : T] ...)
-	  (@ 'Λ (λ ([X : T] ...) M) (C_1 L_- L_+ ⚖ X) ...))
+	  (@ 'Λ (λ ([X : T] ...) M) (C_1 L_- L_+ C_n ⚖ X) ...))
 	ηt)))
 
 (define-metafunction SCPCF
-  not-zero? : any -> #t or #f
-  [(not-zero? 0) #f]
-  [(not-zero? any) #t])
+  not-op-in? : any O ... -> #t or #f
+  [(not-op-in? O any_1 ... O any_2 ...) #f]
+  [(not-op-in? any O ...) #t])
 
 (define-metafunction SCPCF
-  not-div? : any -> #t or #f
-  [(not-div? div) #f]
-  [(not-div? any) #t])
+  ¬∈ : any any ... -> #t or #f
+  [(¬∈ any any_1 ... any any_2 ...) #f]
+  [(¬∈ any any_1 ...) #t])
 
-(define-metafunction SCPCF
-  no-pos? : C ... -> #t or #f
-  [(no-pos? C_1 ... pos? C_2 ...) #f]
-  [(no-pos? C ...) #t])
-
-(define-metafunction SCPCF
-  not-pos? : C -> #t or #f
-  [(not-pos? pos?) #f]
-  [(not-pos? any) #t])
 
 (define-judgment-form SCPCF
   #:mode (δ^ I I I O)
@@ -89,9 +80,16 @@
   [(δ^ pos? L ((• nat C ...)) (• nat))
    (side-condition (no-pos? C ...))]
 
+  [(δ^ zero? L ((• nat C_1 ... zero? C_2 ...)) 0)]
+  [(δ^ zero? L ((• nat C_1 ... pos? C_2 ...)) 1)]
+  [(δ^ zero? L ((• nat C ...)) (• nat))
+   (side-condition (¬∈ zero? C ...))
+   (side-condition (¬∈ pos? C ...))]
+
+  [(δ^ add1 L ((• nat C_1 ...)) (• nat pos?))]
+
   [(δ^ O L (any_0 ... (• nat C ...) any_1 ...) (• nat))
-   (side-condition (not-div? O))
-   (side-condition (not-pos? O))])
+   (side-condition (¬∈ O quotient zero? pos? add1))])
 
 (define-metafunction SCPCF
   havoc : T C ... M -> M
