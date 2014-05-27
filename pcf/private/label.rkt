@@ -14,7 +14,7 @@
   
 (define-syntax (lab/l stx)
   (syntax-parse stx #:literals (• λ μ if0 err ⚖ ->)
-    [(_ (• t) l) #'(list '• 't)]
+    [(_ (• t t0 ...) l) #'(list '• 't 't0 ...)]
     [(_ (λ ([x : t] ...) e) l)
      #'(list 'λ '([x : t] ...) (lab/l e l))]
     [(_ (μ (x : t) e) l)
