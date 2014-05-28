@@ -25,7 +25,7 @@
    (where (X_new ...)
 	  ,(variables-not-in (term (X_1 any_1 any_2))
 			     (term (X_2 ...))))]
-
+  
   [(subst-1 X_1 any_1 (λ ([X_2 : T_2] ...) any_2))
    (λ ([X_2 : T_2] ...)
      (subst-1 X_1 any_1 any_2))]
