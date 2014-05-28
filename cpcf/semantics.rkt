@@ -24,9 +24,9 @@
         con-abort)))
 
 (define-metafunction CPCF
-  not-mt? : E -> #t or #f
+  not-mt? : any -> #t or #f
   [(not-mt? hole) #f]
-  [(not-mt? E) #t])
+  [(not-mt? any) #t])
 
 (define -->cv
   (union-reduction-relations (context-closure cv CPCF E)
