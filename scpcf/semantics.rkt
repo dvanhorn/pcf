@@ -9,11 +9,9 @@
 (define sc
   (extend-reduction-relation v
    SCPCF #:domain M
-
-   (--> Ω Ω)
-   (--> (μ (X : T) S)
-	(subst (X (• T) #;(μ (X : T) S)) S)
-	μ)
+   (--> Ω Ω Ω) ;; Loop
+      
+   (--> (μ (X : T) S) (subst (X (• T)) S) μ) ;; μ^
 
    (--> (@ L (• (T_0 ... -> T)
 		(C_0 ... -> C) ...)
@@ -55,6 +53,7 @@
 	(if0 (@ 'Λ M V) V (blame L_+ C M V))
 	(side-condition (not (redex-match SCPCF (• T C ...) (term V))))
 	?)
+   
    (--> ((C_1 ... -> C) L_+ L_- C_n ⚖ (λ ([X : T] ...) M))
 	(λ ([X : T] ...)
 	  (C L_+ L_- C_n ⚖
@@ -67,14 +66,8 @@
 	  (C L_+ L_- C_n ⚖
 	     (@ 'Λ (• (T_1 ... -> T) C_v ...)
 		(C_1 L_- L_+ C_n ⚖ X) ...)))
-	(where (X ...) ,(map (λ (_) (gensym))
-			     (term (T_1 ...))))
+	(where (X ...) ,(map (λ (_) (gensym)) (term (T_1 ...))))
 	η•)))
-
-(define-metafunction SCPCF
-  not-op-in? : any O ... -> #t or #f
-  [(not-op-in? O any_1 ... O any_2 ...) #f]
-  [(not-op-in? any O ...) #t])
 
 (define-metafunction SCPCF
   ¬∈ : any any ... -> #t or #f
@@ -116,33 +109,10 @@
 (define-metafunction SCPCF
   havoc : T C ... M -> M
   [(havoc nat C ... M) (@ Λ (λ ([y : nat]) Ω) M)]
-
-  ;; I don't know what this is trying to do.
-  #;
-  [(havoc (T_0 -> T_1) (C_0 -> C_1) ...
-	  (λ ((X : T)) (@ 'Λ (λ ((X : T)) M) (C_3 L_+ L_- C ⚖ X))))
-   (havoc T_1 C_1 ...
-	  (@ 'Λ (λ ((X : T)) M) (• T_0 C_3 C_0 ...)))]
-
-  ;; This is matching η
-  #;
-  [(havoc (T_0 -> T_1) (C_0 -> C_1) ...
-	  (λ ((X : T))
-	    (C_2 L_- L_+ C ⚖
-		 (@ 'Λ (λ ((X : T)) M)
-		    (C_3 L_+ L_- C ⚖ X)))))
-   (havoc T_1 C_1 ...
-	  (C_2 L_- L_+ C ⚖
-	       (@ 'Λ (λ ((X : T)) M)
-		  (• T_0 C_3 C_0 ...))))]
-
   [(havoc (T_0 -> T_1) (C_0 -> C_1) ... M)
-   (havoc T_1 (@ 'Λ M (• T_0 C_0 ...)))])
-
-(define scv sc
-  #;(union-reduction-relations sc (extend-reduction-relation v SCPCF)))
+   (havoc T_1 C_1 ... (@ 'Λ M (• T_0 C_0 ...)))])
 
 (define -->scv
-  (union-reduction-relations (context-closure scv SCPCF E)
+  (union-reduction-relations (context-closure sc SCPCF E)
 			     (extend-reduction-relation err-abort SCPCF)
 			     (extend-reduction-relation con-abort SCPCF)))
