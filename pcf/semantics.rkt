@@ -39,9 +39,9 @@
   (union-reduction-relations (context-closure v PCF E) err-abort))
 
 (define-metafunction PCF
-  not-mt? : E -> #t or #f
+  not-mt? : any -> #t or #f
   [(not-mt? hole) #f]
-  [(not-mt? E) #t])
+  [(not-mt? any) #t])
 
 (define-judgment-form PCF
   #:mode (δ I I I O)
