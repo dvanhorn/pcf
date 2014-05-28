@@ -3,7 +3,7 @@
 (require redex/reduction-semantics
          cpcf/syntax)
 
-(define-extended-language SCPCF CPCF
-  ;; Values
+(define-extended-language SCPCF CPCF  
   (V .... (• T C ...))
-  (C .... any?))
+  (C ....)
+  (M .... Ω))

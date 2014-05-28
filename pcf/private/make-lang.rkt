@@ -2,10 +2,11 @@
 (provide make-#%top-interaction make-#%module-begin)
 (require syntax/parse
          redex/reduction-semantics
+        
          pcf/redex
          (for-template racket 
                        redex/reduction-semantics 
-                       redex/pict 
+                       redex/pict redex/gui
                        pcf/private/lexical
                        pcf/private/label))   
   
@@ -43,7 +44,7 @@
         (initial-char-width 140)
         #,(case trace
             [(traces)
-             #`(begin (traces #,REL (lab e) #:pp pp) ...)]
+             #`(begin (traces #,REL (lab e) #:pp pp #:pred color) ...)]
             [(stepper)
              #`(begin (stepper #,REL (lab e) #:pp pp) ...)]
             [else

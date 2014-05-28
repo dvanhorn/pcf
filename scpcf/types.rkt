@@ -9,7 +9,10 @@
 
 (define-judgment-form SCPCF
   #:mode (typeof I I O)
-  #:contract (typeof Γ M T)
+  #:contract (typeof Γ any T)
+  [(typeof Γ (verify C M) nat)
+   (typeof-contract Γ C T)
+   (typeof Γ M T)]
   [(typeof Γ (err T string) T)]
   [(typeof Γ N nat)]
   [(typeof ((X_0 T_0) ... (X T) any_1 ...) X T)]

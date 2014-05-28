@@ -1,23 +1,38 @@
 #lang racket
 (require redex/reduction-semantics
-         pcf/semantics
-         cpcf/semantics
-         scpcf/syntax)
+	 pcf/semantics
+	 pcf/private/subst
+	 cpcf/semantics
+	 scpcf/syntax)
 (provide sc -->scv)
 
 (define sc
-  (reduction-relation
+  (extend-reduction-relation v
    SCPCF #:domain M
+
+   (--> Ω Ω)
+   (--> (μ (X : T) S)
+	(subst (X (• T) #;(μ (X : T) S)) S)
+	μ)
+
    (--> (@ L (• (T_0 ... -> T)
-                (C_0 ... -> C) ...)
-           V ...)
+		(C_0 ... -> C) ...)
+	   V ...)
 	(• T C ...) β•)
 
-   (--> (@ L (• (T -> T_o)  ;; FIXME bug in _1 in Redex
-                (C -> C_o) ...)
-           V)
-	(havoc T C ... V)
-	havoc)
+   #;(--> (@ L (• (T_0 ..._1 T T_1 ... -> T_o)  ;; FIXME bug in _1 in Redex
+		  (C_0 ..._1 C C_1 ... -> C_o)
+		  ...)
+	     V_0 ..._1 V V_1 ...)
+	  (havoc T C ... V)
+	  havoc)
+   ;; Unary case of above
+   (-->  (@ L (• (T -> T_o)  ;; FIXME bug in _1 in Redex
+		 (C -> C_o)
+		 ...)
+	    V)
+	  (havoc T C ... V)
+	  havoc)
 
    (--> (@ L O V ...) M
 	(judgment-holds (δ^ O L (V ...) M))
@@ -25,35 +40,36 @@
    (--> (if0 (• nat C ...) M_0 M_1) M_0 if•-t)
    (--> (if0 (• nat C ...) M_0 M_1) M_1 if•-f)
 
-   (--> (any? L_+ L_- C ⚖ V) V any?)
-
    (--> (C L_+ L_- C_n ⚖ (• T C_0 ... C C_1 ...))
 	(• T C_0 ... C C_1 ...)
-	(side-condition (not (eq? (term M) 'any?)))
 	known)
 
    (--> (M L_+ L_- C_n ⚖ (• T C ...))
 	(if0 (@ 'Λ M (• T C ...))
 	     (• T C ... M)
 	     (blame L_+ C_n M (• T C ...)))
-	(side-condition (not (eq? (term M) 'any?)))
 	(side-condition (not (member (term M) (term (C ...)))))
 	check-rem)
 
    (--> (M L_+ L_- C ⚖ V)
-        (if0 (@ 'Λ M V) V (blame L_+ C M V))
-	(side-condition (not (eq? (term M) 'any?)))
+	(if0 (@ 'Λ M V) V (blame L_+ C M V))
 	(side-condition (not (redex-match SCPCF (• T C ...) (term V))))
 	?)
    (--> ((C_1 ... -> C) L_+ L_- C_n ⚖ (λ ([X : T] ...) M))
 	(λ ([X : T] ...)
-	  (C L_+ L_- C_n ⚖ (@ 'Λ (λ ([X : T] ...) M) (C_1 L_- L_+ C_n ⚖ X) ...)))
-	(side-condition (not (eq? (term C) 'any?)))
+	  (C L_+ L_- C_n ⚖
+	     (@ 'Λ (λ ([X : T] ...) M)
+		(C_1 L_- L_+ C_n ⚖ X) ...)))
 	η)
-   (--> ((C_1 ... -> any?) L_+ L_- C_n ⚖ (λ ([X : T] ...) M))
-	(λ ([X : T] ...)
-	  (@ 'Λ (λ ([X : T] ...) M) (C_1 L_- L_+ C_n ⚖ X) ...))
-	ηt)))
+
+   (--> ((C_1 ... -> C) L_+ L_- C_n ⚖ (• (T_1 ... -> T) C_v ...))
+	(λ ([X : T_1] ...)
+	  (C L_+ L_- C_n ⚖
+	     (@ 'Λ (• (T_1 ... -> T) C_v ...)
+		(C_1 L_- L_+ C_n ⚖ X) ...)))
+	(where (X ...) ,(map (λ (_) (gensym))
+			     (term (T_1 ...))))
+	η•)))
 
 (define-metafunction SCPCF
   not-op-in? : any O ... -> #t or #f
@@ -69,13 +85,19 @@
 (define-judgment-form SCPCF
   #:mode (δ^ I I I O)
   #:contract (δ^ O L (V ...) M)
-  [(δ^ quotient L (any (• nat C ...)) (• nat))]
+
+  [(δ^ quotient L (N (• nat C ...)) (• nat pos?))
+   (side-condition (¬∈ N 0))]
+  [(δ^ quotient L (0 (• nat C ...)) 0)]
+
+
   [(δ^ quotient L (any (• nat C_0 ... pos? C_1 ...)) (• nat))]
   [(δ^ quotient L (any (• nat C ...)) (err L nat "Divide by zero"))
-   (side-condition (no-pos? C ...))]
+   (side-condition (¬∈ pos? C ...))]
   [(δ^ quotient L ((• nat C ...) 0)   (err L nat "Divide by zero"))]
   [(δ^ quotient L ((• nat C ...) N)   (• nat))
-   (side-condition (not-zero? N))]
+   (side-condition (¬∈ N 0))]
+
   [(δ^ pos? L ((• nat C_1 ... pos? C_2 ...)) 0)]
   [(δ^ pos? L ((• nat C ...)) (• nat))
    (side-condition (no-pos? C ...))]
@@ -93,22 +115,34 @@
 
 (define-metafunction SCPCF
   havoc : T C ... M -> M
-  [(havoc nat C ... M) (μ (x : nat) x)]
+  [(havoc nat C ... M) (@ Λ (λ ([y : nat]) Ω) M)]
+
+  ;; I don't know what this is trying to do.
+  #;
   [(havoc (T_0 -> T_1) (C_0 -> C_1) ...
-	  (λ ((X : T)) (@ 'Λ (λ ((X : T)) M) (C_3 ⚖ X))))
+	  (λ ((X : T)) (@ 'Λ (λ ((X : T)) M) (C_3 L_+ L_- C ⚖ X))))
    (havoc T_1 C_1 ...
 	  (@ 'Λ (λ ((X : T)) M) (• T_0 C_3 C_0 ...)))]
+
+  ;; This is matching η
+  #;
   [(havoc (T_0 -> T_1) (C_0 -> C_1) ...
-	  (λ ((X : T)) (C_2 ⚖ (@ 'Λ (λ ((X : T)) M) (C_3 ⚖ X)))))
+	  (λ ((X : T))
+	    (C_2 L_- L_+ C ⚖
+		 (@ 'Λ (λ ((X : T)) M)
+		    (C_3 L_+ L_- C ⚖ X)))))
    (havoc T_1 C_1 ...
-	  (C_2 ⚖ (@ 'Λ (λ ((X : T)) M) (• T_0 C_3 C_0 ...))))]
+	  (C_2 L_- L_+ C ⚖
+	       (@ 'Λ (λ ((X : T)) M)
+		  (• T_0 C_3 C_0 ...))))]
+
   [(havoc (T_0 -> T_1) (C_0 -> C_1) ... M)
    (havoc T_1 (@ 'Λ M (• T_0 C_0 ...)))])
 
-(define scv
-  (union-reduction-relations sc (extend-reduction-relation v SCPCF)))
+(define scv sc
+  #;(union-reduction-relations sc (extend-reduction-relation v SCPCF)))
 
 (define -->scv
   (union-reduction-relations (context-closure scv SCPCF E)
-                             (extend-reduction-relation err-abort SCPCF)
-                             (extend-reduction-relation con-abort SCPCF)))
+			     (extend-reduction-relation err-abort SCPCF)
+			     (extend-reduction-relation con-abort SCPCF)))
