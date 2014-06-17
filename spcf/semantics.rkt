@@ -7,6 +7,7 @@
 (define s
   (reduction-relation
    SPCF #:domain M
+   (--> Ω Ω Ω)
    (--> (@ L (• (T_0 ..._1 -> T)) V ..._1) (• T) β•)
    (--> (@ L (• (T_0 ..._1 T T_1 ... -> T_o))
 	     V_0 ..._1 V V_1 ...)
@@ -23,9 +24,9 @@
 
 (define-metafunction SPCF
   havoc : T M -> M
-  [(havoc nat M) (@ Λ (λ ([y : nat]) (μ (x : nat) x)) M)]
+  [(havoc nat M) (@ Λ (λ ([y : nat]) Ω) M)]
   [(havoc (T_0 ... -> T_1) M)
-   (havoc T_1 (@ 'Λ M (• T_0) ...))])
+   (havoc T_1 (@ Λ M (• T_0) ...))])
 
 (define-metafunction SPCF
   not-zero? : any -> #t or #f

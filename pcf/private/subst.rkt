@@ -1,5 +1,5 @@
 #lang racket
-(provide subst)
+(provide subst ¬∈ transpose)
 (require redex/reduction-semantics)
 
 ;; Subst
@@ -48,3 +48,24 @@
   [(subst-vars (X_1 any_1) (X_2 any_2) ... any_3)
    (subst-vars (X_1 any_1) (subst-vars (X_2 any_2) ... any_3))]
   [(subst-vars any) any])
+
+(define-metafunction L
+  ¬∈ : any any ... -> #t or #f
+  [(¬∈ any any_1 ... any any_2 ...) #f]
+  [(¬∈ any any_1 ...) #t])
+
+(define (transpose m)
+  (cond [(empty? (car m)) '()]
+        [else
+         (cons (map car m)
+               (transpose (map cdr m)))]))
+
+(module+ test
+  (require rackunit)
+  (check-equal? 
+   (transpose '((a b c)
+                (1 2 3)
+                (5 6 7)))
+   '((a 1 5)
+     (b 2 6)
+     (c 3 7))))

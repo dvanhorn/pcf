@@ -87,7 +87,7 @@
      (list 'blame 'HAVOC)]
     [(list 'blame s c0 c1 v)
      (list 'blame (loc s))]
-    [(list c + - '⚖ m)
+    [(list c + - c0 '⚖ m)
      (list (scrub c) '⚖ (scrub m))]
     [(list m ...)
      (map scrub m)]

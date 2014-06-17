@@ -6,11 +6,9 @@
   ;; Types
   (T ::= nat (T ... -> T))
   ;; Terms
-  (M ::= X V (M M ...) (μ (X : T) S) (if0 M M M) (err T string))
+  (M ::= X V (M M ...) (μ (X : T) V) (if0 M M M) (err T string))
   ;; Values
   (V ::= N O (λ ([X : T] ...) M))
-  ;; Simple terms
-  (S ::= V X)
   ;; Naturals
   (N ::= natural)
   ;; Primitive operations

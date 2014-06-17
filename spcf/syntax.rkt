@@ -5,4 +5,5 @@
 
 (define-extended-language SPCF PCF
   ;; Values
-  (V .... (• T)))
+  (V .... (• T))
+  (M .... Ω))
