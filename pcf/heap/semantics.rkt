@@ -1,5 +1,5 @@
 #lang racket
-(provide vσ -->vσ alloc put get ∅)
+(provide vσ -->vσ alloc put get ∅ liftσ)
 (require pcf/heap/syntax
          pcf/semantics
          pcf/private/subst
@@ -35,27 +35,31 @@
         (judgment-holds (nonzero? N))
         if0-f)))
 
-(define -->vσ
+
+(define-syntax-rule (liftσ L r)
   (reduction-relation
-   PCFΣ #:domain (M Σ)
+   L #:domain (M Σ)
    (--> ((in-hole E M) Σ)
         ((in-hole E M_1) Σ_1)
-        (where (_ ... (M_1 Σ_1) _ ...)
-               ,(apply-reduction-relation vσ (term (M Σ)))))))
+        (where (_ (... ...) (M_1 Σ_1) _ (... ...))
+               ,(apply-reduction-relation r (term (M Σ)))))))
+
+(define -->vσ (liftσ PCFΣ vσ))
+
 
 (define-metafunction PCFΣ
-  alloc : Σ -> A
-  [(alloc Σ)
-   ,(add1 (apply max 0 (hash-keys (term Σ))))])
+  alloc : any_Σ -> any_A
+  [(alloc any_Σ)
+   ,(add1 (apply max 0 (hash-keys (term any_Σ))))])
 
 (define-metafunction PCFΣ
-  get : Σ A -> V
-  [(get Σ A)
-   ,(hash-ref (term Σ) (term A))])
+  get : any_Σ any_A -> any_V
+  [(get any_Σ any_A)
+   ,(hash-ref (term any_Σ) (term any_A))])
 
 (define-metafunction PCFΣ
-  put : Σ A V -> Σ
-  [(put Σ A V)
-   ,(hash-set (term Σ) (term A) (term V))])
+  put : any_Σ any_A any_V -> any_Σ
+  [(put any_Σ any_A any_V)
+   ,(hash-set (term any_Σ) (term any_A) (term any_V))])
 
 (define-term ∅ ,(hash))
