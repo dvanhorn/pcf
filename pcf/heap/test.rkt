@@ -3,7 +3,7 @@
          pcf/heap/semantics         
          redex/reduction-semantics)
 
-(provide foldσ)
+(provide make-tester foldσ)
 
 (define-metafunction PCFΣ
   foldσ : (M Σ) -> M
@@ -16,7 +16,7 @@
   [(foldσ ((μ (X : T) V) Σ))
    (μ (X : T) (foldσ (V Σ)))]
   [(foldσ ((if0 M ...) Σ))
-   (if0 (foldσ (M Σ) ...))]
+   (if0 (foldσ (M Σ)) ...)]
   [(foldσ (N Σ)) N]
   [(foldσ (O Σ)) O]
   [(foldσ ((λ ([X : T] ...) M) Σ))
@@ -25,13 +25,19 @@
    (err L T string)])
 
 (define-syntax-rule
-  (test-->>vσ T1 T2)
-  (test-->> -->vσ  
-            #:equiv (λ (t1 t2) 
-                      (equal? (term (foldσ ,t1))
-                              (term (foldσ ,t2))))
-          (term (T1 ∅))
-          (term (T2 ∅))))
+  (make-tester test-->>name -->name fold)  
+  (define-syntax-rule
+    (test-->>name T1 T2 (... ...))
+    (test-->> -->name
+              #:cycles-ok
+              #:equiv (λ (t1 t2) 
+                        (equal? (term (fold ,t1))
+                                (term (fold ,t2))))
+              (term (T1 ∅))
+              (term (T2 ∅))
+              (... ...))))
+
+(make-tester test-->>vσ -->vσ foldσ)
 
 (module+ test
   (test-->>vσ (@ a add1 2) 3)
@@ -49,6 +55,3 @@
                              (@ b * n (@ c fact (@ d sub1 n))))))
                  5)
               120))
-                              
-
-          
