@@ -54,4 +54,6 @@
                              1
                              (@ b * n (@ c fact (@ d sub1 n))))))
                  5)
-              120))
+              120)
+  (test-->>vσ (@ a add1 (@ b quotient 5 0))
+              (err b nat "Divide by zero")))

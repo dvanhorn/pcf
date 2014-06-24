@@ -44,7 +44,16 @@
         (where (_ (... ...) (M_1 Σ_1) _ (... ...))
                ,(apply-reduction-relation r (term (M Σ)))))))
 
-(define -->vσ (liftσ PCFΣ vσ))
+(define err-abortσ
+  (reduction-relation
+   PCFΣ #:domain (M Σ)
+   (--> ((in-hole E (err L T string)) Σ)
+        ((err L T string) Σ)
+        (where #t (not-mt? E))
+	err-abort)))
+
+(define -->vσ 
+  (union-reduction-relations (liftσ PCFΣ vσ) err-abortσ))
 
 
 (define-metafunction PCFΣ
