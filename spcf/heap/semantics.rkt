@@ -1,14 +1,19 @@
 #lang racket
-(provide sσ svσ -->svσ ∅)
+(provide svσ -->svσ ∅)
 (require redex/reduction-semantics 
          pcf/heap/semantics
          spcf/semantics
+         pcf/private/subst
          spcf/heap/syntax)
 
-(define sσ
-  (reduction-relation
+(define svσ
+  (extend-reduction-relation vσ
    SPCFΣ #:domain (M Σ)
-   (--> (Ω Σ) (Ω Σ) Ω)
+   (--> (Ω Σ) (Ω Σ) Ω)        
+   (--> ((μ (X : T) V) Σ)
+        ((subst (X (& A)) V) (put Σ A (• T)))
+        (where A (alloc Σ))
+        μ) ;; μ^
    (--> ((@ L (& A_f) P ..._1) Σ) 
         ((• T) Σ) 
         (where (• (T_0 ..._1 -> T)) (get Σ A_f))
@@ -33,9 +38,6 @@
         (M_1 Σ)
         (where (• nat) (get Σ A))
         if•-f)))
-
-(define svσ
-  (union-reduction-relations sσ (extend-reduction-relation vσ SPCFΣ)))
 
 (define -->svσ 
   (union-reduction-relations (liftσ SPCFΣ svσ) 

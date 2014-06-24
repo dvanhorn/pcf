@@ -19,13 +19,14 @@
                (err a nat "Divide by zero"))
   (test-->>svσ (@ a (λ ([x : nat]) (@ b quotient 5 x)) 2)
                2)
+  ;; Changes from previous semantics
   (test-->>svσ (@ a (μ (fact : (nat -> nat))
                        (λ ([n : nat])
                          (if0 n
                               1
                               (@ b * n (@ c fact (@ d sub1 n))))))
                   5)
-               120)
+               (• nat))
   (test-->>svσ (@ a add1 (@ b quotient 5 0))
                (err b nat "Divide by zero")))
 
@@ -38,8 +39,7 @@
                (• nat)
                (err a nat "Divide by zero"))
   
-  ;; FIXME: diverges, need μ^ rule.
-  #;
+
   (test-->>svσ (@ a (μ (fact : (nat -> nat))
                        (λ ([n : nat])
                          (if0 n
