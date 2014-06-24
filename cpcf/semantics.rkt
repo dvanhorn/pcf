@@ -23,11 +23,6 @@
         (where #t (not-mt? E))
         con-abort)))
 
-(define-metafunction CPCF
-  not-mt? : any -> #t or #f
-  [(not-mt? hole) #f]
-  [(not-mt? any) #t])
-
 (define -->cv
   (union-reduction-relations (context-closure cv CPCF E)
                              (extend-reduction-relation err-abort CPCF)
