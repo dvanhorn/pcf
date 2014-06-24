@@ -1,5 +1,5 @@
 #lang racket
-(provide sσ svσ -->svσ)
+(provide sσ svσ -->svσ ∅)
 (require redex/reduction-semantics 
          pcf/heap/semantics
          spcf/semantics
