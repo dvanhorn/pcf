@@ -1,5 +1,5 @@
 #lang racket
-(provide v err-abort -->v δ δf nonzero?)
+(provide v err-abort -->v δ δf nonzero? not-mt?)
 (require redex/reduction-semantics
          pcf/syntax
          pcf/private/subst)

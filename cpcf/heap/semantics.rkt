@@ -24,4 +24,14 @@
 (define cvσ
   (union-reduction-relations cσ (extend-reduction-relation vσ CPCFΣ)))
 
-(define -->cvσ (liftσ CPCFΣ cvσ))
+(define con-abortσ
+  (reduction-relation
+   CPCFΣ #:domain (M Σ)
+   (--> ((in-hole E B) Σ) (B Σ)
+        (where #t (not-mt? E))
+        con-abort)))
+
+(define -->cvσ 
+  (union-reduction-relations (liftσ CPCFΣ cvσ)
+                             con-abortσ
+                             (extend-reduction-relation err-abortσ CPCFΣ)))

@@ -1,5 +1,5 @@
 #lang racket
-(provide vσ -->vσ alloc put get ∅ liftσ)
+(provide vσ err-abortσ -->vσ alloc put get ∅ liftσ not-mt?)
 (require pcf/heap/syntax
          pcf/semantics
          pcf/private/subst

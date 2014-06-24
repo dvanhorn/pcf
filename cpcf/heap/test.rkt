@@ -28,13 +28,19 @@
                               1
                               (@ b * n (@ c fact (@ d sub1 n))))))
                   5)
-               120))
+               120)
+  (test-->>cvσ (@ a add1 (@ b quotient 5 0))
+               (err b nat "Divide by zero")))
 
 (module+ test
   (test-->>cvσ (pos? + - pos? ⚖ 7) 7)
   (test-->>cvσ (pos? + - pos? ⚖ 0) (blame + pos? pos? 0))
-  (test-->>cvσ (@ a ((pos? -> pos?) + - pos? ⚖ (λ ([x : nat]) x)) 7)
-               7))
+  (test-->>cvσ (@ a ((pos? -> pos?) + - zero? ⚖ (λ ([x : nat]) x)) 7)
+               7)
+  (test-->>cvσ (@ a ((pos? -> pos?) + - zero? ⚖ (λ ([x : nat]) x)) 0)
+               (blame - zero? pos? 0))
+  (test-->>cvσ (@ a ((pos? -> pos?) + - zero? ⚖ (λ ([x : nat]) 0)) 7)
+               (blame + zero? pos? 0)))
                   
                
 
