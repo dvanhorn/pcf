@@ -25,7 +25,9 @@
                               1
                               (@ b * n (@ c fact (@ d sub1 n))))))
                   5)
-               120))
+               120)
+  (test-->>svσ (@ a add1 (@ b quotient 5 0))
+               (err b nat "Divide by zero")))
 
 (module+ test
   (test-->>svσ (@ a add1 (• nat)) (• nat))
@@ -45,4 +47,8 @@
                               (@ b * n (@ c fact (@ d sub1 n))))))
                   (• nat))
                1
-               (• nat)))
+               (• nat))
+  
+  (test-->>svσ (@ a add1 (@ b quotient 5 (• nat)))
+               (• nat)
+               (err b nat "Divide by zero")))

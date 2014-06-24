@@ -37,4 +37,6 @@
 (define svσ
   (union-reduction-relations sσ (extend-reduction-relation vσ SPCFΣ)))
 
-(define -->svσ (liftσ SPCFΣ svσ))
+(define -->svσ 
+  (union-reduction-relations (liftσ SPCFΣ svσ) 
+                             (extend-reduction-relation err-abortσ SPCFΣ)))
