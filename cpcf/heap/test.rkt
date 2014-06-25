@@ -1,4 +1,5 @@
 #lang racket
+(provide cfoldσ)
 (require cpcf/heap/syntax
          cpcf/heap/semantics
          pcf/heap/test

@@ -4,7 +4,7 @@
 	 pcf/private/subst
 	 cpcf/semantics
 	 scpcf/syntax)
-(provide sc -->scv)
+(provide sc -->scv δ^ havoc)
 
 (define sc
   (extend-reduction-relation v
