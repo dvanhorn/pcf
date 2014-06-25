@@ -56,4 +56,6 @@
                  5)
               120)
   (test-->>vσ (@ a add1 (@ b quotient 5 0))
-              (err b nat "Divide by zero")))
+              (err b nat "Divide by zero"))
+  (test-->>vσ (@ a = 3 4) 1)
+  (test-->>vσ (@ a = 3 3) 0))

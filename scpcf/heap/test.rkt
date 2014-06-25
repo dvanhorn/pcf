@@ -29,7 +29,9 @@
                    5)
                 (• nat))
   (test-->>scvσ (@ a add1 (@ b quotient 5 0))
-                (err b nat "Divide by zero")))
+                (err b nat "Divide by zero"))
+  (test-->>scvσ (@ a = 3 4) 1)
+  (test-->>scvσ (@ a = 3 3) 0))
 
 (module+ test
   (test-->>scvσ (@ a add1 (• nat)) (• nat pos?))
@@ -78,5 +80,9 @@
                                          (@ b add1 (@ c quotient 5 x))))
                    (• nat))
                 (• nat pos?)
-                (blame - zero? pos? (• nat zero?))))
+                (blame - zero? pos? (• nat zero?)))
+  
+  (test-->>scvσ (@ a = (• nat) (• nat))
+                0
+                1))
   

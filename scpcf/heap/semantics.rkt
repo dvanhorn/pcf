@@ -151,10 +151,42 @@
   [(δσ^ add1 L (A) Σ ((• nat pos?) Σ))
    (where (• nat C ...) (get Σ A))]
 
+  ;; (= • N)
+  [(δσ^ = L (A_0 A_1) Σ 
+        (0 (refine Σ A_0 (λ ([x : nat]) (@ Λ = x (& A_1))))))
+   (where (• nat C ...) (get Σ A_0))
+   (where N (get Σ A_1))]
+  ;; FIXME: refine not equal
+  [(δσ^ = L (A_0 A_1) Σ (1 Σ))
+   (where (• nat C ...) (get Σ A_0))
+   (where N (get Σ A_1))]
+  
+  ;; (= N •)
+  [(δσ^ = L (A_0 A_1) Σ 
+        (0 (refine Σ A_1  (λ ([x : nat]) (@ Λ = x (& A_0))))))
+   (where N (get Σ A_0))
+   (where (• nat C ...) (get Σ A_1))]
+  ;; FIXME: refine not equal
+  [(δσ^ = L (A_0 A_1) Σ (1 Σ))  
+   (where N (get Σ A_0))
+   (where (• nat C ...) (get Σ A_1))]
+    
+  ;; FIXME: need a more general mechanism for proving, disproving =.
+  ;; (= • •) 
+  [(δσ^ = L (A_0 A_1) Σ 
+        (0 (refine Σ A_0 (λ ([x : nat]) (@ Λ = x (& A_1))))))
+   (where (• nat C_0 ...) (get Σ A_0))
+   (where (• nat C_1 ...) (get Σ A_1))]
+  ;; FIXME: refine not equal
+  [(δσ^ = L (A_0 A_1) Σ (1 Σ))
+   (where (• nat C_0 ...) (get Σ A_0))
+   (where (• nat C_1 ...) (get Σ A_1))]
+   
+  
   ;; FIXME: This rule probably needs to be treated more precisely
   [(δσ^ O L (any_0 ... A any_1 ...) Σ ((• nat) Σ))
    (where (• nat C ...) (get Σ A))
-   (side-condition (¬∈ O quotient zero? pos? add1))])
+   (side-condition (¬∈ O quotient zero? pos? add1 =))])
 
 
 ;; FIXME: should have refinements of concrete values too

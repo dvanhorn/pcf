@@ -62,6 +62,7 @@
   [(δf zero? L (N))           1]
   [(δf even? L (N))           ,(even? (term N))]
   [(δf odd? L (0))            ,(odd? (term N))]
+  [(δf = L (N_0 N_1))         ,(if (= (term N_0) (term N_1)) 0 1)]
 
   [(δf quotient L (N_0 0))    (err L nat "Divide by zero")]
   [(δf quotient L (N_0 N_1)) ,(quotient (term N_0) (term N_1))])

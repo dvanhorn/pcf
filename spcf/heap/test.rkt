@@ -28,7 +28,9 @@
                   5)
                (• nat))
   (test-->>svσ (@ a add1 (@ b quotient 5 0))
-               (err b nat "Divide by zero")))
+               (err b nat "Divide by zero"))
+  (test-->>svσ (@ a = 3 4) 1)
+  (test-->>svσ (@ a = 3 3) 0))
 
 (module+ test
   (test-->>svσ (@ a add1 (• nat)) (• nat))

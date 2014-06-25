@@ -31,7 +31,9 @@
                   5)
                120)
   (test-->>cvσ (@ a add1 (@ b quotient 5 0))
-               (err b nat "Divide by zero")))
+               (err b nat "Divide by zero"))
+  (test-->>cvσ (@ a = 3 4) 1)
+  (test-->>cvσ (@ a = 3 3) 0))
 
 (module+ test
   (test-->>cvσ (pos? + - pos? ⚖ 7) 7)

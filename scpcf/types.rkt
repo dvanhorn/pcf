@@ -21,6 +21,7 @@
   [(typeof Γ zero? (nat -> nat))]
   [(typeof Γ even? (nat -> nat))]
   [(typeof Γ odd? (nat -> nat))]
+  [(typeof Γ = (nat nat -> nat))]
   [(typeof Γ * (nat nat -> nat))]
   [(typeof Γ + (nat nat -> nat))]
   [(typeof Γ pos? (nat -> nat))]
