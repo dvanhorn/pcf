@@ -37,12 +37,10 @@
         havoc)
    
    (--> ((@ L (& A_O) (& A_V) ...) Σ) 
-        (M Σ)
+        (M Σ_1)
         (where O (get Σ A_O))
-        (where (V ...) ((get Σ A_V) ...))
-	(judgment-holds (δσ^ O L (V ...) Σ M))
+        (judgment-holds (δσ^ O L (A_V ...) Σ (M Σ_1)))
 	δ^)
-
    
    (--> ((if0 (& A_V) M_0 M_1) Σ)
         (M_0 Σ)
@@ -96,35 +94,89 @@
         (where (X ...) ,(map (λ (_) (gensym)) (term (T_1 ...))))
         η•)))
 
-
 (define-judgment-form SCPCFΣ
   #:mode (δσ^ I I I I O)
-  #:contract (δσ^ O L (V ...) Σ M)
+  #:contract (δσ^ O L (A ...) Σ (M Σ))
 
-  [(δσ^ quotient L (N (• nat C ...)) Σ (• nat))
+  ;; FIXME: Add equation between result and inputs
+  ;; Requires more primitives (=, etc.)
+  [(δσ^ quotient L (A_n A_d) Σ ((• nat) (refine Σ A_d pos?)))
+   (where N (get Σ A_n))
+   (where (• nat C ...) (get Σ A_d))  
    (side-condition (¬∈ N 0))]
-  [(δσ^ quotient L (0 (• nat C ...)) Σ 0)]
-  [(δσ^ quotient L (any (• nat C_0 ... pos? C_1 ...)) Σ (• nat))]
-  [(δσ^ quotient L (any (• nat C ...)) Σ (err L nat "Divide by zero"))
+      
+  [(δσ^ quotient L (A_n A_d) Σ (0 (refine Σ A_d pos?)))
+   (where 0 (get Σ A_n))
+   (where (• nat C ...) (get Σ A_d))]
+  
+  [(δσ^ quotient L (any A_d) Σ ((• nat) Σ))
+   (where (• nat C_0 ... pos? C_1 ...) (get Σ A_d))]
+  
+  [(δσ^ quotient L (any A_d) Σ 
+        ((err L nat "Divide by zero") 
+         (refine Σ A_d zero?)))
+   (where (• nat C ...) (get Σ A_d))        
    (side-condition (¬∈ pos? C ...))]
-  [(δσ^ quotient L ((• nat C ...) 0) Σ (err L nat "Divide by zero"))]
-  [(δσ^ quotient L ((• nat C ...) N) Σ (• nat))
+  
+  [(δσ^ quotient L (A_n A_d) Σ ((err L nat "Divide by zero") Σ))
+   (where (• nat C ...) (get Σ A_n))
+   (where 0 (get Σ A_d))]
+  
+  [(δσ^ quotient L (A_n A_d) Σ ((• nat) Σ))
+   (where (• nat C ...) (get Σ A_n))
+   (where N (get Σ A_d))
    (side-condition (¬∈ N 0))]
 
-  [(δσ^ pos? L ((• nat C_1 ... pos? C_2 ...)) Σ 0)]
-  [(δσ^ pos? L ((• nat C ...)) Σ (• nat))
+  [(δσ^ pos? L (A) Σ (0 Σ))
+   (where (• nat C_1 ... pos? C_2 ...) (get Σ A))]
+  
+  [(δσ^ pos? L (A) Σ (0 (refine Σ A pos?)))
+   (where (• nat C ...) (get Σ A))
+   (side-condition (no-pos? C ...))]
+  [(δσ^ pos? L (A) Σ (1 (refine Σ A zero?)))
+   (where (• nat C ...) (get Σ A))
    (side-condition (no-pos? C ...))]
 
-  [(δσ^ zero? L ((• nat C_1 ... zero? C_2 ...)) Σ 0)]
-  [(δσ^ zero? L ((• nat C_1 ... pos? C_2 ...)) Σ 1)]
-  [(δσ^ zero? L ((• nat C ...)) Σ (• nat))
+  [(δσ^ zero? L (A) Σ (0 Σ))
+   (where (• nat C_1 ... zero? C_2 ...) (get Σ A))]  
+  [(δσ^ zero? L (A) Σ (1 Σ))
+   (where (• nat C_1 ... pos? C_2 ...) (get Σ A))]
+  
+  [(δσ^ zero? L (A) Σ (0 (refine Σ A zero?)))
+   (where (• nat C ...) (get Σ A))
+   (side-condition (¬∈ zero? C ...))
+   (side-condition (¬∈ pos? C ...))]
+  [(δσ^ zero? L (A) Σ (1 (refine Σ A pos?)))
+   (where (• nat C ...) (get Σ A))
    (side-condition (¬∈ zero? C ...))
    (side-condition (¬∈ pos? C ...))]
 
-  [(δσ^ add1 L ((• nat C_1 ...)) Σ (• nat pos?))]
+  [(δσ^ add1 L (A) Σ ((• nat pos?) Σ))
+   (where (• nat C ...) (get Σ A))]
 
-  [(δσ^ O L (any_0 ... (• nat C ...) any_1 ...) Σ (• nat))
+  ;; FIXME: This rule probably needs to be treated more precisely
+  [(δσ^ O L (any_0 ... A any_1 ...) Σ ((• nat) Σ))
+   (where (• nat C ...) (get Σ A))
    (side-condition (¬∈ O quotient zero? pos? add1))])
+
+
+;; FIXME: should have refinements of concrete values too
+
+(define-metafunction SCPCFΣ
+  refine : Σ A C ... -> Σ
+  [(refine Σ A C ...)
+   (put Σ A (• T C_1 ...))   
+   (where (• T C_0 ...) (get Σ A))
+   (where (C_1 ...)
+          (join-contracts C ... C_0 ...))]
+
+  ;; Change here to refine concrete values
+  [(refine Σ A C ...) Σ])
+
+(define-metafunction SCPCFΣ
+  join-contracts : C ... -> (C ...)
+  [(join-contracts C ...)
+   ,(set->list (apply set (term (C ...))))])
 
 
 (define -->scvσ 
