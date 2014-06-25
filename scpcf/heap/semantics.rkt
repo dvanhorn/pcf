@@ -57,20 +57,17 @@
         (where (• T C_0 ... C C_1 ...) (get Σ A_V))
 	known)
    
-   ;; FIXME: Pointers be in blame terms to see refinements  
-   ;; FIXME: not communicating M to true branch
    (--> ((M L_+ L_- C_n ⚖ (& A_V)) Σ)
 	((if0 (@ Λ M (& A_V))
-              (& A_V) ;(• T C ... M)
-              (blame L_+ C_n M (• T C ...) #;(& A_V)))
+              (& A_V)
+              (blame L_+ C_n M (& A_V)))
          Σ)
         (where (• T C ...) (get Σ A_V))
 	(side-condition (not (member (term M) (term (C ...)))))
 	check-rem)
    
-   ;; FIXME: pointers in blame
    (--> ((M L_+ L_- C ⚖ (& A_V)) Σ)
-	((if0 (@ Λ M (& A_V)) (& A_V) (blame L_+ C M V #;(& A_V))) Σ)
+	((if0 (@ Λ M (& A_V)) (& A_V) (blame L_+ C M (& A_V))) Σ)
         (where V (get Σ A_V))
 	(side-condition (not (redex-match SCPCFΣ (• T C ...) (term V))))
 	?)

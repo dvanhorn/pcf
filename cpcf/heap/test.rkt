@@ -9,8 +9,8 @@
   cfoldσ : (M Σ) -> M
   [(cfoldσ ((C_0 L_0 L_1 C_1 ⚖ M) Σ))
    (C_0 L_0 L_1 C_1 ⚖ (cfoldσ (M Σ)))]
-  [(cfoldσ ((blame L C_0 C_1 V) Σ))
-   (blame L C_0 C_1 (cfoldσ (V Σ)))])
+  [(cfoldσ ((blame L C_0 C_1 M) Σ))
+   (blame L C_0 C_1 (cfoldσ (M Σ)))])
 
 (make-tester test-->>cvσ -->cvσ cfoldσ)
 

@@ -71,4 +71,12 @@
 (module+ test
   (test-->>scvσ (pos? + - pos? ⚖ (• nat))
                 (• nat pos?)
-                (blame + pos? pos? (• nat zero?))))
+                (blame + pos? pos? (• nat zero?)))
+  
+  (test-->>scvσ (@ a ((pos? -> pos?) + - zero?
+                                     ⚖ (λ ([x : nat])
+                                         (@ b add1 (@ c quotient 5 x))))
+                   (• nat))
+                (• nat pos?)
+                (blame - zero? pos? (• nat zero?))))
+  
