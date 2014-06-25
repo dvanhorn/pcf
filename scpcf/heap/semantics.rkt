@@ -101,7 +101,7 @@
   #:mode (δσ^ I I I I O)
   #:contract (δσ^ O L (V ...) Σ M)
 
-  [(δσ^ quotient L (N (• nat C ...)) Σ (• nat pos?))
+  [(δσ^ quotient L (N (• nat C ...)) Σ (• nat))
    (side-condition (¬∈ N 0))]
   [(δσ^ quotient L (0 (• nat C ...)) Σ 0)]
   [(δσ^ quotient L (any (• nat C_0 ... pos? C_1 ...)) Σ (• nat))]
