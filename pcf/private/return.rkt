@@ -1,6 +1,7 @@
 #lang racket
-(provide return pp color)
+(provide return returnσ pp color)
 (require (only-in redex/gui term-node-parents term-node-labels))
+(require redex/reduction-semantics scpcf/heap/semantics)
 (require unstable/lazy-require)
 (lazy-require (redex/gui [default-pretty-printer]))
 
@@ -14,6 +15,10 @@
       [_ (void)]))
 
   (apply values (map scrub (filter value? res))))
+
+(define (returnσ res)
+  (return (map (λ (t) (term (scfoldσ ,t))) res)))
+
 
 (define (color term node)
   (match term
