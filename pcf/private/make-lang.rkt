@@ -1,28 +1,27 @@
 #lang racket
 (provide make-#%top-interaction make-#%module-begin)
 (require syntax/parse
-         redex/reduction-semantics
-        
+         redex/reduction-semantics        
          pcf/redex
          (for-template racket 
                        redex/reduction-semantics 
                        redex/pict redex/gui
                        pcf/private/lexical
-                       pcf/private/label))   
+                       pcf/private/label))
   
 
 (define-syntax-class trace-opt
   [pattern (~datum stepper) #:attr sym 'stepper]
   [pattern (~datum traces)  #:attr sym 'traces])
 
-(define ((make-#%top-interaction REL typable?) stx)
+(define ((make-#%top-interaction REL typable? inj return) stx)
   (syntax-parse stx
     [(_ . e)
      (unless (typable? (syntax->datum #'e))
        (raise-syntax-error 'type-error "ill-typed expression" #'e))
-     #`(return (apply-reduction-relation* #,REL (lab e)))]))
+     #`(#,return (apply-reduction-relation* #,REL (#,inj (lab e))))]))
 
-(define ((make-#%module-begin REL typable?) stx)
+(define ((make-#%module-begin REL typable? inj return pp color) stx)
   (syntax-parse stx
     [(_ (~optional trace:trace-opt #:defaults ([trace.sym #f]))
         e ...)
@@ -44,11 +43,11 @@
         (initial-char-width 140)
         #,(case trace
             [(traces)
-             #`(begin (traces #,REL (lab e) #:pp pp #:pred color) ...)]
+             #`(begin (traces #,REL (#,inj (lab e)) #:pp #,pp #:pred #,color) ...)]
             [(stepper)
-             #`(begin (stepper #,REL (lab e) #:pp pp) ...)]
+             #`(begin (stepper #,REL (#,inj (lab e)) #,pp) ...)]
             [else
              #'(void)])
         
-        (return
-         (append (apply-reduction-relation* #,REL (lab e)) ...)))]))
+        (#,return
+         (append (apply-reduction-relation* #,REL (#,inj (lab e))) ...)))]))

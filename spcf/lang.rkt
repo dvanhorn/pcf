@@ -3,9 +3,10 @@
          (for-syntax (only-in spcf/redex typable/symbolic?))
          spcf/redex
          pcf/private/racket-pcf
-         pcf/private/label)
+         pcf/private/label
+         pcf/private/return)
 (provide #%top-interaction #%module-begin
          (all-from-out pcf/private/label)
          (all-from-out pcf/private/racket-pcf))
-(define-syntax #%top-interaction (make-#%top-interaction #'-->sv typable/symbolic?))
-(define-syntax #%module-begin    (make-#%module-begin    #'-->sv typable/symbolic?))
+(define-syntax #%top-interaction (make-#%top-interaction #'-->sv typable/symbolic? #'values #'return))
+(define-syntax #%module-begin    (make-#%module-begin    #'-->sv typable/symbolic? #'values #'return #'pp #'color))

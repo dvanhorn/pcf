@@ -3,9 +3,10 @@
          (for-syntax (only-in scpcf/redex typable/contract/symbolic?))
          scpcf/redex
          pcf/private/racket-pcf
-         pcf/private/label)
+         pcf/private/label
+         pcf/private/return)
 (provide #%top-interaction #%module-begin 
          (all-from-out pcf/private/label)
          (all-from-out pcf/private/racket-pcf))
-(define-syntax #%top-interaction (make-#%top-interaction #'-->scv typable/contract/symbolic?))
-(define-syntax #%module-begin    (make-#%module-begin    #'-->scv typable/contract/symbolic?))
+(define-syntax #%top-interaction (make-#%top-interaction #'-->scv typable/contract/symbolic? #'values #'return))
+(define-syntax #%module-begin    (make-#%module-begin    #'-->scv typable/contract/symbolic? #'values #'return #'pp #'color))
