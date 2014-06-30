@@ -1,5 +1,5 @@
 #lang racket
-(provide return returnσ pp color)
+(provide return returnσ pp ppσ color)
 (require (only-in redex/gui term-node-parents term-node-labels))
 (require redex/reduction-semantics scpcf/heap/semantics)
 (require unstable/lazy-require)
@@ -67,6 +67,10 @@
 (define pp
   (λ (v port width txt)
     (default-pretty-printer (scrub v) port width txt)))
+
+(define ppσ
+  (λ (v port width txt)
+    (default-pretty-printer (scrub (term (scfoldσ ,v))) port width txt)))
 
 (define (syntax->srcloc stx)
   (srcloc (syntax-source stx)
