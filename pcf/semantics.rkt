@@ -56,6 +56,8 @@
   [(δf sub1 L (N))           ,(max 0 (sub1 (term N)))]
   [(δf * L (N_0 N_1))        ,(* (term N_0) (term N_1))]
   [(δf + L (N_0 N_1))        ,(+ (term N_0) (term N_1))]
+  [(δf - L (N_0 N_1))        ,(max 0 (- (term N_0) (term N_1)))]
+  #;[(δf abs L (N))            ,(abs (term N))]
   [(δf pos? L (0))            1]
   [(δf pos? L (N))            0]
   [(δf zero? L (0))           0]
@@ -63,6 +65,10 @@
   [(δf even? L (N))           ,(even? (term N))]
   [(δf odd? L (0))            ,(odd? (term N))]
   [(δf = L (N_0 N_1))         ,(if (= (term N_0) (term N_1)) 0 1)]
-
+  [(δf > L (N_0 N_1))         ,(if (> (term N_0) (term N_1)) 0 1)]
+  [(δf < L (N_0 N_1))         ,(if (< (term N_0) (term N_1)) 0 1)]
+  [(δf <= L (N_0 N_1))        ,(if (<= (term N_0) (term N_1)) 0 1)]
+  [(δf >= L (N_0 N_1))        ,(if (>= (term N_0) (term N_1)) 0 1)]  
+  [(δf not L (N))             ,(if (zero? (term N)) 1 0)]  
   [(δf quotient L (N_0 0))    (err L nat "Divide by zero")]
   [(δf quotient L (N_0 N_1)) ,(quotient (term N_0) (term N_1))])

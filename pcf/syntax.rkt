@@ -9,10 +9,10 @@
   (M ::= X V (M M ...) (μ (X : T) V) (if0 M M M) (err T string))
   ;; Values
   (V ::= N O (λ ([X : T] ...) M))
-  ;; Naturals
+  ;; Natural
   (N ::= natural)
   ;; Primitive operations
-  (O ::= add1 sub1 * + quotient pos? zero? even? odd? =)
+  (O ::= add1 sub1 * + - quotient pos? zero? even? odd? = <= => < > not)
   ;; Variables
   (X ::= variable-not-otherwise-mentioned)
   ;; Type environments
