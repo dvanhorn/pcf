@@ -68,6 +68,8 @@
               (& A_V)
               (blame L_+ C_n M (& A_V)))
          Σ)
+        (where (• T C ...) (get Σ A_V))
+        (where #t (¬∈ M C ...))
         check)
    
    (--> (((C_1 ... -> C) L_+ L_- C_n ⚖ (& A_V)) Σ)

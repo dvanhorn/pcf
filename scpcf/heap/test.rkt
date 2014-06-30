@@ -70,6 +70,9 @@
   (test-->>scvσ (pos? + - pos? ⚖ (• nat))
                 (• nat pos?)
                 (blame + pos? pos? (• nat zero?)))
+
+  (test-->>scvσ (pos? + - zero? ⚖ (@ a add1 (• nat)))
+                (• nat pos?))
   
   (test-->>scvσ (@ a ((pos? -> pos?) + - zero?
                                      ⚖ (λ ([x : nat])
