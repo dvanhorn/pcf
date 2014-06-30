@@ -43,8 +43,9 @@
    L #:domain (M Σ)
    (--> ((in-hole E M) Σ)
         ((in-hole E M_1) Σ_1)
-        (where (_ (... ...) (M_1 Σ_1) _ (... ...))
-               ,(apply-reduction-relation r (term (M Σ)))))))
+        (where (_ (... ...) (any_n (M_1 Σ_1)) _ (... ...))
+               ,(apply-reduction-relation/tag-with-names r (term (M Σ))))
+        (computed-name (term any_n)))))
 
 (define err-abortσ
   (reduction-relation
