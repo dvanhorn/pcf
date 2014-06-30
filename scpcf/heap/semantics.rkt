@@ -54,7 +54,7 @@
         (judgment-holds (δσ^ zero? Λ (A_V) Σ (0 Σ_1)))       
         if•-t)
    (--> ((if0 (& A_V) M_0 M_1) Σ)
-        (M_0 Σ_1)
+        (M_1 Σ_1)
         (judgment-holds (δσ^ zero? Λ (A_V) Σ (1 Σ_1)))
         if•-f)   
   
