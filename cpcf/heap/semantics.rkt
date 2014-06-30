@@ -1,5 +1,5 @@
 #lang racket
-(provide cσ cvσ con-abortσ -->cvσ ∅ cfoldσ)
+(provide cσ cvσ con-abortσ -->cvσ ∅ cfoldσ injσ)
 (require redex/reduction-semantics 
          pcf/heap/semantics
          cpcf/heap/syntax)

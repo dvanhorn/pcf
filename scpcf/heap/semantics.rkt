@@ -1,5 +1,5 @@
 #lang racket
-(provide scvσ -->scvσ ∅ scfoldσ)
+(provide scvσ -->scvσ ∅ scfoldσ injσ)
 (require redex/reduction-semantics 
          pcf/heap/semantics
          cpcf/heap/semantics
@@ -8,8 +8,15 @@
          scpcf/heap/syntax)
 
 (define scvσ
-  (extend-reduction-relation vσ ;; maybe cvσ?
+  (extend-reduction-relation cvσ ;; maybe cvσ?
    SCPCFΣ #:domain (M Σ)
+   
+   (--> ((@ L (& A_f) P_V ..._1) Σ)
+        ((subst (X P_V) ... M) Σ)
+        (where (λ ([X : T] ..._1) M)
+               (get Σ A_f))
+        β)
+   
    (--> (Ω Σ) (Ω Σ) Ω) ;; Loop
 
    (--> ((μ (X : T) V) Σ)
@@ -211,5 +218,8 @@
                              (extend-reduction-relation err-abortσ SCPCFΣ)))
 
 (define-metafunction/extension cfoldσ SCPCFΣ
-  scfoldσ : (M Σ) -> M
-  [(scfoldσ ((• T C ...) Σ)) (• T C ...)])
+  scfoldσ : (M Σ) -> M 
+  [(scfoldσ ((• T C ...) Σ)) (• T C ...)]
+  ;[(scfoldσ ((M ...) Σ)) ((scfoldσ M) ...)]
+  ;[(scfoldσ (M Σ)) M])
+  [(scfoldσ (Ω Σ)) Ω])
