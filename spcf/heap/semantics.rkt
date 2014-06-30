@@ -1,5 +1,5 @@
 #lang racket
-(provide svσ -->svσ ∅)
+(provide svσ -->svσ ∅ sfoldσ)
 (require redex/reduction-semantics 
          pcf/heap/semantics
          spcf/semantics
@@ -42,3 +42,7 @@
 (define -->svσ 
   (union-reduction-relations (liftσ SPCFΣ svσ) 
                              (extend-reduction-relation err-abortσ SPCFΣ)))
+
+(define-metafunction/extension foldσ SPCFΣ
+  sfoldσ : (M Σ) -> M
+  [(sfoldσ ((• T) Σ)) (• T)])

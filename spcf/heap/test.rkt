@@ -4,10 +4,6 @@
          pcf/heap/test
          redex/reduction-semantics)
 
-(define-metafunction/extension foldσ SPCFΣ
-  sfoldσ : (M Σ) -> M
-  [(sfoldσ ((• T) Σ)) (• T)])
-
 (make-tester test-->>svσ -->svσ sfoldσ)
 
 (module+ test

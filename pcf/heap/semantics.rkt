@@ -1,9 +1,11 @@
 #lang racket
-(provide vσ err-abortσ -->vσ alloc put get ∅ liftσ not-mt?)
+(provide vσ err-abortσ -->vσ alloc put get ∅ liftσ not-mt? injσ foldσ)
 (require pcf/heap/syntax
          pcf/semantics
          pcf/private/subst
          redex/reduction-semantics)
+
+(define (injσ M) (list M (term ∅)))
 
 (define vσ
   (reduction-relation
@@ -64,11 +66,36 @@
 (define-metafunction PCFΣ
   get : any_Σ any_A -> any_V
   [(get any_Σ any_A)
-   ,(hash-ref (term any_Σ) (term any_A))])
+   ,(let ((r (hash-ref (term any_Σ) (term any_A))))
+      (match r
+        [(list '• t cs) `(• ,t ,@(set->list cs))]
+        [(list v _) v]))])
 
 (define-metafunction PCFΣ
-  put : any_Σ any_A any_V -> any_Σ
+  put : any_Σ any_A any_V -> any_Σ  
+  [(put any_Σ any_A (• any_T any_C ...))
+   ,(hash-set (term any_Σ) (term any_A) (list '• (term any_T) (apply set (term (any_C ...)))))]
   [(put any_Σ any_A any_V)
-   ,(hash-set (term any_Σ) (term any_A) (term any_V))])
+   ,(hash-set (term any_Σ) (term any_A) (list (term any_V) (set)))])
 
 (define-term ∅ ,(hash))
+
+
+(define-metafunction PCFΣ
+  foldσ : (M Σ) -> M
+  [(foldσ (X Σ)) X]  
+  [(foldσ ((& A) Σ))
+   (foldσ (M Σ))
+   (where M (get Σ A))]
+  [(foldσ ((@ L M ...) Σ))
+   (@ L (foldσ (M Σ)) ...)]
+  [(foldσ ((μ (X : T) V) Σ))
+   (μ (X : T) (foldσ (V Σ)))]
+  [(foldσ ((if0 M ...) Σ))
+   (if0 (foldσ (M Σ)) ...)]
+  [(foldσ (N Σ)) N]
+  [(foldσ (O Σ)) O]
+  [(foldσ ((λ ([X : T] ...) M) Σ))
+   (λ ([X : T] ...) (foldσ (M Σ)))]
+  [(foldσ ((err L T string) Σ))
+   (err L T string)])

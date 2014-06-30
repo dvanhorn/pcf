@@ -1,5 +1,5 @@
 #lang racket
-(provide scvσ -->scvσ ∅)
+(provide scvσ -->scvσ ∅ scfoldσ)
 (require redex/reduction-semantics 
          pcf/heap/semantics
          cpcf/heap/semantics
@@ -41,16 +41,15 @@
         (where O (get Σ A_O))
         (judgment-holds (δσ^ O L (A_V ...) Σ (M Σ_1)))
 	δ^)
-   
+      
    (--> ((if0 (& A_V) M_0 M_1) Σ)
-        (M_0 Σ)
-        (where (• nat C ...) (get Σ A_V))
+        (M_0 Σ_1)
+        (judgment-holds (δσ^ zero? Λ (A_V) Σ (0 Σ_1)))       
         if•-t)
-   
    (--> ((if0 (& A_V) M_0 M_1) Σ)
-        (M_1 Σ)
-        (where (• nat C ...) (get Σ A_V))
-        if•-f)
+        (M_0 Σ_1)
+        (judgment-holds (δσ^ zero? Λ (A_V) Σ (1 Σ_1)))
+        if•-f)   
   
    (--> ((C L_+ L_- C_n ⚖ (& A_V)) Σ)
 	((• T C_0 ... C C_1 ...) Σ)
@@ -62,15 +61,7 @@
               (& A_V)
               (blame L_+ C_n M (& A_V)))
          Σ)
-        (where (• T C ...) (get Σ A_V))
-	(side-condition (not (member (term M) (term (C ...)))))
-	check-rem)
-   
-   (--> ((M L_+ L_- C ⚖ (& A_V)) Σ)
-	((if0 (@ Λ M (& A_V)) (& A_V) (blame L_+ C M (& A_V))) Σ)
-        (where V (get Σ A_V))
-	(side-condition (not (redex-match SCPCFΣ (• T C ...) (term V))))
-	?)
+        check)
    
    (--> (((C_1 ... -> C) L_+ L_- C_n ⚖ (& A_V)) Σ)
 	((λ ([X : T] ...)
@@ -84,12 +75,18 @@
    (--> (((C_1 ... -> C) L_+ L_- C_n ⚖ (& A_V)) Σ)
 	((λ ([X : T_1] ...)
            (C L_+ L_- C_n ⚖
-              (@ Λ (• (T_1 ... -> T) C_v ...)
+              (@ Λ (& A_v)
                  (C_1 L_- L_+ C_n ⚖ X) ...)))
          Σ)
         (where (• (T_1 ... -> T) C_v ...) (get Σ A_V))
         (where (X ...) ,(map (λ (_) (gensym)) (term (T_1 ...))))
         η•)))
+
+(define-metafunction SCPCFΣ
+  ⊢ : Σ A C -> proves or refutes or abstain
+  [(⊢ Σ A C)
+   '..])
+
 
 (define-judgment-form SCPCFΣ
   #:mode (δσ^ I I I I O)
@@ -177,8 +174,8 @@
         (0 (refine Σ A_0 (λ ([x : nat]) (@ Λ = x (& A_1))))))
    (where (• nat C_0 ...) (get Σ A_0))
    (where (• nat C_1 ...) (get Σ A_1))]
-  ;; FIXME: refine not equal
-  [(δσ^ = L (A_0 A_1) Σ (1 Σ))
+  [(δσ^ = L (A_0 A_1) Σ 
+        (1 (refine Σ A_0 (λ ([x : nat]) (@ Λ not (@ Λ = x (& A_1)))))))
    (where (• nat C_0 ...) (get Σ A_0))
    (where (• nat C_1 ...) (get Σ A_1))]
    
@@ -212,3 +209,7 @@
   (union-reduction-relations (liftσ SCPCFΣ scvσ)
                              (extend-reduction-relation con-abortσ SCPCFΣ)
                              (extend-reduction-relation err-abortσ SCPCFΣ)))
+
+(define-metafunction/extension cfoldσ SCPCFΣ
+  scfoldσ : (M Σ) -> M
+  [(scfoldσ ((• T C ...) Σ)) (• T C ...)])

@@ -1,5 +1,5 @@
 #lang racket
-(provide cσ cvσ con-abortσ -->cvσ ∅)
+(provide cσ cvσ con-abortσ -->cvσ ∅ cfoldσ)
 (require redex/reduction-semantics 
          pcf/heap/semantics
          cpcf/heap/syntax)
@@ -35,3 +35,11 @@
   (union-reduction-relations (liftσ CPCFΣ cvσ)
                              con-abortσ
                              (extend-reduction-relation err-abortσ CPCFΣ)))
+
+
+(define-metafunction/extension foldσ CPCFΣ
+  cfoldσ : (M Σ) -> M
+  [(cfoldσ ((C_0 L_0 L_1 C_1 ⚖ M) Σ))
+   (C_0 L_0 L_1 C_1 ⚖ (cfoldσ (M Σ)))]
+  [(cfoldσ ((blame L C_0 C_1 M) Σ))
+   (blame L C_0 C_1 (cfoldσ (M Σ)))])
