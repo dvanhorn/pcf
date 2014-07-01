@@ -29,7 +29,13 @@
         (where (• (T_0 ... -> T)
                   (C_0 ... -> C) ...)
                (get Σ A_f))
-        β•)   
+        β•)
+
+   (--> ((@ L (& A_p) (& A_a)) Σ)
+        (0 Σ)
+        (where M_p (get Σ A_p))
+        (where (• T C_0 ... M_p C_1 ...) (get Σ A_a))
+        known-pred)
    
    (--> ((@ L (& A_f) (& A_V) ...) Σ)
         ((havoc TC ... V) Σ)        
