@@ -80,6 +80,8 @@
                    (• nat))
                 (• nat pos?)
                 (blame - zero? pos? (• nat zero?)))
+
+  (test-->>scvσ (@ a pos? (• nat pos?)) 0)
   
   (test-->>scvσ (@ a = (• nat) (• nat))
                 0

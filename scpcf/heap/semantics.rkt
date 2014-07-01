@@ -141,10 +141,10 @@
   
   [(δσ^ pos? L (A) Σ (0 (refine Σ A pos?)))
    (where (• nat C ...) (get Σ A))
-   (side-condition (no-pos? C ...))]
+   (where #t (¬∈ pos? C ...))]
   [(δσ^ pos? L (A) Σ (1 (refine Σ A zero?)))
    (where (• nat C ...) (get Σ A))
-   (side-condition (no-pos? C ...))]
+   (where #t (¬∈ pos? C ...))]
 
   [(δσ^ zero? L (A) Σ (0 Σ))
    (where (• nat C_1 ... zero? C_2 ...) (get Σ A))]  
