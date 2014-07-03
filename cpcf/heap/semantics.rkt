@@ -10,7 +10,7 @@
    (--> ((M L_+ L_- C ⚖ P) Σ)
         ((if0 (@ 'Λ M P) P (blame L_+ C M V)) Σ)
         (where (& A) P)
-        (where V (get Σ A))
+        (where (V) (get Σ A))
         ?)
    (--> (((C_1 ..._1 -> C_0) L_+ L_- C ⚖ (& A)) Σ)
         ((λ ([X : T] ...)
@@ -18,7 +18,7 @@
                 (@ 'Λ (λ ([X : T] ...) M)
                    (C_1 L_- L_+ C ⚖ X) ...)))
          Σ)         
-        (where (λ ([X : T] ..._1) M) (get Σ A))
+        (where ((λ ([X : T] ..._1) M)) (get Σ A))
         η)))
 
 (define cvσ
