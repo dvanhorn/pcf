@@ -4,6 +4,7 @@
          pcf/heap/semantics
          cpcf/heap/semantics
          pcf/private/subst
+         pcf/private/prover
          (except-in scpcf/semantics δ^)
          scpcf/heap/syntax)
 
@@ -13,35 +14,35 @@
    
    (--> ((@ L (& A_f) P_V ..._1) Σ)
         ((subst (X P_V) ... M) Σ)
-        (where (λ ([X : T] ..._1) M)
+        (where ((λ ([X : T] ..._1) M) C ...)
                (get Σ A_f))
         β)
    
    (--> (Ω Σ) (Ω Σ) Ω) ;; Loop
 
    (--> ((μ (X : T) V) Σ)
-        ((subst (X (& A)) V) (put Σ A (• T)))
+        ((subst (X (& A)) V) (put Σ A (T)))
         (where A (alloc Σ))
         μ) ;; μ^
      
    (--> ((@ L (& A_f) P ...) Σ)
         ((• T C ...) Σ)        
-        (where (• (T_0 ... -> T)
-                  (C_0 ... -> C) ...)
+        (where ((T_0 ... -> T)
+                (C_0 ... -> C) ...)
                (get Σ A_f))
         β•)
 
    (--> ((@ L (& A_p) (& A_a)) Σ)
         (0 Σ)
-        (where M_p (get Σ A_p))
-        (where (• T C_0 ... M_p C_1 ...) (get Σ A_a))
+        (where (M_p) (get Σ A_p))   ; may cause a type error if M_p is not in C.     
+        (where ✓ (⊢ Σ A_a M_p))   ; but unsound(?) to do for arbitrary C?
         known-pred)
    
    (--> ((@ L (& A_f) (& A_V) ...) Σ)
         ((havoc TC ... V) Σ)        
-        (where (• (TC_0 ... -> TC_n) ...)
+        (where ((TC_0 ... -> TC_n) ...)
                (get Σ A_f))
-        (where (V_0 ...)
+        (where (V_0 ...)            ;; Ugh.  WTF to do here?
                ((get Σ A_V) ...))
         (where (_ ... (V TC ...) _ ...)
                ,(transpose (term ((V_0 ...)
@@ -51,22 +52,24 @@
    
    (--> ((@ L (& A_O) (& A_V) ...) Σ) 
         (M Σ_1)
-        (where O (get Σ A_O))
-        (judgment-holds (δσ^ O L (A_V ...) Σ (M Σ_1)))
-	δ^)
+        (where (O C ...) (get Σ A_O))  ;; Maybe change δ to take a storable
+        (judgment-holds (δσ^ O L (A_V ...) Σ (M Σ_1) any_rule))
+	(computed-name (term any_rule)))
       
    (--> ((if0 (& A_V) M_0 M_1) Σ)
         (M_0 Σ_1)
-        (judgment-holds (δσ^ zero? Λ (A_V) Σ (0 Σ_1)))       
+        (judgment-holds (δσ^ zero? Λ (A_V) Σ (0 Σ_1) any))
         if•-t)
    (--> ((if0 (& A_V) M_0 M_1) Σ)
         (M_1 Σ_1)
-        (judgment-holds (δσ^ zero? Λ (A_V) Σ (1 Σ_1)))
+        (judgment-holds (δσ^ zero? Λ (A_V) Σ (1 Σ_1) any))
         if•-f)   
   
+   ;; This specialized rule goes away because it is taken care of by if.
+   #;
    (--> ((C L_+ L_- C_n ⚖ (& A_V)) Σ)
-	((• T C_0 ... C C_1 ...) Σ)
-        (where (• T C_0 ... C C_1 ...) (get Σ A_V))
+	((& A_V) Σ)
+        (where ✓ (⊢ Σ A_V C))
 	known)
    
    (--> ((M L_+ L_- C_n ⚖ (& A_V)) Σ)
@@ -74,8 +77,8 @@
               (& A_V)
               (blame L_+ C_n M (& A_V)))
          Σ)
-        (where (• T C ...) (get Σ A_V))
-        (where #t (¬∈ M C ...))
+        ;(where (• T C ...) (get Σ A_V))
+        ;(where #t (¬∈ M C ...))
         check)
    
    (--> (((C_1 ... -> C) L_+ L_- C_n ⚖ (& A_V)) Σ)
@@ -84,7 +87,7 @@
               (@ Λ (& A_V)
                  (C_1 L_- L_+ C_n ⚖ X) ...)))
          Σ)
-        (where (λ ([X : T] ...) M) (get Σ A_V))
+        (where ((λ ([X : T] ...) M) C_m ...) (get Σ A_V))
 	η)
       
    (--> (((C_1 ... -> C) L_+ L_- C_n ⚖ (& A_V)) Σ)
@@ -93,111 +96,92 @@
               (@ Λ (& A_v)
                  (C_1 L_- L_+ C_n ⚖ X) ...)))
          Σ)
-        (where (• (T_1 ... -> T) C_v ...) (get Σ A_V))
+        (where ((T_1 ... -> T) C_v ...) (get Σ A_V))
         (where (X ...) ,(map (λ (_) (gensym)) (term (T_1 ...))))
         η•)))
 
 (define-metafunction SCPCFΣ
-  ⊢ : Σ A C -> proves or refutes or abstain
-  [(⊢ Σ A C)
-   '..])
+  eq : M -> M
+  [(eq M)
+   (λ ([x : nat]) (@ Λ = x M))])
 
+(define-metafunction SCPCFΣ
+  neq : M -> M
+  [(neq M)
+   (λ ([x : nat]) (@ Λ not (@ Λ = x M)))])
+   
 
 (define-judgment-form SCPCFΣ
-  #:mode (δσ^ I I I I O)
-  #:contract (δσ^ O L (A ...) Σ (M Σ))
+  #:mode (δσ^ I I I I O O)
+  #:contract (δσ^ O L (A ...) Σ (M Σ) any)
 
   ;; FIXME: Add equation between result and inputs
   ;; Requires more primitives (=, etc.)
-  [(δσ^ quotient L (A_n A_d) Σ ((• nat) (refine Σ A_d pos?)))
-   (where N (get Σ A_n))
-   (where (• nat C ...) (get Σ A_d))  
+  [(δσ^ quotient L (A_n A_d) Σ ((• nat) (refine Σ A_d pos?)) δ-quotient1)
+   (where (N) (get Σ A_n))
+   (where (nat C ...) (get Σ A_d))  
    (side-condition (¬∈ N 0))]
       
-  [(δσ^ quotient L (A_n A_d) Σ (0 (refine Σ A_d pos?)))
-   (where 0 (get Σ A_n))
-   (where (• nat C ...) (get Σ A_d))]
+  [(δσ^ quotient L (A_n A_d) Σ (0 (refine Σ A_d pos?)) δ-quotient2)
+   (where (0) (get Σ A_n))
+   (where (nat C ...) (get Σ A_d))]
   
-  [(δσ^ quotient L (any A_d) Σ ((• nat) Σ))
-   (where (• nat C_0 ... pos? C_1 ...) (get Σ A_d))]
+  [(δσ^ quotient L (any A_d) Σ ((• nat) Σ) δ-quotient3)
+   (where (nat C_0 ... pos? C_1 ...) (get Σ A_d))]
   
   [(δσ^ quotient L (any A_d) Σ 
         ((err L nat "Divide by zero") 
-         (refine Σ A_d zero?)))
-   (where (• nat C ...) (get Σ A_d))        
+         (refine Σ A_d zero?)) δ-quotient4)
+   (where (nat C ...) (get Σ A_d))        
    (side-condition (¬∈ pos? C ...))]
   
-  [(δσ^ quotient L (A_n A_d) Σ ((err L nat "Divide by zero") Σ))
-   (where (• nat C ...) (get Σ A_n))
-   (where 0 (get Σ A_d))]
+  [(δσ^ quotient L (A_n A_d) Σ ((err L nat "Divide by zero") Σ) δ-quotient5)
+   (where (nat C ...) (get Σ A_n))
+   (where (0) (get Σ A_d))]
   
-  [(δσ^ quotient L (A_n A_d) Σ ((• nat) Σ))
-   (where (• nat C ...) (get Σ A_n))
-   (where N (get Σ A_d))
+  [(δσ^ quotient L (A_n A_d) Σ ((• nat) Σ) δ-quotient6)
+   (where (nat C ...) (get Σ A_n))
+   (where (N) (get Σ A_d))
    (side-condition (¬∈ N 0))]
 
-  [(δσ^ pos? L (A) Σ (0 Σ))
-   (where (• nat C_1 ... pos? C_2 ...) (get Σ A))]
+  [(δσ^ pos? L (A) Σ (0 Σ) δ-pos?✓)
+   (where ✓ (⊢ Σ A pos?))]
+  [(δσ^ pos? L (A) Σ (1 Σ) δ-pos?✗)
+   (where ✗ (⊢ Σ A pos?))]
+  [(δσ^ pos? L (A) Σ (0 (refine Σ A pos?)) δ-pos??1)
+   (where ? (⊢ Σ A pos?))]  
+  [(δσ^ pos? L (A) Σ (1 (refine Σ A zero?)) δ-pos??2)
+   (where ? (⊢ Σ A pos?))]
+
+  [(δσ^ zero? L (A) Σ (0 Σ) RULE)
+   (where ✓ (⊢ Σ A zero?))]  
+  [(δσ^ zero? L (A) Σ (1 Σ) RULE)
+   (where ✗ (⊢ Σ A zero?))]  
+  [(δσ^ zero? L (A) Σ (0 Σ) RULE)
+   (where ? (⊢ Σ A zero?))] 
+  [(δσ^ zero? L (A) Σ (1 Σ) RULE)
+   (where ? (⊢ Σ A zero?))]
+
+  [(δσ^ add1 L (A) Σ ((• nat pos?) Σ) RULE)
+   (where (nat C ...) (get Σ A))]
+
   
-  [(δσ^ pos? L (A) Σ (0 (refine Σ A pos?)))
-   (where (• nat C ...) (get Σ A))
-   (where #t (¬∈ pos? C ...))]
-  [(δσ^ pos? L (A) Σ (1 (refine Σ A zero?)))
-   (where (• nat C ...) (get Σ A))
-   (where #t (¬∈ pos? C ...))]
-
-  [(δσ^ zero? L (A) Σ (0 Σ))
-   (where (• nat C_1 ... zero? C_2 ...) (get Σ A))]  
-  [(δσ^ zero? L (A) Σ (1 Σ))
-   (where (• nat C_1 ... pos? C_2 ...) (get Σ A))]
-  
-  [(δσ^ zero? L (A) Σ (0 (refine Σ A zero?)))
-   (where (• nat C ...) (get Σ A))
-   (side-condition (¬∈ zero? C ...))
-   (side-condition (¬∈ pos? C ...))]
-  [(δσ^ zero? L (A) Σ (1 (refine Σ A pos?)))
-   (where (• nat C ...) (get Σ A))
-   (side-condition (¬∈ zero? C ...))
-   (side-condition (¬∈ pos? C ...))]
-
-  [(δσ^ add1 L (A) Σ ((• nat pos?) Σ))
-   (where (• nat C ...) (get Σ A))]
-
-  ;; (= • N)
-  [(δσ^ = L (A_0 A_1) Σ 
-        (0 (refine Σ A_0 (λ ([x : nat]) (@ Λ = x (& A_1))))))
-   (where (• nat C ...) (get Σ A_0))
-   (where N (get Σ A_1))]
-  ;; FIXME: refine not equal
-  [(δσ^ = L (A_0 A_1) Σ (1 Σ))
-   (where (• nat C ...) (get Σ A_0))
-   (where N (get Σ A_1))]
+  [(δσ^ = L (A_0 A_1) Σ (0 Σ) =✓)
+   (where ✓ (⊢ Σ A_0 (eq (& A_1))))]  
+  [(δσ^ = L (A_0 A_1) Σ (1 Σ) =✗)
+   (where ✗ (⊢ Σ A_0 (eq (& A_1))))]
   
   ;; (= N •)
-  [(δσ^ = L (A_0 A_1) Σ 
-        (0 (refine Σ A_1  (λ ([x : nat]) (@ Λ = x (& A_0))))))
-   (where N (get Σ A_0))
-   (where (• nat C ...) (get Σ A_1))]
-  ;; FIXME: refine not equal
-  [(δσ^ = L (A_0 A_1) Σ (1 Σ))  
-   (where N (get Σ A_0))
-   (where (• nat C ...) (get Σ A_1))]
+  [(δσ^ = L (A_0 A_1) Σ (0 (refine Σ A_1 (eq (& A_0)))) =?1) 
+   (where ? (⊢ Σ A_0 (eq (& A_1))))]
+  [(δσ^ = L (A_0 A_1) Σ (1 (refine Σ A_1 (neq (& A_0)))) =?2)
+   (where ? (⊢ Σ A_0 (eq (& A_1))))]
     
-  ;; FIXME: need a more general mechanism for proving, disproving =.
-  ;; (= • •) 
-  [(δσ^ = L (A_0 A_1) Σ 
-        (0 (refine Σ A_0 (λ ([x : nat]) (@ Λ = x (& A_1))))))
-   (where (• nat C_0 ...) (get Σ A_0))
-   (where (• nat C_1 ...) (get Σ A_1))]
-  [(δσ^ = L (A_0 A_1) Σ 
-        (1 (refine Σ A_0 (λ ([x : nat]) (@ Λ not (@ Λ = x (& A_1)))))))
-   (where (• nat C_0 ...) (get Σ A_0))
-   (where (• nat C_1 ...) (get Σ A_1))]
    
   
   ;; FIXME: This rule probably needs to be treated more precisely
-  [(δσ^ O L (any_0 ... A any_1 ...) Σ ((• nat) Σ))
-   (where (• nat C ...) (get Σ A))
+  [(δσ^ O L (any_0 ... A any_1 ...) Σ ((• nat) Σ) RULE)
+   (where (nat C ...) (get Σ A))
    (side-condition (¬∈ O quotient zero? pos? add1 =))])
 
 
@@ -206,13 +190,15 @@
 (define-metafunction SCPCFΣ
   refine : Σ A C ... -> Σ
   [(refine Σ A C ...)
-   (put Σ A (• T C_1 ...))   
-   (where (• T C_0 ...) (get Σ A))
+   (put Σ A (T C_1 ...))
+   (where (T C_0 ...) (get Σ A))
    (where (C_1 ...)
           (join-contracts C ... C_0 ...))]
-
-  ;; Change here to refine concrete values
-  [(refine Σ A C ...) Σ])
+  [(refine Σ A C ...)
+   (put Σ A (V C_1 ...))
+   (where (V C_0 ...) (get Σ A))
+   (where (C_1 ...)
+          (join-contracts C ... C_0 ...))])
 
 (define-metafunction SCPCFΣ
   join-contracts : C ... -> (C ...)
@@ -227,6 +213,12 @@
 
 (define-metafunction/extension cfoldσ SCPCFΣ
   scfoldσ : (M Σ) -> M 
+  [(scfoldσ ((& A) Σ))
+   (scfoldσ (M Σ))
+   (where (M C ...) (get Σ A))]
+  [(scfoldσ ((& A) Σ))
+   (scfoldσ ((• T C ...) Σ))
+   (where (T C ...) (get Σ A))]
   [(scfoldσ ((• T C ...) Σ)) (• T C ...)]
   ;[(scfoldσ ((M ...) Σ)) ((scfoldσ M) ...)]
   ;[(scfoldσ (M Σ)) M])

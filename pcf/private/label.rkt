@@ -24,7 +24,7 @@
        [(list t)
 	#`(list '@ 'HAVOC '(• (#,t -> nat))
 		(list (lab/l c l) #'e 'HAVOC 'c '⚖ (lab/l e l)))])]
-    [(_ (• t t0 ...) l) #'(list '• 't 't0 ...)]
+    [(_ (• t t0 ...) l) #'(list '• 't (lab/l t0 l) ...)]
     [(_ (λ ([x : t] ...) e) l)
      #'(list 'λ '([x : t] ...) (lab/l e l))]
     [(_ (μ (x : t) e) l)

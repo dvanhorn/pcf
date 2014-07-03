@@ -82,8 +82,31 @@
                 (blame - zero? pos? (• nat zero?)))
 
   (test-->>scvσ (@ a pos? (• nat pos?)) 0)
+  (test-->>scvσ (@ a pos? (• nat zero?)) 1)  
+  (test-->>scvσ (@ a pos? (• nat (λ ([x : nat]) (@ b pos? x)))) 0)
+  (test-->>scvσ (@ a pos? (• nat (λ ([x : nat]) (@ b = x 5)))) 0)
   
   (test-->>scvσ (@ a = (• nat) (• nat))
                 0
-                1))
+                1)
   
+  (test-->>scvσ (@ a (λ ([x : nat])
+                       (if0 (@ b = 5 x)
+                            (@ c = 5 x)
+                            0))
+                   (• nat))
+                0)
+  
+  (test-->>scvσ (@ a (λ ([x : nat])
+                       (if0 (@ b = x 5)
+                            (@ c = x 5)
+                            0))
+                   (• nat))
+                0)
+  
+  (test-->>scvσ (@ a (λ ([x : nat])
+                       (if0 (@ b = 5 x)
+                            (@ c = x 5)
+                            0))
+                   (• nat))
+                0))

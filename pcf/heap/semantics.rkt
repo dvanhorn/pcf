@@ -11,10 +11,11 @@
   (reduction-relation
    PCFΣ #:domain (M Σ)
    (--> (V Σ) ((& A) (put Σ A V))
-        (where A (alloc Σ)))
+        (where A (alloc Σ))
+        &)
    (--> ((@ L (& A_f) P_V ..._1) Σ)
         ((subst (X P_V) ... M) Σ)
-        (where (λ ([X : T] ..._1) M)
+        (where ((λ ([X : T] ..._1) M))
                (get Σ A_f))
         β)
    (--> ((μ (X : T) V) Σ)
@@ -23,17 +24,17 @@
         μ)
    (--> ((@ L (& A_O) (& A_V) ...) Σ)
         (M Σ)
-        (where O (get Σ A_O))
-        (where (V ...) ((get Σ A_V) ...))
+        (where (O) (get Σ A_O))
+        (where ((V) ...) ((get Σ A_V) ...))
         (judgment-holds (δ O L (V ...) M))
         δ)
    (--> ((if0 (& A) M_0 M_1) Σ)
         (M_0 Σ)
-        (where 0 (get Σ A))
+        (where (0) (get Σ A))
         if0-t)
    (--> ((if0 (& A) M_0 M_1) Σ)
         (M_1 Σ)
-        (where N (get Σ A))
+        (where (N) (get Σ A))
         (judgment-holds (nonzero? N))
         if0-f)))
 
@@ -65,17 +66,21 @@
    ,(add1 (apply max 0 (hash-keys (term any_Σ))))])
 
 (define-metafunction PCFΣ
-  get : any_Σ any_A -> any_V
+  get : any_Σ any_A -> any_S
   [(get any_Σ any_A)
    ,(let ((r (hash-ref (term any_Σ) (term any_A))))
       (match r
-        [(list '• t cs) `(• ,t ,@(set->list cs))]
-        [(list v _) v]))])
+        [(list t cs) `(,t ,@(set->list cs))]
+        [(list v cs) `(,v ,@(set->list cs))]))])
 
 (define-metafunction PCFΣ
   put : any_Σ any_A any_V -> any_Σ  
+  [(put any_Σ any_A V)
+   ,(hash-set (term any_Σ) (term any_A) (list (term V) (set)))]
   [(put any_Σ any_A (• any_T any_C ...))
-   ,(hash-set (term any_Σ) (term any_A) (list '• (term any_T) (apply set (term (any_C ...)))))]
+   ,(hash-set (term any_Σ) (term any_A) (list (term any_T) (apply set (term (any_C ...)))))]
+  [(put any_Σ any_A (any_T any_C ...))
+   ,(hash-set (term any_Σ) (term any_A) (list (term any_T) (apply set (term (any_C ...)))))]
   [(put any_Σ any_A any_V)
    ,(hash-set (term any_Σ) (term any_A) (list (term any_V) (set)))])
 
@@ -87,7 +92,7 @@
   [(foldσ (X Σ)) X]  
   [(foldσ ((& A) Σ))
    (foldσ (M Σ))
-   (where M (get Σ A))]
+   (where (M) (get Σ A))]
   [(foldσ ((@ L M ...) Σ))
    (@ L (foldσ (M Σ)) ...)]
   [(foldσ ((μ (X : T) V) Σ))
