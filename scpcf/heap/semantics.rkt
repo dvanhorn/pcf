@@ -42,7 +42,7 @@
         ((havoc TC ... V) Σ)        
         (where ((TC_0 ... -> TC_n) ...)
                (get Σ A_f))
-        (where (V_0 ...)            ;; Ugh.  WTF to do here?
+        (where ((V_0) ...)            ;; Ugh.  WTF to do here?
                ((get Σ A_V) ...))
         (where (_ ... (V TC ...) _ ...)
                ,(transpose (term ((V_0 ...)
