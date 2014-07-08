@@ -109,4 +109,12 @@
                             (@ c = x 5)
                             0))
                    (• nat))
-                0))
+                0)
+
+  (test-->>scvσ (@ a (λ ([x : nat])
+                       (if0 x
+                            x
+                            (@ b quotient 5 x)))
+                     (• nat))
+                 (• nat)
+                 (• nat zero?)))

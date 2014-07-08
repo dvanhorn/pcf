@@ -157,9 +157,9 @@
    (where ✓ (⊢ Σ A zero?))]  
   [(δσ^ zero? L (A) Σ (1 Σ) RULE)
    (where ✗ (⊢ Σ A zero?))]  
-  [(δσ^ zero? L (A) Σ (0 Σ) RULE)
+  [(δσ^ zero? L (A) Σ (0 (refine Σ A zero?)) RULE)
    (where ? (⊢ Σ A zero?))] 
-  [(δσ^ zero? L (A) Σ (1 Σ) RULE)
+  [(δσ^ zero? L (A) Σ (1 (refine Σ A pos?)) RULE)
    (where ? (⊢ Σ A zero?))]
 
   [(δσ^ add1 L (A) Σ ((• nat pos?) Σ) RULE)
