@@ -153,31 +153,26 @@
   [(δσ^ pos? L (A) Σ (1 (refine Σ A zero?)) δ-pos??2)
    (where ? (⊢ Σ A pos?))]
 
-  [(δσ^ zero? L (A) Σ (0 Σ) RULE)
+  [(δσ^ zero? L (A) Σ (0 Σ) δ-zero?✓)
    (where ✓ (⊢ Σ A zero?))]  
-  [(δσ^ zero? L (A) Σ (1 Σ) RULE)
+  [(δσ^ zero? L (A) Σ (1 Σ) δ-zero?✗)
    (where ✗ (⊢ Σ A zero?))]  
-  [(δσ^ zero? L (A) Σ (0 (refine Σ A zero?)) RULE)
+  [(δσ^ zero? L (A) Σ (0 (refine Σ A zero?)) δ-zero??1)
    (where ? (⊢ Σ A zero?))] 
-  [(δσ^ zero? L (A) Σ (1 (refine Σ A pos?)) RULE)
+  [(δσ^ zero? L (A) Σ (1 (refine Σ A pos?)) δ-zero??2)
    (where ? (⊢ Σ A zero?))]
 
-  [(δσ^ add1 L (A) Σ ((• nat pos?) Σ) RULE)
+  [(δσ^ add1 L (A) Σ ((• nat pos?) Σ) δ-add1)
    (where (nat C ...) (get Σ A))]
-
   
-  [(δσ^ = L (A_0 A_1) Σ (0 Σ) =✓)
+  [(δσ^ = L (A_0 A_1) Σ (0 Σ) δ-=✓)
    (where ✓ (⊢ Σ A_0 (eq (& A_1))))]  
-  [(δσ^ = L (A_0 A_1) Σ (1 Σ) =✗)
+  [(δσ^ = L (A_0 A_1) Σ (1 Σ) δ-=✗)
    (where ✗ (⊢ Σ A_0 (eq (& A_1))))]
-  
-  ;; (= N •)
-  [(δσ^ = L (A_0 A_1) Σ (0 (refine Σ A_1 (eq (& A_0)))) =?1) 
+  [(δσ^ = L (A_0 A_1) Σ (0 (refine Σ A_1 (eq (& A_0)))) δ-=?1) 
    (where ? (⊢ Σ A_0 (eq (& A_1))))]
-  [(δσ^ = L (A_0 A_1) Σ (1 (refine Σ A_1 (neq (& A_0)))) =?2)
+  [(δσ^ = L (A_0 A_1) Σ (1 (refine Σ A_1 (neq (& A_0)))) δ-=?2)
    (where ? (⊢ Σ A_0 (eq (& A_1))))]
-    
-   
   
   ;; FIXME: This rule probably needs to be treated more precisely
   [(δσ^ O L (any_0 ... A any_1 ...) Σ ((• nat) Σ) RULE)
