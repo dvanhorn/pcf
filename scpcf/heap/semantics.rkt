@@ -36,7 +36,13 @@
         (0 Σ)
         (where (M_p) (get Σ A_p))   ; may cause a type error if M_p is not in C.     
         (where ✓ (⊢ Σ A_a M_p))   ; but unsound(?) to do for arbitrary C?
-        known-pred)
+        known-pred-holds)
+   
+   (--> ((@ L (& A_p) (& A_a)) Σ)
+        (1 Σ)
+        (where (M_p) (get Σ A_p))   ; may cause a type error if M_p is not in C.     
+        (where ✗ (⊢ Σ A_a M_p))   ; but unsound(?) to do for arbitrary C?
+        known-pred-doesnt-hold)
    
    (--> ((@ L (& A_f) (& A_V) ...) Σ)
         ((havoc TC ... V) Σ)        
@@ -63,22 +69,13 @@
    (--> ((if0 (& A_V) M_0 M_1) Σ)
         (M_1 Σ_1)
         (judgment-holds (δσ^ zero? Λ (A_V) Σ (1 Σ_1) any))
-        if•-f)   
-  
-   ;; This specialized rule goes away because it is taken care of by if.
-   #;
-   (--> ((C L_+ L_- C_n ⚖ (& A_V)) Σ)
-	((& A_V) Σ)
-        (where ✓ (⊢ Σ A_V C))
-	known)
+        if•-f)     
    
    (--> ((M L_+ L_- C_n ⚖ (& A_V)) Σ)
 	((if0 (@ Λ M (& A_V))
               (& A_V)
               (blame L_+ C_n M (& A_V)))
          Σ)
-        ;(where (• T C ...) (get Σ A_V))
-        ;(where #t (¬∈ M C ...))
         check)
    
    (--> (((C_1 ... -> C) L_+ L_- C_n ⚖ (& A_V)) Σ)
