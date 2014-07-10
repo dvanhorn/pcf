@@ -5,6 +5,6 @@
 
 (define-extended-language SCPCF CPCF  
   (V .... (• T C ...))
-  (C ....)
+  ;(C ....)  
   (M .... Ω)
   (TC T C))

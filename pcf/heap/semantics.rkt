@@ -1,5 +1,5 @@
 #lang racket
-(provide vσ err-abortσ -->vσ alloc put get ∅ liftσ not-mt? injσ foldσ)
+(provide vσ err-abortσ -->vσ alloc put get get-v ∅ liftσ not-mt? injσ foldσ)
 (require pcf/heap/syntax
          pcf/semantics
          pcf/private/subst
@@ -65,6 +65,15 @@
   [(alloc any_Σ)
    ,(add1 (apply max 0 (hash-keys (term any_Σ))))])
 
+
+(define-metafunction PCFΣ
+  get-v : any_Σ any_A -> any_S
+  [(get-v any_Σ any_A)
+   ,(let ((r (hash-ref (term any_Σ) (term any_A))))
+      (match r
+        [(list (? (redex-match? PCFΣ T) t) cs) `(• ,t ,@(set->list cs))]
+        [(list v cs) v]))])
+
 (define-metafunction PCFΣ
   get : any_Σ any_A -> any_S
   [(get any_Σ any_A)
@@ -74,7 +83,11 @@
         [(list v cs) `(,v ,@(set->list cs))]))])
 
 (define-metafunction PCFΣ
-  put : any_Σ any_A any_V -> any_Σ  
+  put : any_Σ any_A any_V -> any_Σ
+  [(put any_Σ any_A (any_0 ... -> any)) ; hack on top of hack
+   ,(hash-set (term any_Σ) (term any_A) (list (term (any_0 ... -> any)) (set)))]
+  [(put any_Σ any_A (λ any ...)) ; hack on top of hack
+   ,(hash-set (term any_Σ) (term any_A) (list (term (λ any ...)) (set)))]
   [(put any_Σ any_A V)
    ,(hash-set (term any_Σ) (term any_A) (list (term V) (set)))]
   [(put any_Σ any_A (• any_T any_C ...))

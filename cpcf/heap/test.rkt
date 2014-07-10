@@ -40,7 +40,7 @@
   (test-->>cvσ (@ a (λ ([f : (nat -> nat)])
                       ((λ ([x : nat]) (@ b f x)) + - zero? ⚖ 7))
                   pos?)
-               7))
-                  
-               
-
+               7)
+  (test-->>cvσ ((if0 1 pos? zero?) + - zero? ⚖ 0) 0)
+  (test-->>cvσ (@ a (((if0 1 pos? zero?) -> (if0 0 pos? zero?)) + - zero? ⚖ (λ ([x : nat]) (@ b add1 x))) 0)
+               1))

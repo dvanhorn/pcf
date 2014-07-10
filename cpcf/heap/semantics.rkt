@@ -7,19 +7,20 @@
 (define cσ
   (reduction-relation
    CPCFΣ #:domain (M Σ)
-   (--> ((M L_+ L_- C ⚖ P) Σ)
-        ((if0 (@ 'Λ M P) P (blame L_+ C M V)) Σ)
-        (where (& A) P)
-        (where (V) (get Σ A))
+   (--> ((P_F L_+ L_- C ⚖ P) Σ)
+        ((if0 (@ 'Λ P_F P) P (blame L_+ C P_F P)) Σ)
+        (where (& A_C) P_F)
+        (where (F _ ...) (get Σ A_C))
         ?)
-   (--> (((C_1 ..._1 -> C_0) L_+ L_- C ⚖ (& A)) Σ)
-        ((λ ([X : T] ...)
-           (C_0 L_+ L_- C ⚖
-                (@ 'Λ (λ ([X : T] ...) M)
-                   (C_1 L_- L_+ C ⚖ X) ...)))
-         Σ)         
-        (where ((λ ([X : T] ..._1) M)) (get Σ A))
-        η)))
+   (--> (((& A_C) L_+ L_- C_n ⚖ (& A_V)) Σ)
+	((λ ([X : T] ...)
+           (P_n L_+ L_- C_n ⚖
+                (@ Λ (& A_V)
+                   (P_1 L_- L_+ C_n ⚖ X) ...)))
+         Σ)
+        (where ((P_1 ... -> P_n) _ ...) (get Σ A_C))
+        (where ((λ ([X : T] ...) M) _ ...) (get Σ A_V))
+	η)))
 
 (define cvσ
   (union-reduction-relations cσ (extend-reduction-relation vσ CPCFΣ)))
@@ -39,7 +40,9 @@
 
 (define-metafunction/extension foldσ CPCFΣ
   cfoldσ : (M Σ) -> M
+  [(cfoldσ ((C_0 ... -> C) Σ))
+   ((cfoldσ (C_0 Σ)) ... -> (cfoldσ (C Σ)))]
   [(cfoldσ ((C_0 L_0 L_1 C_1 ⚖ M) Σ))
-   (C_0 L_0 L_1 C_1 ⚖ (cfoldσ (M Σ)))]
+   ((cfoldσ (C_0 Σ)) L_0 L_1 (cfoldσ (C_1 Σ)) ⚖ (cfoldσ (M Σ)))]
   [(cfoldσ ((blame L C_0 C_1 M) Σ))
-   (blame L C_0 C_1 (cfoldσ (M Σ)))])
+   (blame L (cfoldσ (C_0 Σ)) (cfoldσ (C_1 Σ)) (cfoldσ (M Σ)))])

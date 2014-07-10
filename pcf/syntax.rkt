@@ -8,7 +8,9 @@
   ;; Terms
   (M ::= X V (M M ...) (μ (X : T) V) (if0 M M M) (err T string))
   ;; Values
-  (V ::= N O (λ ([X : T] ...) M))
+  (V ::= N F)
+  ;; Functions (or Flat contracts)
+  (F ::= O (λ ([X : T] ...) M))
   ;; Natural
   (N ::= natural)
   ;; Primitive operations

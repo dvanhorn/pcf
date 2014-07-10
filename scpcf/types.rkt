@@ -8,11 +8,21 @@
   (cons? (judgment-holds (typeof () ,M T) T)))
 
 (define-judgment-form SCPCF
+  #:mode (typeof-c I I O)
+  #:contract (typeof-c Γ any T)
+  [(typeof-c Γ M (Con T))
+   (typeof Γ M (T -> nat))]  
+  [(typeof-c Γ (M_1 ... -> M_n) (Con (T_1 ... -> T_n)))
+   (typeof-c Γ M_1 (Con T_1))
+   ...
+   (typeof-c Γ M_n (Con T_n))])
+
+(define-judgment-form SCPCF
   #:mode (typeof I I O)
-  #:contract (typeof Γ any T)
+  #:contract (typeof Γ any T)  
   [(typeof Γ (verify C M) nat)
-   (typeof-contract Γ C T)
-   (typeof Γ M T)]
+   (typeof-c Γ C (Con T))
+   (typeof Γ M T)] 
   [(typeof Γ (err T string) T)]
   [(typeof Γ N nat)]
   [(typeof ((X_0 T_0) ... (X T) any_1 ...) X T)]
@@ -47,25 +57,19 @@
   
   ;; CPCF
   [(typeof Γ (C ⚖ M) T)
-   (typeof-contract Γ C T)
+   (typeof-c Γ C (Con T))
    (typeof Γ M T)]
-  
+  [(typeof Γ (C_0 ... -> C) (Con (T_0 ... -> T)))
+   (typeof-c Γ C_0 (Con T_0))
+   ...
+   (typeof-c Γ C (Con T))]
+     
   ;; SCPCF
   [(typeof Γ (• T) T)]
   [(typeof Γ (• T C C_1 ...) T)
    (typeof Γ (• T C_1 ...) T)
-   (typeof-contract Γ C T)])
+   (typeof-c Γ C (Con T))])
 
-(define-judgment-form SCPCF
-  #:mode (typeof-contract I I O)
-  #:contract (typeof-contract Γ C T)
-  ;:interp C is a contract for values of type T
-  [(typeof-contract Γ (C ... -> C_0) (T ... -> T_0))
-   (typeof-contract Γ C_0 T_0)
-   (typeof-contract Γ C T)
-   ...]
-  [(typeof-contract Γ M T)
-   (typeof Γ M (T -> nat))])
 
 (define-metafunction SCPCF
   extend-one : Γ X T -> Γ
@@ -79,3 +83,19 @@
   [(extend Γ) Γ]
   [(extend Γ (X T) any ...)
    (extend (extend-one Γ X T) any ...)])
+
+
+
+(module+ test
+  (test-equal (judgment-holds (typeof () 5 T) T)
+              '(nat))
+  (test-equal (judgment-holds (typeof () pos? T) T)
+              '((nat -> nat)))
+  (test-equal (judgment-holds (typeof () (-> pos?) T) T)
+              '((Con (-> nat))))
+  (test-equal (judgment-holds (typeof () (-> (if0 0 pos? zero?)) T) T)
+              '((Con (-> nat))))
+  (test-equal (judgment-holds (typeof () (λ ([x : nat]) (-> (λ ([y : nat]) (= x y)))) T) T)
+              '((nat -> (Con (-> nat)))))
+  (test-equal (judgment-holds (typeof () (• nat pos?) T) T)
+              '(nat)))
