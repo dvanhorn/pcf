@@ -4,7 +4,7 @@
          redex/reduction-semantics)
 
 (define-extended-language PCFΣ PCF
-  (A ::= integer)
+  (A ::= any)
   (P ::= (& A))
   (M ::= .... P)
   (E ::= hole (@ L P ... E M ...) (if0 E M M))

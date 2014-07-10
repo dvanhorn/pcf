@@ -11,7 +11,7 @@
   (reduction-relation
    PCFΣ #:domain (M Σ)
    (--> (V Σ) ((& A) (put Σ A V))
-        (where A (alloc Σ))
+        (where A (alloc (V Σ)))
         &)
    (--> ((@ L (& A_f) P_V ..._1) Σ)
         ((subst (X P_V) ... M) Σ)
@@ -20,7 +20,7 @@
         β)
    (--> ((μ (X : T) V) Σ)
         ((& A) (put Σ A (subst (X (& A)) V)))
-        (where A (alloc Σ))
+        (where A (alloc ((μ (X : T) V) Σ)))
         μ)
    (--> ((@ L (& A_O) (& A_V) ...) Σ)
         (M Σ)
@@ -61,8 +61,8 @@
 
 
 (define-metafunction PCFΣ
-  alloc : any_Σ -> any_A
-  [(alloc any_Σ)
+  alloc : any_MΣ -> any_A
+  [(alloc (any_M any_Σ))
    ,(add1 (apply max 0 (hash-keys (term any_Σ))))])
 
 

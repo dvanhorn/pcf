@@ -22,7 +22,7 @@
 
    (--> ((μ (X : T) V) Σ)
         ((subst (X (& A)) V) (put Σ A (T)))
-        (where A (alloc Σ))
+        (where A (alloc ((μ (X : T) V) Σ)))
         μ) ;; μ^
      
    (--> ((@ L (& A_f) P ...) Σ)
