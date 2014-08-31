@@ -83,7 +83,7 @@
         [(list v cs) `(,v ,@(set->list cs))]))])
 
 (define-metafunction PCFΣ
-  put : any_Σ any_A any_V -> any_Σ
+  ;put : any_Σ any_A any_V -> any_Σ
   [(put any_Σ any_A (any_0 ... -> any)) ; hack on top of hack
    ,(hash-set (term any_Σ) (term any_A) (list (term (any_0 ... -> any)) (set)))]
   [(put any_Σ any_A (λ any ...)) ; hack on top of hack
