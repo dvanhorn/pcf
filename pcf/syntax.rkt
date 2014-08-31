@@ -14,7 +14,7 @@
   ;; Natural
   (N ::= natural)
   ;; Primitive operations
-  (O ::= add1 sub1 * + - quotient pos? zero? even? odd? = <= => < > not)
+  (O ::= add1 sub1 * + - quotient / pos? zero? even? odd? = <= => < > not)
   ;; Variables
   (X ::= variable-not-otherwise-mentioned)
   ;; Type environments

@@ -53,7 +53,7 @@
     [(list '@ l m ...)
      (map scrub m)]
     [(list 'err l t s)
-     (list 'err (loc l) t s)]
+     (list 'err #;(loc l) #;t s)]
     [(list 'blame 'HAVOC c0 c1 v)
      (list 'blame 'HAVOC)]
     [(list 'blame s c0 c1 v)

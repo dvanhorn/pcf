@@ -41,6 +41,7 @@
   [(typeof Γ - (nat nat -> nat))]
   [(typeof Γ not (nat -> nat))]
   [(typeof Γ pos? (nat -> nat))]
+  [(typeof Γ / (nat nat -> nat))]
   [(typeof Γ quotient (nat nat -> nat))]
   [(typeof Γ (if0 M_1 M_2 M_3) T)
    (typeof Γ M_1 nat)
