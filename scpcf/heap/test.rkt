@@ -117,4 +117,6 @@
                             (@ b quotient 5 x)))
                      (• nat))
                  (• nat)
-                 (• nat zero?)))
+                 (• nat zero?))
+
+  (test-->>scvσ (pos? + - zero? ⚖ (@ add1 4))))
