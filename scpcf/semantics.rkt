@@ -46,7 +46,8 @@
 
    (--> (M L_+ L_- C ⚖ V)
 	(if0 (@ Λ M V) V (blame L_+ C M V))
-	(side-condition (not (redex-match SCPCF (• T C ...) (term V))))
+	(side-condition (not (or (redex-match SCPCF (• T C ...) (term V))
+				 (redex-match SCPCF (C ... -> _) (term M)))))
 	?)
    
    (--> ((C_1 ... -> C) L_+ L_- C_n ⚖ (λ ([X : T] ...) M))
@@ -79,6 +80,17 @@
   [(δ^ quotient L ((• nat C ...) N)   (• nat))
    (side-condition (¬∈ N 0))]
 
+  ;; Dup for /
+  [(δ^ / L (N (• nat C ...)) (• nat))
+   (side-condition (¬∈ N 0))]
+  [(δ^ / L (0 (• nat C ...)) 0)]
+  [(δ^ / L (any (• nat C_0 ... pos? C_1 ...)) (• nat))]
+  [(δ^ / L (any (• nat C ...)) (err L nat "Divide by zero"))
+   (side-condition (¬∈ pos? C ...))]
+  [(δ^ / L ((• nat C ...) 0)   (err L nat "Divide by zero"))]
+  [(δ^ / L ((• nat C ...) N)   (• nat))
+   (side-condition (¬∈ N 0))]
+
   [(δ^ pos? L ((• nat C_1 ... pos? C_2 ...)) 0)]
   [(δ^ pos? L ((• nat C ...)) (• nat))
    (side-condition (no-pos? C ...))]
@@ -91,8 +103,13 @@
 
   [(δ^ add1 L ((• nat C_1 ...)) (• nat pos?))]
 
+  [(δ^ + L ((• nat _ ... pos? _ ...) (• nat _ ...)) (• nat pos?))]
+  [(δ^ + L ((• nat _ ...) (• nat _ ... pos? _ ...)) (• nat pos?))]
+  [(δ^ + L ((• nat C_1 ...) (• nat C_2 ...)) (• nat))
+   (side-condition (¬∈ pos? C_1 ... C_2 ...))]
+
   [(δ^ O L (any_0 ... (• nat C ...) any_1 ...) (• nat))
-   (side-condition (¬∈ O quotient zero? pos? add1))])
+   (side-condition (¬∈ O + quotient / zero? pos? add1))])
 
 (define-metafunction SCPCF
   havoc : T C ... M -> M
