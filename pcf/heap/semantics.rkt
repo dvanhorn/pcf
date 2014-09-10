@@ -1,63 +1,89 @@
 #lang racket
 (provide vσ err-abortσ -->vσ alloc put get get-v ∅ liftσ not-mt? injσ foldσ)
 (require pcf/heap/syntax
-         pcf/semantics
-         pcf/private/subst
-         redex/reduction-semantics)
+	 pcf/semantics
+	 pcf/private/subst
+	 redex/reduction-semantics)
 
 (define (injσ M) (list M (term ∅)))
+
+(define -->v&
+  (reduction-relation
+   PCFΣ #:domain (M Σ)
+   (--> ((in-hole E V) Σ)
+	((in-hole E (& A)) (put Σ A V))
+	(where A (alloc (V Σ)))
+	&)))
+
+(define-metafunction PCFΣ
+  [(&* (M_0 Σ_0))
+   (M_1 Σ_1)
+   (where ((M_1 Σ_1))
+	  ,(apply-reduction-relation* -->v& (term (M_0 Σ_0))))])
+
+(define vσ1
+  (reduction-relation
+   PCFΣ #:domain (M Σ)
+   (--> (M_0 Σ_0)
+	(M_1 Σ_1)
+	(where (M_2 Σ_2) (&* (M_0 Σ_0)))
+	(where (_ ... (any_name (M_1 Σ_1)) _ ...)
+	       ,(apply-reduction-relation/tag-with-names vσ (term (M_2 Σ_2))))
+	(computed-name (term any_name)))))
+
+
 
 (define vσ
   (reduction-relation
    PCFΣ #:domain (M Σ)
    (--> (V Σ) ((& A) (put Σ A V))
-        (where A (alloc (V Σ)))
-        &)
+	(where A (alloc (V Σ)))
+	&)
    (--> ((@ L (& A_f) P_V ..._1) Σ)
-        ((subst (X P_V) ... M) Σ)
-        (where ((λ ([X : T] ..._1) M))
-               (get Σ A_f))
-        β)
+	((subst (X P_V) ... M) Σ)
+	(where ((λ ([X : T] ..._1) M))
+	       (get Σ A_f))
+	β)
    (--> ((μ (X : T) V) Σ)
-        ((& A) (put Σ A (subst (X (& A)) V)))
-        (where A (alloc ((μ (X : T) V) Σ)))
-        μ)
+	((& A) (put Σ A (subst (X (& A)) V)))
+	(where A (alloc ((μ (X : T) V) Σ)))
+	μ)
    (--> ((@ L (& A_O) (& A_V) ...) Σ)
-        (M Σ)
-        (where (O) (get Σ A_O))
-        (where ((V) ...) ((get Σ A_V) ...))
-        (judgment-holds (δ O L (V ...) M))
-        δ)
+	(M Σ)
+	(where (O) (get Σ A_O))
+	(where ((V) ...) ((get Σ A_V) ...))
+	(judgment-holds (δ O L (V ...) M))
+	δ)
    (--> ((if0 (& A) M_0 M_1) Σ)
-        (M_0 Σ)
-        (where (0) (get Σ A))
-        if0-t)
+	(M_0 Σ)
+	(where (0) (get Σ A))
+	if0-t)
    (--> ((if0 (& A) M_0 M_1) Σ)
-        (M_1 Σ)
-        (where (N) (get Σ A))
-        (judgment-holds (nonzero? N))
-        if0-f)))
+	(M_1 Σ)
+	(where (N) (get Σ A))
+	(judgment-holds (nonzero? N))
+	if0-f)))
 
 
 (define-syntax-rule (liftσ L r)
   (reduction-relation
    L #:domain (M Σ)
    (--> ((in-hole E M) Σ)
-        ((in-hole E M_1) Σ_1)
-        (where (_ (... ...) (any_n (M_1 Σ_1)) _ (... ...))
-               ,(apply-reduction-relation/tag-with-names r (term (M Σ))))
-        (computed-name (term any_n)))))
+	((in-hole E M_1) Σ_1)
+	(where (_ (... ...) (any_n (M_1 Σ_1)) _ (... ...))
+	       ,(apply-reduction-relation/tag-with-names r (term (M Σ))))
+	(computed-name (term any_n)))))
 
 (define err-abortσ
   (reduction-relation
    PCFΣ #:domain (M Σ)
    (--> ((in-hole E (err L T string)) Σ)
-        ((err L T string) Σ)
-        (where #t (not-mt? E))
+	((err L T string) Σ)
+	(where #t (not-mt? E))
 	err-abort)))
 
-(define -->vσ 
-  (union-reduction-relations (liftσ PCFΣ vσ) err-abortσ))
+(define -->vσ
+  (union-reduction-relations (liftσ PCFΣ vσ1) err-abortσ))
 
 
 (define-metafunction PCFΣ
@@ -71,16 +97,16 @@
   [(get-v any_Σ any_A)
    ,(let ((r (hash-ref (term any_Σ) (term any_A))))
       (match r
-        [(list (? (redex-match? PCFΣ T) t) cs) `(• ,t ,@(set->list cs))]
-        [(list v cs) v]))])
+	[(list (? (redex-match? PCFΣ T) t) cs) `(• ,t ,@(set->list cs))]
+	[(list v cs) v]))])
 
 (define-metafunction PCFΣ
   get : any_Σ any_A -> any_S
   [(get any_Σ any_A)
    ,(let ((r (hash-ref (term any_Σ) (term any_A))))
       (match r
-        [(list t cs) `(,t ,@(set->list cs))]
-        [(list v cs) `(,v ,@(set->list cs))]))])
+	[(list t cs) `(,t ,@(set->list cs))]
+	[(list v cs) `(,v ,@(set->list cs))]))])
 
 (define-metafunction PCFΣ
   ;put : any_Σ any_A any_V -> any_Σ
@@ -102,7 +128,7 @@
 
 (define-metafunction PCFΣ
   foldσ : (M Σ) -> M
-  [(foldσ (X Σ)) X]  
+  [(foldσ (X Σ)) X]
   [(foldσ ((& A) Σ))
    (foldσ (M Σ))
    (where (M) (get Σ A))]
