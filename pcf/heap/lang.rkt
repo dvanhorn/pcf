@@ -9,4 +9,4 @@
          (all-from-out pcf/private/label)
          (all-from-out pcf/private/racket-pcf))
 (define-syntax #%top-interaction (make-#%top-interaction #'-->vσ typable? #'injσ #'returnσ))
-(define-syntax #%module-begin    (make-#%module-begin    #'-->vσ typable? #'injσ #'returnσ #'pp #'color))
+(define-syntax #%module-begin    (make-#%module-begin    #'-->vσ typable? #'injσ #'returnσ #'ppσ* #'color))

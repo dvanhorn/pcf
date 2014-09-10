@@ -1,5 +1,5 @@
 #lang racket
-(provide return returnσ pp ppσ color)
+(provide return returnσ pp ppσ ppσ* color)
 (require (only-in redex/gui term-node-parents term-node-labels))
 (require redex/reduction-semantics scpcf/heap/semantics)
 (require unstable/lazy-require)
@@ -44,6 +44,7 @@
 
 (define (value? r)
 	  (match r
+	    ['blame #f]
 	    [(list-rest 'blame l) #f]
 	    [(list 'err l t s) #f]
 	    [_ #t]))
@@ -57,7 +58,8 @@
     [(list 'blame 'HAVOC c0 c1 v)
      (list 'blame 'HAVOC)]
     [(list 'blame s c0 c1 v)
-     (list 'blame (loc s))]
+     'blame
+     #;(list 'blame #;(loc s))]
     [(list c + - c0 '⚖ m)
      (list (scrub c) '⚖ (scrub m))]
     [(list m ...)
@@ -67,6 +69,25 @@
 (define pp
   (λ (v port width txt)
     (default-pretty-printer (scrub v) port width txt)))
+
+(define ppσ*
+  (λ (v port width txt)
+    (match v
+      [(list m s)
+       (default-pretty-printer (list (scrub m) (pp-heap s)) port width txt)])))
+
+(define (pp-heap s)
+  (for/vector ([(k v) (in-hash s)])
+	      (list k '↦
+		    (let ()
+		      (define rs 	       
+			(for/list ((x (in-set (second v)))) (scrub x)))
+		      (if (empty? rs)
+			  (scrub (first v))
+			  (cons (scrub (first v)) rs))))))
+
+
+
 
 (define ppσ
   (λ (v port width txt)
