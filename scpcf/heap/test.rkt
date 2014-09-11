@@ -119,4 +119,5 @@
                  (• nat)
                  (• nat zero?))
 
-  (test-->>scvσ (pos? + - zero? ⚖ (@ add1 4))))
+  (test-->>scvσ (pos? + - zero? ⚖ (@ a add1 4))
+                5))
