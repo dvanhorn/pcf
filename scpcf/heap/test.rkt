@@ -120,4 +120,16 @@
                  (• nat zero?))
 
   (test-->>scvσ (pos? + - zero? ⚖ (@ a add1 4))
-                5))
+                5)
+
+  (test-->>scvσ (@ l1 (• ((nat -> nat) -> nat))
+		      (λ ([x : nat]) (@ l2 / 10 x)))
+		(• nat)
+		(err l2 nat "Divide by zero"))
+
+  (test-->>scvσ (@ l1 (• ((nat -> nat) (nat -> nat) -> nat))
+		      (• (nat -> nat))
+		      (λ ([x : nat]) (@ l2 quotient 10 x)))
+		(• nat)
+		(err l2 nat "Divide by zero")))
+		
