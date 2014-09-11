@@ -21,14 +21,14 @@
    (where ((M_1 Σ_1))
 	  ,(apply-reduction-relation* -->v& (term (M_0 Σ_0))))])
 
-(define vσ1
+(define -->vσ1
   (reduction-relation
    PCFΣ #:domain (M Σ)
    (--> (M_0 Σ_0)
 	(M_1 Σ_1)
 	(where (M_2 Σ_2) (&* (M_0 Σ_0)))
 	(where (_ ... (any_name (M_1 Σ_1)) _ ...)
-	       ,(apply-reduction-relation/tag-with-names vσ (term (M_2 Σ_2))))
+	       ,(apply-reduction-relation/tag-with-names (liftσ PCFΣ vσ) (term (M_2 Σ_2))))
 	(computed-name (term any_name)))))
 
 
@@ -83,7 +83,7 @@
 	err-abort)))
 
 (define -->vσ
-  (union-reduction-relations (liftσ PCFΣ vσ1) err-abortσ))
+  (union-reduction-relations -->vσ1 err-abortσ))
 
 
 (define-metafunction PCFΣ
