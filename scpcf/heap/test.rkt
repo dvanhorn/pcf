@@ -131,5 +131,8 @@
 		      (• (nat -> nat))
 		      (λ ([x : nat]) (@ l2 quotient 10 x)))
 		(• nat)
-		(err l2 nat "Divide by zero")))
+		(err l2 nat "Divide by zero"))
+
+  (test-->>scvσ ((• (nat -> nat)) + - zero? ⚖ (• nat))
+		(blame + zero? (• (nat -> nat)) (• nat))))
 		
