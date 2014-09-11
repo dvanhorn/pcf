@@ -22,14 +22,14 @@
    (where ((M_1 Σ_1))
           ,(apply-reduction-relation* -->scv& (term (M_0 Σ_0))))])
    
-(define scvσ1
+(define -->scvσ1
   (reduction-relation
    SCPCFΣ #:domain (M Σ)
    (--> (M_0 Σ_0)
         (M_1 Σ_1)
         (where (M_2 Σ_2) (&* (M_0 Σ_0)))
         (where (_ ... (any_name (M_1 Σ_1)) _ ...)
-               ,(apply-reduction-relation/tag-with-names scvσ (term (M_2 Σ_2))))
+               ,(apply-reduction-relation/tag-with-names (liftσ SCPCFΣ scvσ) (term (M_2 Σ_2))))
         (computed-name (term any_name)))))
 
 
@@ -209,7 +209,7 @@
 
 
 (define -->scvσ 
-  (union-reduction-relations (liftσ SCPCFΣ scvσ1)
+  (union-reduction-relations -->scvσ1
                              (extend-reduction-relation con-abortσ SCPCFΣ)
                              (extend-reduction-relation err-abortσ SCPCFΣ)))
 
