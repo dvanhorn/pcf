@@ -15,6 +15,11 @@
      (P ... -> E)           
      (E L L C ⚖ M)
      (P L L C ⚖ E))
+  
+  ;; Tempting, but wrong.  Makes types into values.
+  #;(F ::= .... (T -> nat))
+  ;; Without, the ? rule in CPCFΣ breaks when lifted to SCPCΣ
+  
   (S ::= (TV C ...))
   (TV ::= T V)
   (Σ ::= (side-condition any_0 (hash? (term any_0))))) ; A -> S
