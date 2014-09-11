@@ -65,6 +65,8 @@
 	if0-f)))
 
 
+;; Like (context-closure L r (E Σ))
+;; but r is a relation on M × Σ.
 (define-syntax-rule (liftσ L r)
   (reduction-relation
    L #:domain (M Σ)
