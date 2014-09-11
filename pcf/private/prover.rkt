@@ -23,6 +23,8 @@
    (O (! A) N)]
   [(to-assert A (λ ([X : nat]) (@ _ O X)))
    (to-assert A O)]
+  [(to-assert A sub1)
+   (= (! A) 1)]
   [(to-assert A C) (= true true)])
 
 ; unify with above
@@ -38,6 +40,8 @@
    (O (! A) N)]
   [(to-conclude A (λ ([X : nat]) (@ _ O X)))
    (to-conclude A O)]
+  [(to-conclude A sub1)
+   (= (! A) 1)]   
   [(to-conclude A C) #f])
 
 
