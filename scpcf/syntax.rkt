@@ -4,7 +4,7 @@
          cpcf/syntax)
 
 (define-extended-language SCPCF CPCF  
-  (V .... (• T C ...))
+  (V .... (• T C ...) (• L T C ...))
   ;(C ....)  
   (M .... Ω)
   (TC T C))

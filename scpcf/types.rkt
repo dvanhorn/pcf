@@ -67,6 +67,8 @@
      
   ;; SCPCF
   [(typeof Γ (• T) T)]
+  [(typeof Γ (• L T C ...) T)
+   (typeof Γ (• T C ...) T)]
   [(typeof Γ (• T C C_1 ...) T)
    (typeof Γ (• T C_1 ...) T)
    (typeof-c Γ C (Con T))])

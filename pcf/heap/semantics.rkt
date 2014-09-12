@@ -118,8 +118,10 @@
    ,(hash-set (term any_Σ) (term any_A) (list (term (λ any ...)) (set)))]
   [(put any_Σ any_A V)
    ,(hash-set (term any_Σ) (term any_A) (list (term V) (set)))]
-  [(put any_Σ any_A (• any_T any_C ...))
-   ,(hash-set (term any_Σ) (term any_A) (list (term any_T) (apply set (term (any_C ...)))))]
+  [(put any_Σ any_A (• T any_C ...))
+   ,(hash-set (term any_Σ) (term any_A) (list (term T) (apply set (term (any_C ...)))))]
+  [(put any_Σ any_A (• L T any_C ...))
+   ,(hash-set (term any_Σ) (term any_A) (list (term T) (apply set (term (any_C ...)))))]
   [(put any_Σ any_A (any_T any_C ...))
    ,(hash-set (term any_Σ) (term any_A) (list (term any_T) (apply set (term (any_C ...)))))]
   [(put any_Σ any_A any_V)

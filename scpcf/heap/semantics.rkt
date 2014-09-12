@@ -8,12 +8,18 @@
          (except-in scpcf/semantics δ^)
          scpcf/heap/syntax)
 
+
+(define-metafunction/extension alloc SCPCFΣ
+  scalloc : any_MΣ -> any_A
+  [(scalloc ((• L T C ...) any_Σ)) L])
+  
+
 (define -->scv&
   (reduction-relation
    SCPCFΣ #:domain (M Σ)
    (--> ((in-hole E V) Σ) 
         ((in-hole E (& A)) (put Σ A V))
-        (where A (alloc (V Σ)))
+        (where A (scalloc (V Σ)))
         &)))
 
 (define-metafunction SCPCFΣ 
@@ -210,6 +216,7 @@
    (scfoldσ ((• T C ...) Σ))
    (where (T C ...) (get Σ A))]
   [(scfoldσ ((• T C ...) Σ)) (• T C ...)]
+  [(scfoldσ ((• L T C ...) Σ)) (• L T C ...)]
   ;[(scfoldσ ((M ...) Σ)) ((scfoldσ M) ...)]
   ;[(scfoldσ (M Σ)) M])
   [(scfoldσ (Ω Σ)) Ω])
