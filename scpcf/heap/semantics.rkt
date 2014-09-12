@@ -11,7 +11,7 @@
 
 (define-metafunction/extension alloc SCPCFΣ
   scalloc : any_MΣ -> any_A
-  [(scalloc ((• L T C ...) any_Σ)) L])
+  [(scalloc ((• L T C ...) any_Σ)) ,(- (term L))])
   
 
 (define -->scv&
