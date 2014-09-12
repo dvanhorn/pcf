@@ -18,7 +18,9 @@
   ;; Variables
   (X ::= variable-not-otherwise-mentioned)
   ;; Type environments
-  (Γ ::= ((X T) ...)))
+  (Γ ::= ((X T) ...))
+  ;; `quotient` and `/` are aliases for now
+  (÷ quotient /))
 
 (define-extended-language PCF PCF-source
   ;; Labels

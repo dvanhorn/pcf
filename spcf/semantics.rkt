@@ -34,7 +34,7 @@
 
 (define-metafunction SPCF
   not-div? : any -> #t or #f
-  [(not-div? div) #f]
+  [(not-div? ÷) #f]
   [(not-div? any) #t])
 
 (define -->sv
@@ -44,10 +44,10 @@
 (define-judgment-form SPCF
   #:mode (δ^ I I I O)
   #:contract (δ^ O L (V ...) M)
-  [(δ^ quotient L (any (• nat)) (• nat))]
-  [(δ^ quotient L (any (• nat)) (err L nat "Divide by zero"))]
-  [(δ^ quotient L ((• nat) 0)   (err L nat "Divide by zero"))]
-  [(δ^ quotient L ((• nat) N)   (• nat))
+  [(δ^ ÷ L (any (• nat)) (• nat))]
+  [(δ^ ÷ L (any (• nat)) (err L nat "Divide by zero"))]
+  [(δ^ ÷ L ((• nat) 0)   (err L nat "Divide by zero"))]
+  [(δ^ ÷ L ((• nat) N)   (• nat))
    (side-condition (not-zero? N))]
   [(δ^ O L (any_0 ... (• nat) any_1 ...) (• nat))
    (side-condition (not-div? O))])

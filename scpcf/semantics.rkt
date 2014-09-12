@@ -70,25 +70,14 @@
   #:mode (δ^ I I I O)
   #:contract (δ^ O L (V ...) M)
 
-  [(δ^ quotient L (N (• nat C ...)) (• nat))
+  [(δ^ ÷ L (N (• nat C ...)) (• nat))
    (side-condition (¬∈ N 0))]
-  [(δ^ quotient L (0 (• nat C ...)) 0)]
-  [(δ^ quotient L (any (• nat C_0 ... pos? C_1 ...)) (• nat))]
-  [(δ^ quotient L (any (• nat C ...)) (err L nat "Divide by zero"))
+  [(δ^ ÷ L (0 (• nat C ...)) 0)]
+  [(δ^ ÷ L (any (• nat C_0 ... pos? C_1 ...)) (• nat))]
+  [(δ^ ÷ L (any (• nat C ...)) (err L nat "Divide by zero"))
    (side-condition (¬∈ pos? C ...))]
-  [(δ^ quotient L ((• nat C ...) 0)   (err L nat "Divide by zero"))]
-  [(δ^ quotient L ((• nat C ...) N)   (• nat))
-   (side-condition (¬∈ N 0))]
-
-  ;; Dup for /
-  [(δ^ / L (N (• nat C ...)) (• nat))
-   (side-condition (¬∈ N 0))]
-  [(δ^ / L (0 (• nat C ...)) 0)]
-  [(δ^ / L (any (• nat C_0 ... pos? C_1 ...)) (• nat))]
-  [(δ^ / L (any (• nat C ...)) (err L nat "Divide by zero"))
-   (side-condition (¬∈ pos? C ...))]
-  [(δ^ / L ((• nat C ...) 0)   (err L nat "Divide by zero"))]
-  [(δ^ / L ((• nat C ...) N)   (• nat))
+  [(δ^ ÷ L ((• nat C ...) 0)   (err L nat "Divide by zero"))]
+  [(δ^ ÷ L ((• nat C ...) N)   (• nat))
    (side-condition (¬∈ N 0))]
 
   [(δ^ pos? L ((• nat C_1 ... pos? C_2 ...)) 0)]
