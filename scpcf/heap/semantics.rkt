@@ -78,10 +78,10 @@
         ((havoc TC ... V) Σ)        
         (where ((TC_0 ... -> TC_n) ...)
                (get Σ A_f))
-        (where ((V_0) ...)            ;; Ugh.  WTF to do here?
+        (where ((any_V) ...) ; `get` may return non-V
                ((get Σ A_V) ...))
-        (where (_ ... (V TC ...) _ ...)
-               ,(transpose (term ((V_0 ...)
+        (where (_ ... (V TC ...) _ ...) ; only pick out concrete V
+               ,(transpose (term ((any_V ...)
                                   (TC_0 ...)
                                   ...))))
         havoc)
@@ -128,29 +128,29 @@
 
   ;; FIXME: Add equation between result and inputs
   ;; Requires more primitives (=, etc.)
-  [(δσ^ quotient L (A_n A_d) Σ ((• nat) (refine Σ A_d pos?)) δ-quotient1)
+  [(δσ^ ÷ L (A_n A_d) Σ ((• nat) (refine Σ A_d pos?)) δ-÷1)
    (where (N) (get Σ A_n))
    (where (nat C ...) (get Σ A_d))  
    (side-condition (¬∈ N 0))]
       
-  [(δσ^ quotient L (A_n A_d) Σ (0 (refine Σ A_d pos?)) δ-quotient2)
+  [(δσ^ ÷ L (A_n A_d) Σ (0 (refine Σ A_d pos?)) δ-÷2)
    (where (0) (get Σ A_n))
    (where (nat C ...) (get Σ A_d))]
   
-  [(δσ^ quotient L (any A_d) Σ ((• nat) Σ) δ-quotient3)
+  [(δσ^ ÷ L (any A_d) Σ ((• nat) Σ) δ-÷3)
    (where (nat C_0 ... pos? C_1 ...) (get Σ A_d))]
   
-  [(δσ^ quotient L (any A_d) Σ 
+  [(δσ^ ÷ L (any A_d) Σ 
         ((err L nat "Divide by zero") 
-         (refine Σ A_d zero?)) δ-quotient4)
+         (refine Σ A_d zero?)) δ-÷4)
    (where (nat C ...) (get Σ A_d))        
    (side-condition (¬∈ pos? C ...))]
   
-  [(δσ^ quotient L (A_n A_d) Σ ((err L nat "Divide by zero") Σ) δ-quotient5)
+  [(δσ^ ÷ L (A_n A_d) Σ ((err L nat "Divide by zero") Σ) δ-÷5)
    (where (nat C ...) (get Σ A_n))
    (where (0) (get Σ A_d))]
   
-  [(δσ^ quotient L (A_n A_d) Σ ((• nat) Σ) δ-quotient6)
+  [(δσ^ ÷ L (A_n A_d) Σ ((• nat) Σ) δ-÷6)
    (where (nat C ...) (get Σ A_n))
    (where (N) (get Σ A_d))
    (side-condition (¬∈ N 0))]
@@ -188,7 +188,7 @@
   ;; FIXME: This rule probably needs to be treated more precisely
   [(δσ^ O L (any_0 ... A any_1 ...) Σ ((• nat) Σ) RULE)
    (where (nat C ...) (get Σ A))
-   (side-condition (¬∈ O quotient zero? pos? add1 =))])
+   (side-condition (¬∈ O quotient / zero? pos? add1 =))])
 
 
 ;; FIXME: should have refinements of concrete values too

@@ -70,8 +70,6 @@
   [(δf <= L (N_0 N_1))        ,(if (<= (term N_0) (term N_1)) 0 1)]
   [(δf >= L (N_0 N_1))        ,(if (>= (term N_0) (term N_1)) 0 1)]  
   [(δf not L (N))             ,(if (zero? (term N)) 1 0)]  
-  [(δf / L (N_0 0))    (err L nat "Divide by zero")]
-  [(δf / L (N_0 N_1)) ,(quotient (term N_0) (term N_1))]
-  [(δf quotient L (N_0 0))    (err L nat "Divide by zero")]
-  [(δf quotient L (N_0 N_1)) ,(quotient (term N_0) (term N_1))])
+  [(δf ÷ L (N_0 0))    (err L nat "Divide by zero")]
+  [(δf ÷ L (N_0 N_1)) ,(quotient (term N_0) (term N_1))])
 
