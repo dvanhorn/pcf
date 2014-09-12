@@ -7,7 +7,7 @@
   (A ::= integer)
   (P ::= (& A))
   (M ::= .... P)
-  (V ::= N F (P ... -> P) (• T C ...))
+  (V ::= N O (λ ([X : T] ...) M) (P ... -> P) (• T C ...))
   (E ::= hole 
      (@ L P ... E M ...) 
      (if0 E M M)     
@@ -16,8 +16,7 @@
      (E L L C ⚖ M)
      (P L L C ⚖ E))
   
-  ;; Tempting, but wrong.  Makes types into values.
-  #;(F ::= .... (T -> nat))
+  (F ::= .... (T -> nat))
   ;; Without, the ? rule in CPCFΣ breaks when lifted to SCPCΣ
   
   (S ::= (TV C ...))

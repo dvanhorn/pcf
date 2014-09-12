@@ -134,5 +134,6 @@
 		(err l2 nat "Divide by zero"))
 
   (test-->>scvσ ((• (nat -> nat)) + - zero? ⚖ (• nat))
+                (• nat)
 		(blame + zero? (• (nat -> nat)) (• nat))))
 		
