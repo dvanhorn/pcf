@@ -57,22 +57,6 @@
                 (C_0 ... -> C) ...)
                (get Σ A_f))
         β•)
-
-   ;; Are these useful?  Just adding behavior...
-   #;
-   (--> ((@ L (& A_p) (& A_a)) Σ)
-        (0 Σ)
-        (where (M_p) (get Σ A_p))
-        (where ✓ (⊢ Σ A_a M_p))
-        known-pred-holds)
-
-   ;; This produces spurious results when M_p returns > 1
-   #;
-   (--> ((@ L (& A_p) (& A_a)) Σ)
-        (1 Σ)
-        (where (M_p) (get Σ A_p))
-        (where ✗ (⊢ Σ A_a M_p))
-        known-pred-doesnt-hold)
    
    (--> ((@ L (& A_f) (& A_V) ...) Σ)
         ((havoc TC ... V) Σ)        
