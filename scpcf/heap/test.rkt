@@ -135,5 +135,12 @@
 
   (test-->>scvσ ((• (nat -> nat)) + - zero? ⚖ (• nat))
                 (• nat)
-		(blame + zero? (• (nat -> nat)) (• nat))))
+		(blame + zero? (• (nat -> nat)) (• nat)))
+  
+  (test-->>scvσ (@ l
+                   (• ((nat -> nat) (nat -> nat) -> nat))
+                   (λ ([x : nat]) (@ l1 / 1 x))
+                   (λ ([x : nat]) (@ l2 + 1 x)))
+                (• nat)
+                (err l1 nat "Divide by zero")))
 		
