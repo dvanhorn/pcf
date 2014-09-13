@@ -65,15 +65,12 @@
         β•)
    
    (--> ((@ L (& A_f) (& A_V) ...) Σ)
-        ((havoc TC ... V) Σ)        
-        (where ((TC_0 ... -> TC_n) ...)
+        ((@ L (& A_f) (& A_V) ...) Σ_1)
+        ; partially concretize the unknown function
+        (where ((T_dom ... -> _) _ ...)
                (get Σ A_f))
-        (where ((any_V) ...) ; `get` may return non-V
-               ((get Σ A_V) ...))
-        (where (_ ... (V TC ...) _ ...) ; only pick out concrete V
-               ,(transpose (term ((any_V ...)
-                                  (TC_0 ...)
-                                  ...))))
+        (judgment-holds (havoc/n Λ (T_dom ...) V_hv))
+        (where Σ_1 (put Σ A_f V_hv))
         havoc)
    
    (--> ((@ L (& A_O) (& A_V) ...) Σ) 
@@ -100,6 +97,33 @@
         (where ((T_1 ... -> T) C_v ...) (get Σ A_V))
         (where (X ...) ,(map (λ (_) (gensym)) (term (T_1 ...))))
         η•)))
+
+(define fresh!
+  (let ([next 100])
+    (λ () (begin (set! next (+ 1 next)) next))))
+
+;; Nondeterministically generate a function that havocs one of its argument
+;; E.g. (λ ([f₁ : τ₁] ... [f : τ] [f₂ : τ₂]...) (havoc f))
+(define-judgment-form SCPCFΣ
+  #:contract (havoc/n L (T ...) V)
+  #:mode     (havoc/n I I       O)
+  [(where (T_x ... -> T_y) T)
+   (where M (havocᵢ ,(fresh!) L T f))
+   (where (X_l ...)
+          ,(variables-not-in (term M) (make-list (length (term (T_l ...))) 'l)))
+   (where (X_r ...)
+          ,(variables-not-in (term M) (make-list (length (term (T_r ...))) 'r)))
+   -----------------------------------------------------------------------------
+   (havoc/n L (T_l ... T T_r ...)
+            (λ ([X_l : T_l] ... [f : T] [X_r : T_r] ...) M))])
+
+;; Synthesize havoc-ing expression for type `T`
+(define-metafunction SCPCFΣ
+  ; The first argument is a hack around Redex's memoization
+  havocᵢ : _ L T M -> M
+  [(havocᵢ _ L nat M) M]
+  [(havocᵢ _ L (T_x ... -> T_y) M)
+   (havocᵢ ,(fresh!) L T_y (@ L M (• ,(fresh!) T_x) ...))])
 
 (define-metafunction SCPCFΣ
   eq : M -> M
@@ -215,6 +239,7 @@
   [(scfoldσ ((& A) Σ))
    (scfoldσ ((• T C ...) Σ))
    (where (T C ...) (get Σ A))]
+  [(scfoldσ ((• _ ... zero? _ ...) _)) 0]
   [(scfoldσ ((• T C ...) Σ)) (• T C ...)]
   [(scfoldσ ((• L T C ...) Σ)) (• L T C ...)]
   ;[(scfoldσ ((M ...) Σ)) ((scfoldσ M) ...)]
