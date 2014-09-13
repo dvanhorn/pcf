@@ -111,20 +111,25 @@
 	[(list v cs) `(,v ,@(set->list cs))]))])
 
 (define-metafunction PCFΣ
-  ;put : any_Σ any_A any_V -> any_Σ
-  [(put any_Σ any_A (any_0 ... -> any)) ; hack on top of hack
+  ;put : any_Σ any_A any_V ... ... -> any_Σ
+  [(put any_Σ) any_Σ]
+  [(put any_Σ any_A any_V any ...) (put (put₁ any_Σ any_A any_V) any ...)])
+
+(define-metafunction PCFΣ
+  ;put₁ : any_Σ any_A any_V -> any_Σ
+  [(put₁ any_Σ any_A (any_0 ... -> any)) ; hack on top of hack
    ,(hash-set (term any_Σ) (term any_A) (list (term (any_0 ... -> any)) (set)))]
-  [(put any_Σ any_A (λ any ...)) ; hack on top of hack
+  [(put₁ any_Σ any_A (λ any ...)) ; hack on top of hack
    ,(hash-set (term any_Σ) (term any_A) (list (term (λ any ...)) (set)))]
-  [(put any_Σ any_A V)
+  [(put₁ any_Σ any_A V)
    ,(hash-set (term any_Σ) (term any_A) (list (term V) (set)))]
-  [(put any_Σ any_A (• T any_C ...))
+  [(put₁ any_Σ any_A (• T any_C ...))
    ,(hash-set (term any_Σ) (term any_A) (list (term T) (apply set (term (any_C ...)))))]
-  [(put any_Σ any_A (• L T any_C ...))
+  [(put₁ any_Σ any_A (• L T any_C ...))
    ,(hash-set (term any_Σ) (term any_A) (list (term T) (apply set (term (any_C ...)))))]
-  [(put any_Σ any_A (any_T any_C ...))
+  [(put₁ any_Σ any_A (any_T any_C ...))
    ,(hash-set (term any_Σ) (term any_A) (list (term any_T) (apply set (term (any_C ...)))))]
-  [(put any_Σ any_A any_V)
+  [(put₁ any_Σ any_A any_V)
    ,(hash-set (term any_Σ) (term any_A) (list (term any_V) (set)))])
 
 (define-term ∅ ,(hash))
