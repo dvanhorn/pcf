@@ -32,11 +32,18 @@
   (reduction-relation
    SCPCFΣ #:domain (M Σ)
    (--> (M_0 Σ_0)
-        (M_1 Σ_1)
-        (where (M_2 Σ_2) (&* (M_0 Σ_0)))
-        (where (_ ... (any_name (M_1 Σ_1)) _ ...)
-               ,(apply-reduction-relation/tag-with-names (liftσ SCPCFΣ scvσ) (term (M_2 Σ_2))))
-        (computed-name (term any_name)))))
+        (M_2 Σ_2)
+        (where (M_1 Σ_1) (&* (M_0 Σ_0)))
+        (where (_ ... (any_name (M_2 Σ_2)) _ ...)
+               ,(apply-reduction-relation/tag-with-names (liftσ SCPCFΣ scvσ) (term (M_1 Σ_1))))
+        (computed-name (term any_name)))
+   ; Below is a hack for when &* leaves no redex left in the expression
+   ; e.g. • ↦ &1
+   (--> (M_0 Σ_0) (M_1 Σ_1)
+        (where (M_1 Σ_1) (&* (M_0 Σ_0)))
+        (where () ,(apply-reduction-relation (liftσ SCPCFΣ scvσ) (term (M_1 Σ_1))))
+        (side-condition (not (equal? (term (M_0 Σ_0)) (term (M_1 Σ_1)))))
+        alloc)))
 
 
 
@@ -231,17 +238,31 @@
                              (extend-reduction-relation con-abortσ SCPCFΣ)
                              (extend-reduction-relation err-abortσ SCPCFΣ)))
 
+;; HACK: Attach counterexample to folded result
+(define-metafunction SCPCFΣ
+  scfoldσ : (M Σ) -> any
+  [(scfoldσ (M Σ))
+   ((scfoldσ₁ (M Σ)) with any_ctx)
+   (side-condition (or (redex-match? SCPCFΣ (err _ ...) (term M))
+                       (redex-match? SCPCFΣ (blame _ ...) (term M))))
+   (where any_ctx ,(for/hash ([(a M) (term Σ)] #:when (<= -99 a -1))
+                     (values a (term (scfoldσ₁ ((& ,a) Σ))))))]
+  [(scfoldσ any) (scfoldσ₁ any)])
+
 (define-metafunction/extension cfoldσ SCPCFΣ
-  scfoldσ : (M Σ) -> M 
-  [(scfoldσ ((& A) Σ))
-   (scfoldσ (M Σ))
+  scfoldσ₁ : (M Σ) -> M 
+  [(scfoldσ₁ ((& A) Σ))
+   (scfoldσ₁ (M Σ))
    (where (M C ...) (get Σ A))]
-  [(scfoldσ ((& A) Σ))
-   (scfoldσ ((• T C ...) Σ))
+  [(scfoldσ₁ ((& A) Σ))
+   (scfoldσ₁ ((• T C ...) Σ))
    (where (T C ...) (get Σ A))]
-  [(scfoldσ ((• _ ... zero? _ ...) _)) 0]
-  [(scfoldσ ((• T C ...) Σ)) (• T C ...)]
-  [(scfoldσ ((• L T C ...) Σ)) (• L T C ...)]
-  ;[(scfoldσ ((M ...) Σ)) ((scfoldσ M) ...)]
-  ;[(scfoldσ (M Σ)) M])
-  [(scfoldσ (Ω Σ)) Ω])
+  [(scfoldσ₁ ((• natural T C ...) Σ))
+   (scfoldσ₁ ((& ,(- (term natural))) Σ))]
+  [(scfoldσ₁ ((• _ ... zero? _ ...) _)) 0]
+  [(scfoldσ₁ ((• T C ...) Σ)) (• T C ...)]
+  [(scfoldσ₁ ((• L T C ...) Σ)) (• L T C ...)]
+  ;[(scfoldσ₁ ((M ...) Σ)) ((scfoldσ₁ M) ...)]
+  ;[(scfoldσ₁ (M Σ)) M])
+  [(scfoldσ₁ (Ω Σ)) Ω])
+
