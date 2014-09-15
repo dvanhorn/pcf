@@ -11,7 +11,11 @@
       [(list 'blame l c0 c1 v)
        (unless (eq? l 'HAVOC)
 	 (raise-blame l c0 c1 v))]
+      [(list (list 'blame l c0 c1 v) 'with cs)
+       (unless (eq? l 'HAVOC)
+         (raise-blame l c0 c1 v cs))]
       [(list 'err l t s) (raise-err l t s)]
+      [(list (list 'err l t s) 'with cs) (raise-err l t s cs)]
       [_ (void)]))
 
   (apply values (map scrub (filter value? res))))
@@ -27,26 +31,47 @@
     [(list 'blame _ ...) #f]
     [_ (if (havoc? node) "lightgray" #t)]))
 
-(define (raise-blame l c0 c1 v)
+(define (raise-blame l c0 c1 v [cs (hash)])
   ((error-display-handler)
-   (format "blaming: ~a~nbroke: ~a~nexpected: ~a~ngiven: ~a"
-	   (syntax->srcstring l)
-	   c0 c1 v)
+   (apply
+    string-append
+    (format "blaming: ~a~nbroke: ~a~nexpected: ~a~ngiven: ~a"
+            (syntax->srcstring l)
+            c0 c1 v)
+    (cond
+     [(hash-empty? cs) '()]
+     [else
+      (list*
+       "\nPossible breaking context:"
+       (for/list ([(a t) (in-hash cs)])
+         (format "~n  ~a: ~a" (•/subscript a) (scrub t))))]))
    (exn:fail:src ""
 		 (current-continuation-marks)
 		 (and l (syntax->srcloc l)))))
 
-(define (raise-err l t s)
-  ((error-display-handler) (format "err:~a ~a" (syntax->srcstring l) s)
-			   (exn:fail:src ""
-					 (current-continuation-marks)
-					 (and l (syntax->srcloc l)))))
+(define (raise-err l t s [cs (hash)])
+  ((error-display-handler)
+   (apply
+    string-append
+    (format "err:~a ~a" (syntax->srcstring l) s)
+    (cond
+     [(hash-empty? cs) '()]
+     [else
+      (list*
+       "\nPossible breaking context:"
+       (for/list ([(a t) (in-hash cs)])
+         (format "~n  ~a: ~a" (•/subscript a) (scrub t))))]))
+   (exn:fail:src ""
+                 (current-continuation-marks)
+                 (and l (syntax->srcloc l)))))
 
 (define (value? r)
 	  (match r
 	    ['blame #f]
 	    [(list-rest 'blame l) #f]
+            [(list (list-rest 'blame _) 'with _) #f]
 	    [(list 'err l t s) #f]
+            [(list (list* 'err _) 'with _) #f]
 	    [_ #t]))
 
 (define (scrub v)
@@ -136,3 +161,11 @@
 	 (define to-visit* (set-union to-visit (apply set (term-node-parents a))))
 	 (ancestor-rules (set-add seen a) (set-subtract to-visit* (set-add seen a)))]))
 
+;; Generate identifier such as "•₄₂"
+(define (•/subscript n)
+  (define (subscript n)
+    (cond [(< n 0) (subscript (- n))]
+          [(< n 10) (vector-ref #("₀" "₁" "₂" "₃" "₄" "₅" "₆" "₇" "₈" "₉") n)]
+          [else (define-values (q r) (quotient/remainder n 10))
+                (string-append (subscript q) (subscript r))]))
+  (string->symbol (format "•~a" (subscript n))))
