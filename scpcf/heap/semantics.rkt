@@ -141,40 +141,23 @@
   neq : M -> M
   [(neq M)
    (λ ([x : nat]) (@ Λ not (@ Λ = x M)))])
+
+(define-metafunction SCPCFΣ
+  ≡/c : O A ... -> M
+  [(≡/c O A ...)
+   (λ ([x : nat]) (@ Λ = x (@ Λ O (& A) ...)))])
    
 
 (define-judgment-form SCPCFΣ
   #:mode (δσ^ I I I I O O)
   #:contract (δσ^ O L (A ...) Σ (M Σ) any)
 
-  ;; FIXME: Add equation between result and inputs
   ;; Requires more primitives (=, etc.)
-  [(δσ^ ÷ L (A_n A_d) Σ ((• nat) (refine Σ A_d pos?)) δ-÷1)
-   (where (N) (get Σ A_n))
-   (where (nat C ...) (get Σ A_d))  
-   (side-condition (¬∈ N 0))]
-      
-  [(δσ^ ÷ L (A_n A_d) Σ (0 (refine Σ A_d pos?)) δ-÷2)
-   (where (0) (get Σ A_n))
-   (where (nat C ...) (get Σ A_d))]
+  [(δσ^ ÷ L (A_n A_d) Σ ((• nat (≡/c / A_n A_d)) (refine Σ A_d pos?)) δ-÷1)
+   (side-condition ,(member (term (⊢ Σ A_d zero?)) '(? ✗)))]
   
-  [(δσ^ ÷ L (any A_d) Σ ((• nat) Σ) δ-÷3)
-   (where (nat C_0 ... pos? C_1 ...) (get Σ A_d))]
-  
-  [(δσ^ ÷ L (any A_d) Σ 
-        ((err L nat "Divide by zero") 
-         (refine Σ A_d zero?)) δ-÷4)
-   (where (nat C ...) (get Σ A_d))        
-   (side-condition (¬∈ pos? C ...))]
-  
-  [(δσ^ ÷ L (A_n A_d) Σ ((err L nat "Divide by zero") Σ) δ-÷5)
-   (where (nat C ...) (get Σ A_n))
-   (where (0) (get Σ A_d))]
-  
-  [(δσ^ ÷ L (A_n A_d) Σ ((• nat) Σ) δ-÷6)
-   (where (nat C ...) (get Σ A_n))
-   (where (N) (get Σ A_d))
-   (side-condition (¬∈ N 0))]
+  [(δσ^ ÷ L (A_n A_d) Σ ((err L nat "Divide by zero") (refine Σ A_d zero?)) δ-÷2)
+   (side-condition ,(member (term (⊢ Σ A_d zero?)) '(? ✓)))]
 
   [(δσ^ pos? L (A) Σ (0 Σ) δ-pos?✓)
    (where ✓ (⊢ Σ A pos?))]
@@ -207,7 +190,7 @@
    (where ? (⊢ Σ A_0 (eq (& A_1))))]
   
   ;; FIXME: This rule probably needs to be treated more precisely
-  [(δσ^ O L (any_0 ... A any_1 ...) Σ ((• nat) Σ) RULE)
+  [(δσ^ O L (A_0 ... A A_1 ...) Σ ((• nat (≡/c O A_0 ... A A_1 ...)) Σ) RULE)
    (where (nat C ...) (get Σ A))
    (side-condition (¬∈ O quotient / zero? pos? add1 =))])
 
@@ -242,11 +225,16 @@
 (define-metafunction SCPCFΣ
   scfoldσ : (M Σ) -> any
   [(scfoldσ (M Σ))
-   ((scfoldσ₁ (M Σ)) with any_ctx)
+   ((scfoldσ₁ (M Σ_1)) with any_ctx)
    (side-condition (or (redex-match? SCPCFΣ (err _ ...) (term M))
                        (redex-match? SCPCFΣ (blame _ ...) (term M))))
-   (where any_ctx ,(for/hash ([(a M) (term Σ)] #:when (<= -99 a -1))
-                     (values a (term (scfoldσ₁ ((& ,a) Σ))))))]
+   ; If model generating is successful, `Σ_1` is one possible breaking context
+   (where any_model (z3/model Σ))
+   (side-condition (term any_model))
+   (where Σ_1 ,(for/fold ([Σᵢ (term Σ)]) ([(a n) (term any_model)])
+                 (term (put ,Σᵢ ,a ,n))))
+   (where any_ctx ,(for/hash ([(a M) (term Σ_1)] #:when (<= -99 a -1))
+                     (values a (term (scfoldσ₁ ((& ,a) Σ_1))))))]
   [(scfoldσ any) (scfoldσ₁ any)])
 
 (define-metafunction/extension cfoldσ SCPCFΣ
@@ -265,4 +253,3 @@
   ;[(scfoldσ₁ ((M ...) Σ)) ((scfoldσ₁ M) ...)]
   ;[(scfoldσ₁ (M Σ)) M])
   [(scfoldσ₁ (Ω Σ)) Ω])
-

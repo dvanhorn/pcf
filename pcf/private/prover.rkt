@@ -1,7 +1,7 @@
 #lang racket
 (require scpcf/heap/syntax
          redex/reduction-semantics)
-(provide ⊢)
+(provide ⊢ z3/model)
 
 (define Z3
   (getenv "Z3"))
@@ -12,6 +12,12 @@
   [(! A) ,(string->symbol (format "a~a" (term A)))])
 
 (define-metafunction SCPCFΣ
+  ¡ : variable -> A
+  [(¡ variable)
+   ,(match (symbol->string (term variable))
+      [(regexp #rx"a(.+)" (list _ d)) (string->number d)])])
+
+#;(define-metafunction SCPCFΣ
   to-assert : A C -> any
   [(to-assert A pos?) (> (! A) 0)]
   [(to-assert A zero?) (= (! A) 0)]
@@ -40,6 +46,14 @@
    (O (! A) N)]
   [(to-conclude A (λ ([X : nat]) (@ _ O X)))
    (to-conclude A O)]
+  [(to-conclude A (λ ([X : nat]) (@ _ = X (@ _ add1 (& A_1)))))
+   (= (! A) (+ 1 (! A_1)))]
+  [(to-conclude A (λ ([X : nat]) (@ _ = X (@ _ sub1 (& A_1)))))
+   (= (! A) (- (! A_1) 1))]
+  [(to-conclude A (λ ([X : nat]) (@ _ = X (@ _ ÷ (& A_1) ...))))
+   (= (! A) (div (! A_1) ...))]
+  [(to-conclude A (λ ([X : nat]) (@ _ = X (@ _ O (& A_1) ...))))
+   (= (! A) (O (! A_1) ...))]
   [(to-conclude A sub1)
    (= (! A) 1)]   
   [(to-conclude A C) #f])
@@ -98,34 +112,57 @@
       [_ (values ds as)])))
 
 
-
+;; Ask Z3 whether (Σ ∧ any ...) is sat
 (define-metafunction SCPCFΣ
   z3 : Σ any ... -> sat or unsat or unknown
   [(z3 Σ any ...)
    ,(let ()
-      (define p (make-temporary-file))
       (define-values (ds as) (Σ->SMT (term Σ)))
-      (with-output-to-file p
-        #:exists 'replace
-        (λ ()      
-          (for-each display
-                    `[(set-option :produce-models true)
+      (match (query `((set-option :produce-models true)
                       (set-logic QF_NIA)                  
                       ,@(for/list ([d (in-set ds)]) d)
                       ,@(for/list ([a (in-set as)]) a) 
                       ,@(term (any ...))
-                      (check-sat)])))
-      
-      
-      (begin0
-        (match
-            (with-output-to-string 
-             (λ ()
-               (if Z3
-                   (system (format "~a -smt2 ~a" Z3 (path->string p)))
-                   (error "No Z3 in environment"))))
-          ["unsat\n" 'unsat]
-          ["sat\n" 'sat]
-          ["unknown\n" 'unknown])
-        (delete-file p)))])
+                      (check-sat)))
+        ["unsat\n" 'unsat]
+        ["sat\n" 'sat]
+        ["unknown\n" 'unknown]))])
      
+;; Ask Z3 to build a model if (Σ ∧ any ...) is sat
+(define-metafunction SCPCFΣ
+  z3/model : Σ -> any #|#f or hash|#
+  [(z3/model Σ)
+   ,(let ()
+      (define-values (ds as) (Σ->SMT (term Σ)))
+      (match (query `((set-option :produce-models true)
+                      (set-logic QF_NIA)                  
+                      ,@(for/list ([d (in-set ds)]) d)
+                      ,@(for/list ([a (in-set as)]) a) 
+                      (check-sat)
+                      (get-model)))
+        [(regexp #rx"^sat(.*)" (list _ m))
+         (with-input-from-string m
+           (λ ()
+             (match-define `(model ,lines ...) (read))
+             (for/hash ([line lines])
+               (match-define `(define-fun ,a () Int ,n) line)
+               (values (term (¡ ,a)) n))))]
+        [_ #f]))])
+
+;; Call out to Z3 with given query as Sexp
+(define (query sexp)
+  ; Debug
+  #;(begin (printf "About to query:~n")
+         (for-each (curry printf "~a~n") sexp)
+         (printf "~n"))
+  (define p (make-temporary-file))
+  (with-output-to-file p
+    #:exists 'replace
+    (λ () (for-each display sexp)))
+  (begin0
+      (with-output-to-string 
+          (λ ()
+            (if Z3
+                (system (format "~a -smt2 ~a" Z3 (path->string p)))
+                (error "No Z3 in environment"))))
+    (delete-file p)))
