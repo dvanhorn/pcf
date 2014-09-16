@@ -1,7 +1,7 @@
 #lang racket
 (provide return returnσ pp ppσ ppσ* color)
 (require (only-in redex/gui term-node-parents term-node-labels))
-(require redex/reduction-semantics scpcf/heap/semantics)
+(require redex/reduction-semantics scpcf/heap/semantics scpcf/syntax)
 (require unstable/lazy-require)
 (lazy-require (redex/gui [default-pretty-printer]))
 
@@ -39,7 +39,7 @@
             (syntax->srcstring l)
             c0 c1 v)
     (cond
-     [(hash-empty? cs) '()]
+     [(hash-empty? cs) '("\n(Unable to come up with counterexample)")]
      [else
       (list*
        "\nPossible breaking context:"
@@ -55,7 +55,7 @@
     string-append
     (format "err:~a ~a" (syntax->srcstring l) s)
     (cond
-     [(hash-empty? cs) '()]
+     [(hash-empty? cs) '("\n(Unable to come up with counterexample)")]
      [else
       (list*
        "\nPossible breaking context:"
@@ -74,10 +74,14 @@
             [(list (list* 'err _) 'with _) #f]
 	    [_ #t]))
 
+(define T? (redex-match? SCPCF T))
+(define O? (redex-match? SCPCF O))
 (define (scrub v)
   (match v
     [(list '@ l m ...)
      (map scrub m)]
+    [(list '• TC ...) ; only keep simple contracts
+     (list* '• (for/list ([tc TC] #:when (or (T? tc) (O? tc))) tc))]
     [(list 'err l t s)
      (list 'err #;(loc l) #;t s)]
     [(list 'blame 'HAVOC c0 c1 v)
