@@ -127,8 +127,8 @@
    ,(hash-set (term any_Σ) (term any_A) (list (term T) (apply set (term (any_C ...)))))]
   [(put₁ any_Σ any_A (• L T any_C ...))
    ,(hash-set (term any_Σ) (term any_A) (list (term T) (apply set (term (any_C ...)))))]
-  [(put₁ any_Σ any_A (any_T any_C ...))
-   ,(hash-set (term any_Σ) (term any_A) (list (term any_T) (apply set (term (any_C ...)))))]
+  [(put₁ any_Σ any_A (T any_C ...))
+   ,(hash-set (term any_Σ) (term any_A) (list (term T) (apply set (term (any_C ...)))))]
   [(put₁ any_Σ any_A any_V)
    ,(hash-set (term any_Σ) (term any_A) (list (term any_V) (set)))])
 

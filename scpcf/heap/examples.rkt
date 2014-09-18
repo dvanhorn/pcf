@@ -1,4 +1,4 @@
-#lang scpcf/heap
+#lang scpcf/heap traces
 
 ((• 1 ((nat -> nat) (nat -> nat) -> nat))
  (λ ([x : nat]) (/ 1 x))
@@ -19,3 +19,11 @@
     (λ ([n : nat])
       (if0 (zero? n) 1
            (+ (/ 2 (- 13 n)) (f (/ 1 (- 7 n))))))))
+
+((• 1 (((nat -> nat) -> (nat -> nat)) -> nat))
+ (λ ([f : (nat -> nat)])
+   (λ ([x : nat]) (/ 10 (f x)))))
+
+((• 1 (((nat -> nat) -> nat) -> nat))
+ (λ ([f : (nat -> nat)])
+   (/ 10 (- 10 (* (f 5) (f 7))))))

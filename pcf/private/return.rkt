@@ -39,7 +39,7 @@
             (syntax->srcstring l)
             c0 c1 v)
     (cond
-     [(hash-empty? cs) '("\n(Unable to come up with counterexample)")]
+     [(hash-empty? cs) '()]
      [else
       (list*
        "\nPossible breaking context:"
@@ -55,7 +55,7 @@
     string-append
     (format "err:~a ~a" (syntax->srcstring l) s)
     (cond
-     [(hash-empty? cs) '("\n(Unable to come up with counterexample)")]
+     [(hash-empty? cs) '()]
      [else
       (list*
        "\nPossible breaking context:"

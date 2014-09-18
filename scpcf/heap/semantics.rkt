@@ -63,13 +63,32 @@
         ((subst (X (& A)) V) (put Σ A (T)))
         (where A (alloc ((μ (X : T) V) Σ)))
         μ) ;; μ^
-     
-   (--> ((@ L (& A_f) P ...) Σ)
-        ((• T C ...) Σ)        
-        (where ((T_0 ... -> T)
-                (C_0 ... -> C) ...)
-               (get Σ A_f))
+   
+   (--> ((@ L (& A_f) (& A_x) ...) Σ) 
+        ((& A_y) Σ_1)
+        (where ((T_0 ... -> T) _ ...) (get Σ A_f))
+        (where A_y (alloc ((• T) Σ)))
+        (where Fin (fin (T_0 ... -> T) (A_x ... ↦ A_y)))
+        (where Σ_1 (put Σ
+                        A_y (• T)
+                        A_f Fin))
         β•)
+   (--> ((@ L (& A_f) (& A) ...) Σ)
+        ((& A_y) Σ)
+        (where (Fin) (get Σ A_f))
+        (where A_y (fin@ Fin A ...))
+        (side-condition (term A_y))
+        fin@)
+   (--> ((@ L (& A_f) (& A) ...) Σ)
+        ((& A_y) Σ_1)
+        (where ((name Fin (fin (_ ... -> T) _ ...)))
+               (get Σ A_f))
+        (where #f (fin@ Fin A ...))
+        (where A_y (alloc ((• T) Σ)))
+        (where Σ_1 (put Σ
+                        A_y (• T)
+                        A_f (fin+ Fin (A ... ↦ A_y))))
+        fin+)
    
    (--> ((@ L (& A_f) (& A_V) ...) Σ)
         ((@ L (& A_f) (& A_V) ...) Σ_1)
@@ -250,6 +269,28 @@
   [(scfoldσ₁ ((• _ ... zero? _ ...) _)) 0]
   [(scfoldσ₁ ((• T C ...) Σ)) (• T C ...)]
   [(scfoldσ₁ ((• L T C ...) Σ)) (• L T C ...)]
+  [(scfoldσ₁ ((fin (T_x ... -> T) (A_x ... ↦ A) ...) Σ))
+   (λ ([X : T_x] ...)
+     (scfoldσ₁ ((COND [(=* (X ...) ((& A_x) ...)) (& A)] ... #:else 42) Σ)))
+   (where (X ...)
+          ,(variables-not-in (term '()) (make-list (length (term (T_x ...))) 'n)))]
   ;[(scfoldσ₁ ((M ...) Σ)) ((scfoldσ₁ M) ...)]
-  ;[(scfoldσ₁ (M Σ)) M])
   [(scfoldσ₁ (Ω Σ)) Ω])
+
+;;;;; Macros
+
+(define-metafunction SCPCFΣ
+  COND : [M M] ... #:else M -> M
+  [(COND #:else M) M]
+  [(COND [0 M] _ ...) M]
+  [(COND [M_1 M_2] any ...) (if0 M_1 M_2 (COND any ...))])
+
+(define-metafunction SCPCFΣ
+  =* : [M ..._1] [M ..._1] -> M
+  [(=* (M_1 ...) (M_2 ...)) (AND (@ 'Λ #|easy fix, hack for now|# = M_1 M_2) ...)])
+
+(define-metafunction SCPCFΣ
+  AND : M ... -> M
+  [(AND) 0] ; 0 = true
+  [(AND M) M]
+  [(AND M_1 M ...) (if0 M_1 (AND M ...) 1)])
