@@ -134,7 +134,7 @@
   #:contract (havoc/n L (T ...) V)
   #:mode     (havoc/n I I       O)
   [(where (T_x ... -> T_y) T)
-   (where M (havocᵢ ,(fresh!) L T f))
+   (where M ,(havocᵢ (term L) (term T) (term f)))
    (where (X_l ...)
           ,(variables-not-in (term M) (make-list (length (term (T_l ...))) 'l)))
    (where (X_r ...)
@@ -144,12 +144,12 @@
             (λ ([X_l : T_l] ... [f : T] [X_r : T_r] ...) M))])
 
 ;; Synthesize havoc-ing expression for type `T`
-(define-metafunction SCPCFΣ
-  ; The first argument is a hack around Redex's memoization
-  havocᵢ : _ L T M -> M
-  [(havocᵢ _ L nat M) M]
-  [(havocᵢ _ L (T_x ... -> T_y) M)
-   (havocᵢ ,(fresh!) L T_y (@ L M (• ,(fresh!) T_x) ...))])
+;; I make this a function to get around Redex's memoization
+(define (havocᵢ L T M)
+  (match T
+    ['nat M]
+    [`(,T_x ... -> ,T_y)
+     (havocᵢ L T_y (list* '@ L M (for/list ([T_xᵢ T_x]) (list '• (fresh!) T_xᵢ))))]))
 
 (define-metafunction SCPCFΣ
   eq : M -> M
