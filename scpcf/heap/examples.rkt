@@ -20,10 +20,14 @@
       (if0 (zero? n) 1
            (+ (/ 2 (- 13 n)) (f (/ 1 (- 7 n))))))))
 
-((• 1 (((nat -> nat) -> (nat -> nat)) -> nat))
+((• 6 (((nat -> nat) -> (nat -> nat)) -> nat))
  (λ ([f : (nat -> nat)])
    (λ ([x : nat]) (/ 10 (f x)))))
 
-((• 1 (((nat -> nat) -> nat) -> nat))
+((• 7 (((nat -> nat) -> nat) -> nat))
  (λ ([f : (nat -> nat)])
    (/ 10 (- 10 (* (f 5) (f 7))))))
+
+((• 8 (((nat -> nat) nat nat -> nat) -> nat))
+ (λ ([f : (nat -> nat)] [x : nat] [y : nat])
+   (/ 1 (- 10 (* (f x) (f y))))))
