@@ -31,3 +31,7 @@
 ((• 8 (((nat -> nat) nat nat -> nat) -> nat))
  (λ ([f : (nat -> nat)] [x : nat] [y : nat])
    (/ 1 (- 10 (* (f x) (f y))))))
+
+((• 9 (((nat nat -> nat) nat nat nat nat -> nat) -> nat))
+ (λ ([f : (nat nat -> nat)] [a : nat] [b : nat] [c : nat] [d : nat])
+   (/ 1 (- 10 (* (f a b) (f c d))))))
