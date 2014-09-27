@@ -28,7 +28,7 @@
 (define-metafunction SCPCFΣ
   fin@ : Fin A ... -> A or #f
   [(fin@ (fin _ ... (A ... ↦ A_y) _ ...) A ...) A_y]
-  [(fin@ _ _) #f])
+  [(fin@ _ _ ...) #f])
 
 ;; Extend finite function
 (define-metafunction SCPCFΣ

@@ -17,6 +17,14 @@
    ,(match (symbol->string (term variable))
       [(regexp #rx"a(.+)" (list _ d)) (string->number d)])])
 
+;; Z3 macro avoiding cluttering the formula with `and` in trivial cases
+(define-metafunction SCPCFΣ
+  AND : any ... -> any
+  [(AND) true]
+  [(AND any) any]
+  [(AND any ...) (and any ...)])
+
+
 #;(define-metafunction SCPCFΣ
   to-assert : A C -> any
   [(to-assert A pos?) (> (! A) 0)]
@@ -55,7 +63,7 @@
   [(to-conclude A (λ ([X : nat]) (@ _ = X (@ _ O (& A_1) ...))))
    (= (! A) (O (! A_1) ...))]
   [(to-conclude A sub1)
-   (= (! A) 1)]   
+   (= (! A) 1)]
   [(to-conclude A C) #f])
 
 
@@ -109,6 +117,22 @@
                           (set `(assert (>= ,(term (! ,a)) 0)))
                           (for/set ([c (in-set cs)])
                             (assert a c))))]
+      [(list (list 'fin (list 'nat ... '-> 'nat) maps ...) _)
+       ;; Assert that ((a₁ = b₁) ∧ ⋯ ∧ (aₙ = bₙ) ⇒ ((f a₁ ⋯ aₙ) = (f b₁ ⋯ bₙ)))
+       (define assrt 
+         (term
+          (AND
+           ,@(let go ([maps maps])
+               (match maps
+                 [(cons `(,x ... ↦ ,y) maps′)
+                  (append (for/list ([m maps′])
+                            (match-define `(,w ... ↦ ,v) m)
+                            (term (=> (AND ,@(for/list ([xᵢ x] [wᵢ w])
+                                               (term (= (! ,xᵢ) (! ,wᵢ)))))
+                                      (= (! ,y) (! ,v)))))
+                          (go maps′))]
+                 ['() '()])))))
+       (values ds (set-add as `(assert ,assrt)))]
       [_ (values ds as)])))
 
 
