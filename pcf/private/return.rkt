@@ -2,7 +2,7 @@
 (provide return returnσ pp ppσ ppσ* color)
 (require (only-in redex/gui term-node-parents term-node-labels))
 (require redex/reduction-semantics scpcf/heap/semantics scpcf/syntax)
-(require unstable/lazy-require)
+(require racket/lazy-require)
 (lazy-require (redex/gui [default-pretty-printer]))
 
 (define (return res)
