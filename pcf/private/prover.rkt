@@ -4,7 +4,10 @@
 (provide ⊢ z3/model)
 
 (define Z3
-  (getenv "Z3"))
+  (let ((z3 (getenv "Z3")))
+    (if z3
+        z3
+        (find-executable-path "z3"))))
 
 
 (define-metafunction SCPCFΣ
@@ -184,9 +187,12 @@
     #:exists 'replace
     (λ () (for-each display sexp)))
   (begin0
-      (with-output-to-string 
+      (with-input-from-string
+       ""
+       (λ ()
+         (with-output-to-string 
           (λ ()
             (if Z3
                 (system (format "~a -smt2 ~a" Z3 (path->string p)))
-                (error "No Z3 in environment"))))
-    (delete-file p)))
+                (error "No Z3 in environment"))))))
+      (delete-file p)))
