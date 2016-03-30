@@ -29,6 +29,9 @@
     [(list 'err _ ...) #f]
     [(list 'blame 'HAVOC _ ...) "lightgray"]
     [(list 'blame _ ...) #f]
+    [(list (list 'blame 'HAVOC _ ...) _ ...) #f] ; heap
+    [(list (list 'blame _ ...) _ ...) #f] ; heap
+    [(list (list 'err _ ...) _ ...) #f] ; heap
     [_ (if (havoc? node) "lightgray" #t)]))
 
 (define (raise-blame l c0 c1 v [cs (hash)])
