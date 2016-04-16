@@ -5,8 +5,7 @@
 (define deps 
   '("base" 
     "redex-lib" 
-    "redex-pict-lib" 
-    "unstable-lib"))
+    "redex-pict-lib"))
 
 (define build-deps 
   '("scribble-lib" 

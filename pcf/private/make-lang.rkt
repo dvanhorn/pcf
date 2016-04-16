@@ -32,7 +32,7 @@
      (define trace (attribute trace.sym))
      #`(#%module-begin
         (lexical e) ... ; lexical expansion for IDE integration
-	(require unstable/lazy-require)
+	(require racket/lazy-require)
 	(lazy-require [redex (traces stepper initial-char-width 
                                      term-node-children reduction-steps-cutoff
                                      default-pretty-printer)])        
